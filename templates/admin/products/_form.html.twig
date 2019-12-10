@@ -1,0 +1,57 @@
+{{ form_start(form) }}
+	{{ form_row(form.contents) }}
+	{{ form_row(form.reference) }}
+	<div class="row">
+		<div class="col-3">
+			{{ form_row(form.purshasing_price) }}
+		</div>
+		<div class="col-3">
+			{{ form_row(form.selling_price) }}
+		</div>
+		<div class="col-3">
+			{{ form_row(form.taxe) }}
+		</div>
+		<div class="col-3">
+			{{ form_row(form.selling_price_all_taxes) }}
+		</div>
+	</div>
+	<hr>
+	<div class="row">
+		<div class="col-4 border-right">
+			{{ form_row(form.categories) }}
+		</div>
+		<div class="col-8">
+			<div class="row">
+				<div class="col-6">
+					{{ form_row(form.date_publish) }}
+				</div>
+				<div class="col-6">
+					{{ form_row(form.available_date) }}
+				</div>
+			</div>
+			{{ form_row(form.pre_order) }}
+			<div class="row">
+				<div class="col-6">
+					{{ form_row(form.sales_unit) }}
+				</div>
+				<div class="col-6">
+					{{ form_row(form.min_quantity) }}
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					{{ form_row(form.max_quantity) }}
+				</div>
+				<div class="col-6">
+					{{ form_row(form.bulk_quantity) }}
+				</div>
+			</div>
+			{{ form_row(form.offline) }}
+			{{ form_row(form.stock_management) }}
+			{{ form_row(form.gamme) }}
+			{{ form_row(form.supplier) }}
+		</div>
+	</div>
+    {# form_widget(form) #}
+    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}

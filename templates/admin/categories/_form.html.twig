@@ -1,0 +1,15 @@
+{{ form_start(form) }}
+<div class="row">
+	<div class="col-md-8">
+		{{ form_row(form.contents) }}
+		<div style="width: 100px;">
+		{{ form_row(form.position) }}
+		</div>
+	</div>
+	<div class="col-md-4 border-left">
+		{{ form_row(form.parent) }}{{ form_row(form.active) }}
+		{{ form_row(form.force_display) }}
+	</div>
+</div>
+<button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}

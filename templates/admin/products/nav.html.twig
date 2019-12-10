@@ -1,0 +1,13 @@
+<aside>
+	<div class="list-group">
+		<a href="{{ path('products_edit', {'id' : id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'product-edit' %} active {% endif %}">Informations</a>
+		<a href="{# path('product-images', {'id' : id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'product-images' %} active {% endif #}">Images</a>
+		<a href="{# path('product-discount', {'id' : id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'product-discount' %} active {% endif #}">Promotions</a>
+		<a href="{# path('product-stock', {'id' : id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'product-stock' %} active {% endif #}">Gestion stocks</a>
+		<a href="{# path('product-numerical', {'id' : id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'product-numerical' %} active {% endif #}">Format numérique</a>
+		<a href="{# path('product-authors', {'id' : id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'product-authors' %} active {% endif #}">Auteurs</a>
+		<!-- <a href="#" class="list-group-item"><span>Propriétés</span></a> -->
+		<a href="#" class="list-group-item">Packs</a>
+		<a href="#" class="list-group-item">Fournisseurs</a>
+	</div>
+</aside>

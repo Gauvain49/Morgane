@@ -1,0 +1,38 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Paramètres générales{% endblock %}
+{% form_theme form _self %}
+
+{% block body %}
+<div class="page-header">
+	<h4 class="page-title">Paramètres générales</h4>
+	<ul class="breadcrumbs">
+		<li class="nav-home">
+			<a href="{{ path('dashboard') }}">
+				<i class="flaticon-home"></i>
+			</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			<a href="{{ path('parameters') }}">Paramètres</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			<a href="#">Paramètres générales</a>
+		</li>
+	</ul>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-body">
+				{{ include('admin/parameters/_form.html.twig', {'button_label': 'Update'}) }}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

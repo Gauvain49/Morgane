@@ -1,0 +1,129 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Liste des catégories{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <h4 class="page-title">Catégories</h4>
+    <ul class="breadcrumbs">
+        <li class="nav-home">
+            <a href="{{ path('dashboard') }}">
+                <i class="flaticon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow"></i>
+        </li>
+        <li class="nav-item">
+            {% if (type == 'product') %}
+            <a href="{{ path('products_index') }}">Produits</a>
+            {% else %}
+            <a href="{{ path('products_index', {'role': 'post'}) }}">Articles</a>
+        {% endif %}
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow"></i>
+        </li>
+        <li class="nav-item">
+            Catégories
+        </li>
+    </ul>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('categories_index', {'type': type}) }}">Racine</a></li>
+                {% for key, bread in filAriane %}
+                    {% if key == parent %}
+                        <li class="breadcrumb-item" aria-current="page">{{ bread }}</li>
+                    {% else %}
+                        <li class="breadcrumb-item"><a href="{{ path('categories_index', {'type': type, 'parent': key}) }}">{{ bread }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ol class="breadcrumb">
+        </nav>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <h4 class="card-title">Catégories</h4>
+                    <div class="card-tools">
+                        <a href="{{ path('categories_new', {'type': type}) }}" class="btn btn-info font-weight-bold"><span class="btn-label"><i class="flaticon-plus"></i></span> Ajouter une catégorie</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-3">
+                        <h6>Arborescence</h6>
+                        <ul class="list-group">
+                            {% for name, categorie in arborescence %}
+                            <li class="list-group-item text-muted small">{{ name|raw }}</li>
+                            {% else %}
+                            <li class="list-group-item text-muted small">Racine</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col-9">
+                        <div class="table-responsive">
+                            <table class="display table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Nom</th>
+                                        <th>Position</th>
+                                        <th>Enfants</th>
+                                        <th>Active</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for category in categories %}
+                                    <tr>
+                                        <td>{{ category.id }}</td>
+                                        <td>
+                                            {% for content in category.contents %}
+                                                {% if content.lang.id == languagesService.languageDefault.id %}
+                                                    {{ content.name }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                        <td>{{ category.position }}</td>
+                                        <td>
+                                            {% if children[category.id] > 0 %}
+                                            <a href="{{ path('categories_index', {'type': type, 'parent': category.id}) }}">
+                                                <span class="badge badge-primary">{{ children[category.id] }}</span>
+                                            </a>
+                                            {% else %}
+                                                <span class="badge badge-light">{{ children[category.id] }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ category.active ? '<i class="la la-check" style="color: #009A07; font-weight: bold; font-size: 15px;">' : '<i class="la la-close" style="color: #CF0000; font-weight: bold; font-size: 15px;">' }}</td>
+                                        <td class="text-right">
+                                            <div class="d-inline-flex">
+                                                <div class="p-1">
+                                                    <a href="{{ path('categories_edit', {'id': category.id}) }}" class="btn btn-primary" title="Éditer"><i class="btn-label fas fa-pen" style="font-size: 16px;"></i></a>
+                                                </div>
+                                                <div class="p-1">{{ include('admin/categories/_delete_form.html.twig') }}</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="9">Aucun enregistrement dans la base de données.</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

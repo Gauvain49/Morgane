@@ -1,0 +1,224 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}Éditer un produit{% endblock %}
+{% form_theme form _self %}
+
+{% block body %}
+<div class="page-header">
+	<h4 class="page-title">Modifier un produit</h4>
+	<ul class="breadcrumbs">
+		<li class="nav-home">
+			<a href="{{ path('dashboard') }}">
+				<i class="flaticon-home"></i>
+			</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			<a href="{{ path('products_index')}}">Produits</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			<a href="#">Modifier un produit</a>
+		</li>
+	</ul>
+</div>
+<div class="row">
+	<div class="col-md-2">
+		<div class="card">
+			{% block menuProduct %}
+			{{ include('admin/products/nav.html.twig') }}
+			{% endblock %}
+		</div>
+	</div>
+	<div class="col-md-10">
+		<div class="card">
+			<div class="card-header">
+				<div class="card-head-row">
+					<h4 class="card-title">Produits</h4>
+                    <div class="card-tools">
+                        <a href="{{ path('products_new') }}" class="btn btn-info font-weight-bold"><span class="btn-label"><i class="flaticon-plus"></i></span> Ajouter un produit</a>
+                    </div>
+				</div>
+			</div>
+			<div class="card-body">
+				{% if languagesService.getLanguages|length > 1 %}
+					{% set iteration = 0 %}
+				<!-- champ de sélection des langues -->
+				<div class="choiceLanguage contentWrapperInput">
+					<button onclick="event.preventDefault(); return addDisplay(this);" class="btn btn-primary"></button>
+					<select name="choiceLanguage" class="choice_language_multiple selectHidden skipThese">
+						{% for lang in languagesService.getLanguages %}
+						<option data-role="{{ lang.langIsoCode }}" id="id_langue_name_{{ iteration }}" value="{{ iteration }}">{{ lang.langName}}</option>
+						{% set iteration = iteration + 1 %}
+					{% endfor %}
+					</select>
+				</div>
+				{% endif %}
+				{{ include('admin/products/_form.html.twig', {'button_label': 'Modifier'}) }}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{# Pour retirer les 0  des CollectionsType#}
+{% block _products_contents_entry_row %}
+		{{ form_widget(form) }}
+{% endblock %}
+{% block _products_categories_entry_widget %}
+	<div class="form-check p-0">
+		<label class="form-check-label" {% for key, styles in attr %} {% for k, style in styles %} {{ key }}="{{ k }}:{{ style }}" {% endfor %} {% endfor %}>
+			<input class="form-check-input group-categories" type="checkbox" name="{{full_name}}" id="{{id}}" value="{{value}}">
+			<span class="form-check-sign">{{ label }}</span>
+		</label>
+	</div>
+{% endblock %}
+{% block _products_date_publish_date_widget %}
+	<div class="input-group" style="width: 200px">{{ form_widget(form) }}
+		<div class="input-group-append">
+			<span class="input-group-text">
+				<i class="la la-calendar-o"></i>
+			</span>
+		</div></div>
+{% endblock %}
+{% block _products_date_publish_time_widget %}
+	<div class="input-group pl-2" style="width: 150px">{{ form_widget(form) }}
+		<div class="input-group-append">
+			<span class="input-group-text">
+				<i class="la la-clock-o"></i>
+			</span>
+		</div></div>
+{% endblock %}
+{% block _products_available_date_date_widget %}
+	<div class="input-group" style="width: 200px">{{ form_widget(form) }}
+		<div class="input-group-append">
+			<span class="input-group-text">
+				<i class="la la-calendar-o"></i>
+			</span>
+		</div></div>
+{% endblock %}
+{% block _products_available_date_time_widget %}
+	<div class="input-group pl-2" style="width: 150px">{{ form_widget(form) }}
+		<div class="input-group-append">
+			<span class="input-group-text">
+				<i class="la la-clock-o"></i>
+			</span>
+		</div></div>
+{% endblock %}
+
+{% block javascripts %}
+	<!-- Summernote -->
+	<script src="{{ asset('admin/js/plugin/summernote/summernote-bs4.min.js') }}"></script>
+	<!-- Bootstrap Toggle -->
+	<script src="{{ asset('admin/js/plugin/bootstrap-toggle/bootstrap-toggle.min.js') }}"></script>
+	<!-- Moment JS -->
+	<script src="{{ asset('admin/js/plugin/moment/moment.min.js') }}"></script>
+		<!-- DateTimePicker -->
+	<script src="{{ asset('admin/js/plugin/datepicker/bootstrap-datetimepicker.min.js') }}"></script>
+	<!-- Multilanguage -->
+	<script src="{{ asset('admin/js/multilanguage.js') }}"></script>
+	<script type="text/javascript">
+		//Création du tableau recueillant les langues
+		const listLang = new Object();
+		const listLangIso = new Object();
+		{% for lang in languagesService.getLanguages %}
+		listLang[{{lang.id}}] = '{{lang.langName}}';
+		listLangIso[{{lang.id}}] = '{{lang.langIsoCode}}';
+		{% endfor %}
+
+		//Function pour calculer la taille du tableau
+		Object.size = function(arr) 
+		{
+		    var size = 0;
+		    for (var key in arr) 
+		    {
+		        if (arr.hasOwnProperty(key)) size++;
+		    }
+		    return size;
+		};
+		var langLength = Object.size(listLang);
+
+		multilanguage('products_contents', listLang, {{ languagesService.getLanguages|length }}, {{ languagesService.languageDefault.id }});
+	</script>
+	<script>
+	(function(e) {
+		var taxe = document.getElementById('products_taxe');
+		var choixTaxe = taxe.selectedIndex;
+		var valeur = taxe.options[choixTaxe].dataset.role;
+		var ht = document.getElementById('products_selling_price');
+		var ttc = document.getElementById('products_selling_price_all_taxes');
+		taxe.addEventListener('change', function() {
+			var newChoixTaxe = this.selectedIndex;
+			valeur = this.options[newChoixTaxe].dataset.role;
+			if(ht.value != '') {
+				ttc.value = (ht.value * ((valeur / 100) + 1)).toFixed(2);
+			}
+		});
+		ht.addEventListener('keyup', function() {
+			if(this.value == '') {
+				ttc.value = 0;
+			} else {
+				ttc.value = (this.value * ((valeur / 100) + 1)).toFixed(2);
+			}
+		});
+		ttc.addEventListener('keyup', function() {
+			if(this.value == '') {
+			ht.value = 0;
+			} else {
+				ht.value = (this.value / ((valeur / 100) + 1)).toFixed(2);
+			}
+		});
+	})();
+	</script>
+	<!-- Attribution de l'editor summernote sur les champs summary et description -->
+	<script>
+	var div = document.getElementsByClassName('editor');
+	console.log(div);
+	for(var i = 0; i<div.length; i++) {
+		$('#products_contents_' + i + '_summary').summernote({
+			placeholder: 'Vous pouvez mettre ici une description courte du produit.',
+			fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New'],
+			tabsize: 2,
+			height: 200
+		});
+
+		$('#products_contents_' + i + '_description').summernote({
+			placeholder: 'Description complète du produit.',
+			fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New'],
+			tabsize: 2,
+			height: 300
+		});
+	}
+	</script>
+    <script >
+		//moment.locale('fr-ca'); 
+		//$.datepicker.setDefaults($.datepicker.regional["fr"]);
+		//jQuery.datetimepicker.setLocale('fr');
+		$('#products_date_publish_time').datetimepicker({
+			format: 'H:mm',
+			//format: 'DD/MM/YYYY',
+			locale: 'fr'
+		});
+		$('#products_available_date_time').datetimepicker({
+			format: 'H:mm',
+			//format: 'DD/MM/YYYY',
+			locale: 'fr'
+		});
+	</script>
+
+	<!-- Attribution des checked aux catégories -->
+	<script>
+		var selected = ["{{ catSelected|join('", "')|raw }}"];
+		var a = document.getElementsByClassName('group-categories');
+		for(var i = 0; i < a.length; i++) {
+			var b = a[i].value;
+			var index = selected.indexOf(b);
+			if(index != -1) {
+				a[i].setAttribute('checked', '');
+			}
+		}
+	</script>
+{% endblock %}

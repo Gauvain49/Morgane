@@ -1,0 +1,81 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Ajouter une taxe{% endblock %}
+{% form_theme form _self %}
+
+{% block body %}
+<div class="page-header">
+	<h4 class="page-title">Ajouter une taxe</h4>
+	<ul class="breadcrumbs">
+		<li class="nav-home">
+			<a href="{{ path('dashboard') }}">
+				<i class="flaticon-home"></i>
+			</a>
+		</li>
+        <li class="separator">
+            <i class="flaticon-right-arrow"></i>
+        </li>
+        <li class="nav-item">
+            Catalogue
+        </li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			<a href="{{ path('taxes_index')}}">Taxes</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			<a href="#">Ajouter une taxe</a>
+		</li>
+	</ul>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h4 class="card-title">Ajouter une taxe</h4>
+			</div>
+			<div class="card-body">
+				{{ include('admin/taxes/_form.html.twig') }}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block _taxes_taxesLangs_entry_row %}
+		{{ form_widget(form) }}
+{% endblock %}
+{% block javascripts %}
+
+	<!-- Bootstrap Toggle -->
+	<script src="{{ asset('admin/js/plugin/bootstrap-toggle/bootstrap-toggle.min.js') }}"></script>
+
+	<!-- Multilanguage -->
+	<script src="{{ asset('admin/js/multilanguage.js') }}"></script>
+	<script type="text/javascript">
+		//Création du tableau recueillant les langues
+		const listLang = new Object();
+		const listLangIso = new Object();
+		{% for lang in languagesService.getLanguages %}
+		listLang[{{lang.id}}] = '{{lang.langName}}';
+		listLangIso[{{lang.id}}] = '{{lang.langIsoCode}}';
+		{% endfor %}
+
+		//Function pour calculer la taille du tableau
+		Object.size = function(arr) 
+		{
+		    var size = 0;
+		    for (var key in arr) 
+		    {
+		        if (arr.hasOwnProperty(key)) size++;
+		    }
+		    return size;
+		};
+		var langLength = Object.size(listLang);
+
+		multilanguage('taxes_taxesLangs', listLang, {{ languagesService.getLanguages|length }}, {{ languagesService.languageDefault.id }});
+		</script>
+{% endblock %}

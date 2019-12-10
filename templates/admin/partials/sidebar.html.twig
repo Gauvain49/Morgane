@@ -1,0 +1,225 @@
+				<div class="sidebar-wrapper scrollbar-inner">
+					<div class="sidebar-content">
+						<div class="user">
+							<div class="photo">
+								<img src="{{ appService.getGravatar(app.user.email, '40') }}" alt="image profile">
+							</div>
+							<div class="info">
+								<a data-toggle="collapse" href="#collapseExample" aria-expanded="true">
+									<span>
+										{{ app.user.firstname}} {{ app.user.lastname }}
+										<span class="user-level">{% if is_granted('ROLE_SUPER_ADMIN') %}Super Administrateur{% elseif is_granted('ROLE_ADMIN') %}Administrateur{% endif %}</span>
+									</span>
+								</a>
+							</div>
+						</div>
+						<ul class="nav">
+							<li class="nav-item">
+								<a href="{{ path('dashboard') }}">
+									<i class="la la-dashboard"></i>
+									<p>Tableau de bord</p>
+								</a>
+							</li>
+							<li class="nav-section">
+								<span class="sidebar-mini-icon">
+									<i class="la la-ellipsis-h"></i>
+								</span>
+								<h4 class="text-section">Boutique</h4>
+							</li>
+							<li class="nav-item">
+								<a data-toggle="collapse" href="#catalog">
+									<i class="la la-cubes"></i>
+									<p>Catalogue</p>
+									<span class="caret"></span>
+								</a>
+								<div class="collapse" id="catalog">
+									<ul class="nav nav-collapse">
+										<li>
+											<a href="{{ path('products_index') }}">
+												<span class="sub-item">Produits</span>
+											</a>
+										</li>
+										<li>
+											<a href="{{ path('categories_index', {'type': 'product'}) }}">
+												<span class="sub-item">Catégories</span>
+											</a>
+										</li>
+										<li>
+											<a href="{# path('properties-index') #}">
+												<span class="sub-item">Propriétés</span>
+											</a>
+										</li>
+										<li>
+											<a href="{# path('authors-index') #}">
+												<span class="sub-item">Auteurs</span>
+											</a>
+										</li>
+										<li>
+											<a href="{# path('suppliers-index') #}">
+												<span class="sub-item">Fournisseurs</span>
+											</a>
+										</li>
+										<li>
+											<a href="{{ path('taxes_index') }}">
+												<span class="sub-item">Gestion des taxes</span>
+											</a>
+										</li>
+										<li>
+											<a href="{# path('main') #}">
+												<span class="sub-item">Gammes</span>
+											</a>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li class="nav-section">
+								<span class="sidebar-mini-icon">
+									<i class="la la-ellipsis-h"></i>
+								</span>
+								<h4 class="text-section">E-commerce</h4>
+							</li>
+							<li class="nav-item">
+								<a data-toggle="collapse" href="#clients">
+									<i class="la la-street-view"></i>
+									<p>Clients</p>
+									<span class="caret"></span>
+								</a>
+								<div class="collapse" id="clients">
+									<ul class="nav nav-collapse">
+										<li>
+											<a href="{# path('customers') #}">
+												<span class="sub-item">Liste des clients</span>
+											</a>
+										</li>
+										<li>
+											<a href="{# path('customers_groups_list') #}">
+												<span class="sub-item">Groupe de client</span>
+											</a>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li class="nav-item">
+								<a href="{# path('orders') #}">
+									<i class="la la-cart-arrow-down"></i>
+									<p>Commandes</p>
+								</a>
+							</li>
+							<li class="nav-item">
+								<a href="{# path('payments_mode') #}">
+									<i class="la la-money"></i>
+									<p>Mode de paiements</p>
+								</a>
+							</li>
+							<li class="nav-section">
+								<span class="sidebar-mini-icon">
+									<i class="flaticon-layers"></i>
+								</span>
+								<h4 class="text-section">Contenus</h4>
+							</li>
+							<li class="nav-item">
+								<a data-toggle="collapse" href="#page">
+									<i class="la la-copy"></i>
+									<p>Pages du site</p>
+									<span class="caret"></span>
+								</a>
+								<div class="collapse" id="page">
+									<ul class="nav nav-collapse">
+										<li>
+											<a href="{# path('post-index', {'role' : 'page'}) #}">
+												<span class="sub-item">Liste des pages</span>
+											</a>
+										</li>
+										<li>
+											<a href="{# path('post-new', {'role' : 'page'}) #}">
+												<span class="sub-item">Ajouter une page</span>
+											</a>
+										</li>
+										<li>
+											<a href="{# path('post-position') #}">
+												<span class="sub-item">Gestion du menu</span>
+											</a>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li class="nav-item">
+								<a href="{# path('medias-list') #}">
+									<i class="la la-photo"></i>
+									<p>Médiathèque</p>
+								</a>
+							</li>
+							<li class="nav-item">
+								<a data-toggle="collapse" href="#posts">
+									<i class="la la-newspaper-o"></i>
+									<p>Articles</p>
+									<span class="caret"></span>
+								</a>
+								<div class="collapse" id="posts">
+									<ul class="nav nav-collapse">
+										<li>
+											<span>
+												<a href="{# path('post-index', {'role' : 'post'}) #}">
+													<span class="sub-item">Liste des articles</span>
+												</a>
+											</span>
+										</li>
+										<li>
+											<span>
+												<a href="{# path('post-new', {'role' : 'post'}) #}">
+													<span class="sub-item">Ajouter un article</span>
+												</a>
+											</span>
+										</li>
+										<li>
+											<span>
+												<a href="{# path('category-list', {'type': 'post'}) #}">
+													<span class="sub-item">Catégories d'articles</span>
+												</a>
+											</span>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li class="nav-item">
+								<a href="{# path('manuscript-index') #}">
+									<i class="la la-leanpub"></i>
+									<p>Manuscrits reçus</p>
+								</a>
+							</li>
+							<li class="nav-section">
+								<span class="sidebar-mini-icon">
+									<i class="flaticon-layers"></i>
+								</span>
+								<h4 class="text-section">Configuration</h4>
+							</li>
+							<li class="nav-item">
+								<a href="{# path('user_users') #}">
+									<i class="la la-users"></i>
+									<p>Utilisateurs</p>
+								</a>
+							</li>
+							<li class="nav-item">
+								<a data-toggle="collapse" href="#params">
+									<i class="flaticon-settings"></i>
+									<p>Paramètres</p>
+									<span class="caret"></span>
+								</a>
+								<div class="collapse" id="params">
+									<ul class="nav nav-collapse">
+										<li>
+											<a href="{{ path('parameters') }}">
+												<span class="sub-item">Paramètres générales</span>
+											</a>
+										</li>
+										<li>
+											<a href="{# path('parameter_adresses') #}">
+												<span class="sub-item">Gestion adresses</span>
+											</a>
+										</li>
+									</ul>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>

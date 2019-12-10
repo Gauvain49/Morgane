@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<title>Login</title>
+	<meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
+	<link rel="icon" href="{{ asset('admin/img/favicon.ico') }}" type="image/x-icon"/>
+
+	<!-- Fonts and icons -->
+	{% block fonts %}
+	<script src="{{ asset('admin/js/plugin/webfont/webfont.min.js') }}"></script>
+	<script>
+		WebFont.load({
+			google: {"families":["Montserrat:100,200,300,400,500,600,700,800,900"]},
+			custom: {"families":["Flaticon", "LineAwesome"], urls: ['{{ asset('admin/assets/css/fonts.css') }}']},
+			active: function() {
+				sessionStorage.fonts = true;
+			}
+		});
+	</script>
+	{% endblock %}
+
+	<!-- CSS Files -->
+	{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('admin/css/bootstrap.min.css') }}">
+	<link rel="stylesheet" href="{{ asset('admin/css/ready.min.css') }}">
+	{% endblock %}
+</head>
+<body class="login">
+	<div class="wrapper wrapper-login">
+		<div class="container container-login animated fadeIn">
+			<h3 class="text-center">Connexion</h3>
+			{% if hasError %}
+		    <div class="alert alert-danger">
+		        <ul class="list-unstyled mb-0">
+		            <li>
+		            	<span class="initialism form-error-icon badge badge-danger">Erreur !</span>
+		                <span class="form-error-message">Vos informations ne sont pas corrects.</span>
+		            </li>
+		        </ul>
+		    </div>
+		    {% endif %}
+			<div class="login-form">
+				<form action="{{ path('admin_login') }}" method="post">
+					<div class="form-group form-floating-label">
+						<input id="username" name="_username" type="text" class="form-control input-border-bottom" value="{{ last_username }}" required>
+						<label for="_username" class="placeholder">Identifiant</label>
+					</div>
+					<div class="form-group form-floating-label">
+						<input id="password" name="_password" type="password" class="form-control input-border-bottom" required>
+						<label for="_password" class="placeholder">Mot de passe</label>
+						<div class="show-password">
+							<i class="flaticon-interface"></i>
+						</div>
+					</div>
+					<div class="row form-sub m-0">
+						<div class="col col-md-6">
+							<div class="custom-control custom-checkbox">
+								<input type="checkbox" class="custom-control-input" id="remember_me" name="remember_me">
+								<label class="custom-control-label" for="remember_me">Se souvenir de moi</label>
+							</div>
+						</div>
+						<div class="col col-md-6 login-forget">
+							<a href="#" class="link">Mot de passe oublié ?</a>
+						</div>
+					</div>
+					<div class="form-action">
+						<button type="submit" class="btn btn-primary btn-rounded btn-login">Connexion</button>
+					</div>
+					<div class="text-center"><a href="{{ path('home') }}">Retour sur {{ appService.getParams.title }}</a></div>
+				</form>
+			</div>
+		</div>
+	</div>
+	{% block javascripts %}
+	<script src="{{ asset('admin/assets/js/core/jquery.3.2.1.min.js') }}"></script>
+	<script src="{{ asset('admin/assets/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js') }}"></script>
+	<script src="{{ asset('admin/assets/js/core/popper.min.js') }}"></script>
+	<script src="{{ asset('admin/assets/js/core/bootstrap.min.js') }}"></script>
+	<script src="{{ asset('admin/assets/js/ready.js') }}"></script>
+	{% endblock %}
+</body>
+</html>

@@ -1,0 +1,5 @@
+<form method="post" action="{{ path('taxes_delete', {'id': taxe.id}) }}" onsubmit="return confirm('Confirmez-vous la suppression de cette ligne ?');">
+    <input type="hidden" name="_method" value="DELETE">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ taxe.id) }}">
+    <button class="btn"><i class="btn-label fas fa-trash" title="Supprimer" style="font-size: 16px;"></i></button>
+</form>
