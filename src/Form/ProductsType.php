@@ -189,7 +189,14 @@ class ProductsType extends AbstractType
             ->add('gamme', EntityType::class, [
                 'label' => 'Gamme',
                 'class' => MgGammes::class,
-                'choice_label' => 'gamme_active'
+                'query_builder' => function (
+                    EntityRepository $er) {
+                    return $er->createQueryBuilder('g')
+                    ->join('g.gammesLangs', 'l')
+                    ->addSelect('l')
+                    ->where('l.lang = 1');
+                },
+                'choice_label' => 'gammesLangs[0].gamme_name'
             ])
             ->get('categories')
                 //->addModelTransformer($this->transformer)

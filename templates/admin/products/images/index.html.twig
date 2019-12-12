@@ -1,0 +1,165 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Images du produit{% endblock %}
+{% block stylesheets %}
+	<link rel="stylesheet" type="text/css" href="{{ asset('admin/css/fileuploader.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+	<h4 class="page-title">Modifier un produit</h4>
+	<ul class="breadcrumbs">
+		<li class="nav-home">
+			<a href="{{ path('dashboard') }}">
+				<i class="flaticon-home"></i>
+			</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			<a href="{{ path('products_index')}}">Produits</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			<a href="{{ path('products_edit', {'id': id}) }}">Modifier un produit</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			Gestion des images
+		</li>
+	</ul>
+</div>
+<div class="row">
+	<div class="col-md-2">
+		<div class="card">
+			{% block menuProduct %}
+			{{ include('admin/products/nav.html.twig') }}
+			{% endblock %}
+		</div>
+	</div>
+	<div class="col-md-10">
+		<div class="card">
+			<div class="card-header">
+				<div class="card-head-row">
+					<h4 class="card-title">Gestion des images</h4>
+					<div class="card-tools">
+						<a href="{{ path('products_new') }}" class="btn btn-info font-weight-bold"><span class="btn-label"><i class="flaticon-plus"></i></span> Ajouter un produit</a>
+					</div>
+				</div>
+			</div>
+			<form name="products_images" method="post" id="file-uploader">
+				<div class="row d-flex justify-content-end align-items-end mb-2">
+					<div class="col-md-10">
+						<input type="file" name="image" id="image" multiple>
+					</div>
+					<div class="col-md-2">
+					    <button type="submit" class="btn btn-primary">Transférer</button>
+					</div>
+				</div>
+			</form>
+			<noscript>          
+			<p>Veuillez activer JavaScript pour pouvoir charger des fichiers.</p>
+			<!-- or put a simple form for upload here -->
+			</noscript>
+			<div id="loadBar"></div>
+			<div class="card-body">
+				<table class="display table table-striped table-hover">
+					<thead>
+						<tr>
+							<th>Nom</th>
+							<th class="text-center">Image principale</th>
+							<th>&nbsp;</th>
+						</tr>
+					</thead>
+					<tbody>
+					{% for image in images %}
+						<tr>
+							<td>
+							<figure class="figure mr-3" style="width: 120px"><img src="{{ asset('img/p/') ~ imgPath[image.id]}}" alt="" class="img-fluid img-thumbnail"></figure>
+							</td>
+							<td class="text-center">
+								{% if image.cover == 1 %}
+								<span class="badge badge-success"><i class="la la-check"></i></span>
+								{% else %}
+								<a href="{{ path('images_cover', {'id': image.id}) }}" title="Définir comme image principale">
+									<i class="la la-close btn btn-danger"></i>
+								</a>
+								{% endif %}
+							</td>
+							<td class="text-center">
+                                <div class="p-1">{{ include('admin/products/images/_delete_form.html.twig') }}</div>
+							</td>
+						</tr>
+					{% else %}
+						<td colspan="3">Aucune image enregistrée...</td>
+					{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block javascripts %}
+<script src="{{ asset('admin/js/fileuploader.js') }}"></script>
+<script type="text/javascript">
+	/**
+	* SCRIPT D'UPLOAD DE FICHIER
+	**/
+	$(document).ready(function(){
+		var uploader = new qq.FileUploader({
+			 // pass the dom node (ex. $(selector)[0] for jQuery users)
+		    element: document.getElementById('file-uploader'),
+		    // path to server-side upload script
+		    action: '{{ path('images_upload', {'id': id}) }}',
+		    // additional data to send, name-value pairs
+		    params: {
+		    	type: 'product',
+		    	id_product: '{{ id }}'
+		    },
+			    // validation    
+		    // ex. ['jpg', 'jpeg', 'png', 'gif'] or []
+		    allowedExtensions: ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'xls', 'xlsx'],        
+		    // each file size limit in bytes
+		    // this option isn't supported in all browsers
+		    sizeLimit: 0, // max size   
+		    minSizeLimit: 0, // min size
+	    	abortOnFailure: true, // Fail all files if one doesn't meet the criteria
+			    // set to true to output server response to console
+		    debug: true,
+			    // events         
+		    // you can return false to abort submit
+		    onSubmit: function(id, fileName){
+		    	//$("#fileName").text(fileName);
+		    },
+		    onProgress: function(id, fileName, loaded, total){
+		    	var pourcent = Math.ceil((100/total) * loaded);
+		    	$(".qq-progress-bar").css({'width' : pourcent + "%"}).text(pourcent + "%");
+		    },
+		    onComplete: function(id, fileName, responseJSON){
+		    	console.log(responseJSON.success);
+		    	//console.log(responseJSON);
+		    	if(responseJSON.success == true) {
+		    		window.location.reload();
+		    	}
+		    },
+		    onCancel: function(id, fileName){},
+		    onError: function(id, fileName, xhr){},
+
+		    messages: {
+	            typeError: "Le(s) fichier(s) que vous avez sélectionné ont un type incorrect. Seuls les fichiers {extensions} sont autorisés.",
+	            sizeError: "{file} est trop lourd, la taille maximum est {sizeLimit}.",
+	            minSizeError: "{file} est trop léger, la taille minimum est {minSizeLimit}.",
+	            emptyError: "{file} est vide, veuillez choisir un autre fichier.",
+	            onLeave: "Les fichiers sont téléchargés, si vous quittez maintenant le transfert sera annulé."
+	        },
+		    showMessage: function(message){ alert(message); }     
+		});
+	});
+</script>
+{% endblock %}

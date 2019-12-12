@@ -51,6 +51,17 @@
                             <tr>
                                 <td>{{ product.id }}</td>
                                 <td>
+                                    {% for image in product.images %}
+                                        {% if image.cover == 1 %}
+                                        <figure class="figure mr-3" style="width: 90px">
+                                            <img src="{{ asset('img/p/') ~ image.id|pathProduct ~ image.id }}_smallsquare{{ image.mimeType|mimeType }}" alt="" class="img-fluid img-thumbnail">
+                                        </figure>
+                                        {% endif %}
+                                    {% else %}
+                                        <figure class="figure mr-3" style="width: 90px">
+                                            <img src="{{ asset('img/p/fr.jpg') }}" alt="" class="img-fluid img-thumbnail">
+                                        </figure>
+                                    {% endfor %}
                                     {% for content in product.contents %}
                                         {% if content.lang.id == languagesService.languageDefault.id %}
                                             {{ content.name }}

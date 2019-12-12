@@ -42,6 +42,11 @@ class MgProductsImages
      */
     private $cover;
 
+    /**
+     * @ORM\Column(type="string", length=50)
+     */
+    private $mime_type;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -103,6 +108,18 @@ class MgProductsImages
     public function setCover(bool $cover): self
     {
         $this->cover = $cover;
+
+        return $this;
+    }
+
+    public function getMimeType(): ?string
+    {
+        return $this->mime_type;
+    }
+
+    public function setMimeType(string $mime_type): self
+    {
+        $this->mime_type = $mime_type;
 
         return $this;
     }

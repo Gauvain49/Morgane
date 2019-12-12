@@ -5,6 +5,9 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'fr'
+    upload_directory: '%kernel.project_dir%/public/uploads'
+    upload_directory_products: '%kernel.project_dir%/public/img/p'
+    upload_directory_numericals: '%kernel.project_dir%/public/download'
 
 services:
     # default configuration for services in *this* file
