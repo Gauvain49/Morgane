@@ -34,7 +34,7 @@ class MgTaxes
     private $taxesLangs;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\MgProducts", mappedBy="taxes")
+     * @ORM\OneToMany(targetEntity="App\Entity\MgProducts", mappedBy="taxe")
      */
     private $products;
 

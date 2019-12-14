@@ -1,0 +1,19 @@
+{# form_row est équivalent à form_label() + form_errors() + form_widget() + form_help() #}
+{{ form_start(form) }}
+<div class="row">
+	<div class="col-4">
+		{{ form_row(form.selling_price) }}
+	</div>
+	<div class="col-4">
+		{{ form_row(form.taxe) }}
+	</div>
+	<div class="col-4">
+		{{ form_row(form.selling_price_all_taxes) }}
+	</div>
+</div>
+{{ form_row(form.offline) }}
+{# <div class="row"> #}
+	{{ form_row(form.numericals) }}
+{# </div> #}
+<input type="submit" value="Modifier" name="submitForm" id="submitForm" class='btn btn-primary'>
+{{ form_end(form) }}

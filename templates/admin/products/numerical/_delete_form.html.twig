@@ -1,0 +1,12 @@
+<form method="post" action="{{ path('products_numerical_delete', {'id': numerical.id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer le format numérique ?');">
+	<div class="form-group row">
+		<label for="" class="col-2 col-form-label text-right">Nom du fichier</label>
+		<input type="text" class="form-control col-5 p-0" readonly="readonly" value="{{ numerical.useFilename }}" name="useFilename" id="useFilename">
+		<div class="col-3">
+			<a href="{{ path('products_download_numeric', {'id': numerical.id, 'file': filename}) }}" class="btn btn-primary" target="_blank">Voir le fichier</a>
+		    <input type="hidden" name="_method" value="DELETE">
+		    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ numerical.id) }}">
+		    <button class="btn btn-danger"><i class="btn-label fas fa-trash" title="Supprimer" style="font-size: 16px;"></i></button>
+		</div>
+	</div>
+</form>

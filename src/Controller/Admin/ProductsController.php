@@ -23,8 +23,27 @@ class ProductsController extends AbstractController
     public function index(MgProductsRepository $ProductsRepository): Response
     {
         return $this->render('admin/products/index.html.twig', [
-            'products' => $ProductsRepository->findAll(),
+            'products' => $ProductsRepository->findBy(['type' => 'master'], ['id' => 'DESC']),
         ]);
+    }
+
+    /**
+     * @Route("/display/{id}", name="products_display", methods="GET")
+     */
+    public function display(Request $request, MgProducts $product)
+    {
+        if (!$product->getOffline()) {
+            $product->setOffline(true);
+            $message = 'Le product n\'apparaît plus dans le catalogue.';
+        } else {
+            $product->setOffline(false);
+            $message = 'Le product apparaît dans le catalogue.';
+        }
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($product);
+        $entityManager->flush();
+
+        return $this->json(['code' => 200, 'message' => $message], 200);
     }
 
     /**

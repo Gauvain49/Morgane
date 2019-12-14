@@ -1,0 +1,16 @@
+{{ form_start(form) }}
+<div class="row">
+	<div class="col-md-4">
+		{{ form_row(form.discount) }}
+	</div>
+	<div class="col-md-4">
+		{{ form_row(form.discount_type) }}
+	</div>
+	<div class="col-md-4">
+		{{ form_row(form.discount_on_taxe) }}
+	</div>
+	<div class="col">
+		<button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+	</div>
+</div>
+{{ form_end(form) }}

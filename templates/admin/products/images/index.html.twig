@@ -46,7 +46,7 @@
 		<div class="card">
 			<div class="card-header">
 				<div class="card-head-row">
-					<h4 class="card-title">Gestion des images</h4>
+					<h4 class="card-title text-info">- {% for content in product.contents %}{% if content.lang.id == languagesService.languageDefault.id %}{{ content.name }}{% endif %}{% endfor %} -</h4>
 					<div class="card-tools">
 						<a href="{{ path('products_new') }}" class="btn btn-info font-weight-bold"><span class="btn-label"><i class="flaticon-plus"></i></span> Ajouter un produit</a>
 					</div>
@@ -86,8 +86,8 @@
 								{% if image.cover == 1 %}
 								<span class="badge badge-success"><i class="la la-check"></i></span>
 								{% else %}
-								<a href="{{ path('images_cover', {'id': image.id}) }}" title="Définir comme image principale">
-									<i class="la la-close btn btn-danger"></i>
+								<a href="{{ path('images_cover', {'id': image.id}) }}" class="jsDisplay" data-toggle="tooltip" data-placement="left" title="Définir comme image principale">
+									<i class="la la-close" style="color: #CF0000; font-weight: bold; font-size: 15px;"></i>
 								</a>
 								{% endif %}
 							</td>

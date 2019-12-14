@@ -51,13 +51,14 @@ class MgProductsImagesRepository extends ServiceEntityRepository
         if (!is_file($path . $img)) {
             while (!is_file($path . $img)) {
                 $key++;
+                if($key > count(self::SIZES)-1) {
+                    $img = null;
+                    break;
+                }
                 if (self::SIZES[$key] == '') {
                     $square = '';
                 }
                 $img = $image . self::SIZES[$key] . $square . $ext;
-                if($key > count(self::SIZES)-1) {
-                    break;
-                }
             }
         }
         return $img;

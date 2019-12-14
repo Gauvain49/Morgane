@@ -37,7 +37,7 @@
 		<div class="card">
 			<div class="card-header">
 				<div class="card-head-row">
-					<h4 class="card-title">Produits</h4>
+					<h4 class="card-title text-info">- {% for content in product.contents %}{% if content.lang.id == languagesService.languageDefault.id %}{{ content.name }}{% endif %}{% endfor %} -</h4>
                     <div class="card-tools">
                         <a href="{{ path('products_new') }}" class="btn btn-info font-weight-bold"><span class="btn-label"><i class="flaticon-plus"></i></span> Ajouter un produit</a>
                     </div>

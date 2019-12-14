@@ -1,0 +1,91 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}
+	Éditer un produit
+{% endblock %}
+{# form_theme form _self #}
+{% block body %}
+<div class="page-header">
+	<h4 class="page-title">Éditer un produit</h4>
+	<ul class="breadcrumbs">
+		<li class="nav-home">
+			<a href="{{ path('dashboard') }}">
+				<i class="flaticon-home"></i>
+			</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			<a href="{{ path('products_index')}}">Produits</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			<a href="{{ path('products_edit', {'id': product.id}) }}">Modifier un produit</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			Gestion des promotions
+		</li>
+	</ul>
+</div>
+<div class="row">
+	<div class="col-md-2">
+		<div class="card">
+			{% block menuProduct %}
+			{{ include('admin/products/nav.html.twig') }}
+			{% endblock %}
+		</div>
+	</div>
+	<div class="col-md-10">
+		<div class="card">
+			<div class="card-header">
+				<div class="card-head-row">
+					<h4 class="card-title text-info">- {% for content in product.contents %}{% if content.lang.id == languagesService.languageDefault.id %}{{ content.name }}{% endif %}{% endfor %} -</h4>
+					<div class="card-tools">
+						<a href="{{ path('products_new') }}" class="btn btn-info font-weight-bold"><span class="btn-label"><i class="flaticon-plus"></i></span> Ajouter un produit</a>
+					</div>
+				</div>
+			</div>
+			<div class="card-body">
+				{{ include('admin/products/discount/_form.html.twig', {'button_label': 'Enregistrer'}) }}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block javascripts %}
+	<script>
+	(function(e) {
+		var taxe = document.getElementById('products_taxe');
+		var choixTaxe = taxe.selectedIndex;
+		var valeur = taxe.options[choixTaxe].dataset.role;
+		var ht = document.getElementById('products_selling_price');
+		var ttc = document.getElementById('products_selling_price_all_taxes');
+		taxe.addEventListener('change', function() {
+			var newChoixTaxe = this.selectedIndex;
+			valeur = this.options[newChoixTaxe].dataset.role;
+			if(ht.value != '') {
+				ttc.value = (ht.value * ((valeur / 100) + 1)).toFixed(2);
+			}
+		});
+		ht.addEventListener('keyup', function() {
+			if(this.value == '') {
+				ttc.value = 0;
+			} else {
+				ttc.value = (this.value * ((valeur / 100) + 1)).toFixed(2);
+			}
+		});
+		ttc.addEventListener('keyup', function() {
+			if(this.value == '') {
+			ht.value = 0;
+			} else {
+				ht.value = (this.value / ((valeur / 100) + 1)).toFixed(2);
+			}
+		});
+	})();
+	</script>
+{% endblock %}

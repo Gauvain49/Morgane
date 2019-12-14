@@ -31,6 +31,7 @@ class ProductsImagesController extends AbstractController
             $imgPath[$value->getId()] = $repoImages->getImgBySize($this->getParameter('upload_directory_products') . '/', $value->getId(), $repoImages::SMALL, 'square');
         }
         return $this->render('admin/products/images/index.html.twig', [
+            'product' => $product,
             'id' => $product->getId(),
             'images' => $images,
             'imgPath' => $imgPath

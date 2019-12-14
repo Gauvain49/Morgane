@@ -1,10 +1,10 @@
 <aside>
 	<div class="list-group">
-		<a href="{{ path('products_edit', {'id' : id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'products_edit' %} active {% endif %}">Informations</a>
-		<a href="{{ path('images_index', {'id' : id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'images_index' %} active {% endif %}">Images</a>
-		<a href="{# path('product-discount', {'id' : id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'product-discount' %} active {% endif #}">Promotions</a>
-		<a href="{# path('product-stock', {'id' : id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'product-stock' %} active {% endif #}">Gestion stocks</a>
-		<a href="{# path('product-numerical', {'id' : id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'product-numerical' %} active {% endif #}">Format numérique</a>
+		<a href="{{ path('products_edit', {'id' : product.id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'products_edit' %} active {% endif %}">Informations</a>
+		<a href="{{ path('images_index', {'id' : product.id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'images_index' %} active {% endif %}">Images</a>
+		<a href="{{ path('discount_index', {'id' : product.id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'discount_index' %} active {% endif %}">Promotions</a>
+		<a href="{{ path('products_stock', {'id' : product.id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'products_stock' %} active {% endif %}">Gestion stocks</a>
+		<a href="{{ path('products_numerical_index', {'id' : product.id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'products_numerical_index' %} active {% endif %}">Format numérique</a>
 		<a href="{# path('product-authors', {'id' : id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'product-authors' %} active {% endif #}">Auteurs</a>
 		<!-- <a href="#" class="list-group-item"><span>Propriétés</span></a> -->
 		<a href="#" class="list-group-item">Packs</a>

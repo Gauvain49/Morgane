@@ -197,6 +197,16 @@ class MgProducts
      */
     private $images;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MgMovementsStocks", mappedBy="product", orphanRemoval=true)
+     */
+    private $movementsStocks;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MgProductsNumerical", mappedBy="product", orphanRemoval=true)
+     */
+    private $numericals;
+
     public function __construct()
     {
         $this->reviser = new ArrayCollection();
@@ -208,6 +218,8 @@ class MgProducts
         $this->mgProducts = new ArrayCollection();
         $this->categories = new ArrayCollection();
         $this->images = new ArrayCollection();
+        $this->movementsStocks = new ArrayCollection();
+        $this->numericals = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -688,6 +700,68 @@ class MgProducts
             // set the owning side to null (unless already changed)
             if ($image->getProduct() === $this) {
                 $image->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MgMovementsStocks[]
+     */
+    public function getMovementsStocks(): Collection
+    {
+        return $this->movementsStocks;
+    }
+
+    public function addMovementsStock(MgMovementsStocks $movementsStock): self
+    {
+        if (!$this->movementsStocks->contains($movementsStock)) {
+            $this->movementsStocks[] = $movementsStock;
+            $movementsStock->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMovementsStock(MgMovementsStocks $movementsStock): self
+    {
+        if ($this->movementsStocks->contains($movementsStock)) {
+            $this->movementsStocks->removeElement($movementsStock);
+            // set the owning side to null (unless already changed)
+            if ($movementsStock->getProduct() === $this) {
+                $movementsStock->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MgProductsNumerical[]
+     */
+    public function getNumericals(): Collection
+    {
+        return $this->numericals;
+    }
+
+    public function addNumerical(MgProductsNumerical $numerical): self
+    {
+        if (!$this->numericals->contains($numerical)) {
+            $this->numericals[] = $numerical;
+            $numerical->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNumerical(MgProductsNumerical $numerical): self
+    {
+        if ($this->numericals->contains($numerical)) {
+            $this->numericals->removeElement($numerical);
+            // set the owning side to null (unless already changed)
+            if ($numerical->getProduct() === $this) {
+                $numerical->setProduct(null);
             }
         }
 

@@ -1,0 +1,206 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Version numérique d'un produit{% endblock %}
+{% form_theme form _self %}
+{% block stylesheets %}
+	<link rel="stylesheet" type="text/css" href="{{ asset('admin/css/fileuploader.css') }}">
+	<style>
+	fieldset {
+		padding: 0;
+	}
+	#product_downloadable_numericals .form-group {
+		padding: 0;
+	}
+	/*fieldset.form-group div.form-group {
+		padding: 5px;
+	}*/
+	</style>
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+	<h4 class="page-title">Modifier un produit</h4>
+	<ul class="breadcrumbs">
+		<li class="nav-home">
+			<a href="{{ path('dashboard') }}">
+				<i class="flaticon-home"></i>
+			</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			<a href="{{ path('products_index')}}">Produits</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			<a href="{{ path('products_edit', {'id': product.id}) }}">Modifier un produit</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			Version numérique
+		</li>
+	</ul>
+</div>
+<div class="row">
+	<div class="col-md-2">
+		<div class="card">
+			{% block menuProduct %}
+			{{ include('admin/products/nav.html.twig') }}
+			{% endblock %}
+		</div>
+	</div>
+	<div class="col-md-10">
+		<div class="card">
+			<div class="card-header">
+				<div class="card-head-row">
+					<h4 class="card-title text-info">- {% for content in product.contents %}{% if content.lang.id == languagesService.languageDefault.id %}{{ content.name }}{% endif %}{% endfor %} -</h4>
+					<div class="card-tools">
+						<a href="{{ path('products_new') }}" class="btn btn-info font-weight-bold"><span class="btn-label"><i class="flaticon-plus"></i></span> Ajouter un produit</a>
+					</div>
+				</div>
+				{% if numerical|length == 0 %}
+				<form name="products_images" method="post" id="product_numerical_file">
+					<div class="row d-flex justify-content-end align-items-end mb-2">
+						<div class="col-md-10">
+							<input type="file" name="image" id="image">
+						</div>
+						<div class="col-md-2">
+						    <button type="submit" class="btn btn-primary">Transférer</button>
+						</div>
+					</div>
+				</form>
+				<noscript>          
+				<p>Veuillez activer JavaScript pour pouvoir charger des fichiers.</p>
+				<!-- or put a simple form for upload here -->
+				</noscript>
+				<div id="loadBar"></div>
+				{% else %}
+					{{ include('admin/products/numerical/_delete_form.html.twig') }}
+				{% endif %}
+			</div>
+			<div class="card-body">
+				{% if numerical|length > 0 %}
+				{{ include('admin/products/numerical/_form.html.twig') }}
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{# Pour retirer les 0  des CollectionsType#}
+{% block _product_downloadable_numericals_entry_row %}
+		{{ form_widget(form) }}
+{% endblock %}
+{% block _product_downloadable_numericals_entry_widget %}
+	<div class="form-group">
+		{{ form_row(form.exclusive)}}
+		<div class="row">
+			<div class="col-6">
+				{{ form_row(form.nb_days_accessibles)}}
+			</div>
+			<div class="col-6">
+				{{ form_row(form.nb_downloadable)}}
+			</div>
+		</div>
+	</div>
+{% endblock %}
+{% block javascripts %}
+	<!-- Bootstrap Toggle -->
+	<script src="{{ asset('admin/js/plugin/bootstrap-toggle/bootstrap-toggle.min.js') }}"></script>
+	<script src="{{ asset('admin/js/fileuploader.js') }}"></script>
+	<script>
+	(function(e) {
+		var taxe = document.getElementById('product_downloadable_taxe');
+		var choixTaxe = taxe.selectedIndex;
+		var valeur = taxe.options[choixTaxe].dataset.role;
+		var ht = document.getElementById('product_downloadable_selling_price');
+		var ttc = document.getElementById('product_downloadable_selling_price_all_taxes');
+		taxe.addEventListener('change', function() {
+			var newChoixTaxe = this.selectedIndex;
+			valeur = this.options[newChoixTaxe].dataset.role;
+			if(ht.value != '') {
+				ttc.value = (ht.value * ((valeur / 100) + 1)).toFixed(2);
+			}
+		});
+		ht.addEventListener('keyup', function() {
+			if(this.value == '') {
+				ttc.value = 0;
+			} else {
+				ttc.value = (this.value * ((valeur / 100) + 1)).toFixed(2);
+			}
+		});
+		ttc.addEventListener('keyup', function() {
+			if(this.value == '') {
+			ht.value = 0;
+			} else {
+				ht.value = (this.value / ((valeur / 100) + 1)).toFixed(2);
+			}
+		});
+	})();
+	</script>
+	<script type="text/javascript">
+		/**
+		* SCRIPT D'UPLOAD DE FICHIER
+		**/
+		$(document).ready(function(){
+			var uploader = new qq.FileUploader({
+				 // pass the dom node (ex. $(selector)[0] for jQuery users)
+			    element: document.getElementById('product_numerical_file'),
+			    // path to server-side upload script
+			    //action: 'http://sf4/admin/numerical/numerical-upload/1',
+			    action: '{{ path('products_numerical_upload', {'id': product.id}) }}',
+			    // additional data to send, name-value pairs
+			    params: {
+			    	type: 'numeric',
+			    	id_product: '{{ product.id }}'
+			    },
+
+			    // validation    
+			    // ex. ['jpg', 'jpeg', 'png', 'gif'] or []
+			    allowedExtensions: ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'xls', 'xlsx'],        
+			    // each file size limit in bytes
+			    // this option isn't supported in all browsers
+			    sizeLimit: 0, // max size   
+			    minSizeLimit: 0, // min size
+		    	abortOnFailure: true, // Fail all files if one doesn't meet the criteria
+
+			    // set to true to output server response to console
+			    debug: true,
+
+			    // events         
+			    // you can return false to abort submit
+			    onSubmit: function(id, fileName){
+			    	//$("#fileName").text(fileName);
+			    },
+			    onProgress: function(id, fileName, loaded, total){
+			    	var pourcent = Math.ceil((100/total) * loaded);
+			    	$(".qq-progress-bar").css({'width' : pourcent + "%"}).text(pourcent + "%");
+			    },
+			    onComplete: function(id, fileName, responseJSON){
+			    	console.log(responseJSON.success);
+			    	//console.log(responseJSON);
+			    	if(responseJSON.success == true) {
+			    		window.location.reload();
+			    	}
+			    },
+			    onCancel: function(id, fileName){},
+			    onError: function(id, fileName, xhr){},
+
+			    messages: {
+		            typeError: "Le(s) fichier(s) que vous avez sélectionné ont un type incorrect. Seuls les fichiers {extensions} sont autorisés.",
+		            sizeError: "{file} est trop lourd, la taille maximum est {sizeLimit}.",
+		            minSizeError: "{file} est trop léger, la taille minimum est {minSizeLimit}.",
+		            emptyError: "{file} est vide, veuillez choisir un autre fichier.",
+		            onLeave: "Les fichiers sont téléchargés, si vous quittez maintenant le transfert sera annulé."
+		        },
+			    showMessage: function(message){ alert(message); }     
+			});
+		});
+	</script>
+{% endblock %}
