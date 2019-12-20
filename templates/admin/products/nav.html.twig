@@ -5,9 +5,9 @@
 		<a href="{{ path('discount_index', {'id' : product.id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'discount_index' %} active {% endif %}">Promotions</a>
 		<a href="{{ path('products_stock', {'id' : product.id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'products_stock' %} active {% endif %}">Gestion stocks</a>
 		<a href="{{ path('products_numerical_index', {'id' : product.id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'products_numerical_index' %} active {% endif %}">Format numérique</a>
-		<a href="{# path('product-authors', {'id' : id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'product-authors' %} active {% endif #}">Auteurs</a>
+		<a href="{{ path('products_authors', {'id' : product.id})}}" class="list-group-item {% if app.request.attributes.get('_route') == 'products_authors' %} active {% endif %}">Auteurs</a>
 		<!-- <a href="#" class="list-group-item"><span>Propriétés</span></a> -->
 		<a href="#" class="list-group-item">Packs</a>
-		<a href="#" class="list-group-item">Fournisseurs</a>
+		<!-- <a href="#" class="list-group-item">Fournisseurs</a> -->
 	</div>
 </aside>

@@ -29,7 +29,7 @@ class AppFixtures extends Fixture
 
     	//Insertion d'un utilisateur
     	$user = new MgUsers();
-    	$password = $this->encoder->encodePassword($user, 'abcd1234');
+    	$password = $this->encoder->encodePassword($user, 'Abcd1234');
     	$user->setUsername('gauvain49')
     		->setPassword($password)
     		->setLastname('Moreau')

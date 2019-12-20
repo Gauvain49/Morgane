@@ -1,0 +1,71 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion des clients{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <h4 class="page-title">Gestion des clients</h4>
+    <ul class="breadcrumbs">
+        <li class="nav-home">
+            <a href="{{ path('dashboard') }}">
+                <i class="flaticon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow"></i>
+        </li>
+        <li class="nav-item">
+            Clients
+        </li>
+    </ul>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <h4 class="card-title">Gestion des clients</h4>
+                    <div class="card-tools">
+                        <a href="{{ path('customers_new') }}" class="btn btn-info font-weight-bold"><span class="btn-label"><i class="flaticon-plus"></i></span> Ajouter</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="display table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Compagny</th>
+                                <th>Birthday</th>
+                                <th>Notes</th>
+                                <th>actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for mg_customer in mg_customers %}
+                            <tr>
+                                <td>{{ mg_customer.id }}</td>
+                                <td>{{ mg_customer.compagny }}</td>
+                                <td>{{ mg_customer.birthday ? mg_customer.birthday|date('Y-m-d') : '' }}</td>
+                                <td>{{ mg_customer.notes }}</td>
+                                <td>
+                                    <a href="{{ path('customers_edit', {'id': mg_customer.id}) }}">edit</a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5">Aucun enregistrement dans la base de données</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <a href="{{ path('customers_new') }}">Create new</a>
+{% endblock %}

@@ -8,7 +8,7 @@
 								<a data-toggle="collapse" href="#collapseExample" aria-expanded="true">
 									<span>
 										{{ app.user.firstname}} {{ app.user.lastname }}
-										<span class="user-level">{% if is_granted('ROLE_SUPER_ADMIN') %}Super Administrateur{% elseif is_granted('ROLE_ADMIN') %}Administrateur{% endif %}</span>
+										<span class="user-level">{% if is_granted('ROLE_SUPER_ADMIN') %}Super Administrateur{% elseif is_granted('ROLE_ADMIN') %}Administrateur{% elseif is_granted('ROLE_USER') %}Utilisateur{% endif %}</span>
 									</span>
 								</a>
 							</div>
@@ -32,7 +32,7 @@
 									<p>Catalogue</p>
 									<span class="caret"></span>
 								</a>
-								<div class="collapse" id="catalog">
+								<div class="collapse {% if NavCatalogOpen is defined %}show{% endif %}" id="catalog">
 									<ul class="nav nav-collapse">
 										<li>
 											<a href="{{ path('products_index') }}">
@@ -45,17 +45,17 @@
 											</a>
 										</li>
 										<li>
-											<a href="{# path('properties-index') #}">
+											<a href="{{ path('properties_index') }}">
 												<span class="sub-item">Propriétés</span>
 											</a>
 										</li>
 										<li>
-											<a href="{# path('authors-index') #}">
+											<a href="{{ path('authors_index') }}">
 												<span class="sub-item">Auteurs</span>
 											</a>
 										</li>
 										<li>
-											<a href="{# path('suppliers-index') #}">
+											<a href="{{ path('suppliers_index') }}">
 												<span class="sub-item">Fournisseurs</span>
 											</a>
 										</li>
@@ -65,7 +65,7 @@
 											</a>
 										</li>
 										<li>
-											<a href="{# path('main') #}">
+											<a href="{{ path('gammes_index') }}">
 												<span class="sub-item">Gammes</span>
 											</a>
 										</li>
@@ -84,10 +84,10 @@
 									<p>Clients</p>
 									<span class="caret"></span>
 								</a>
-								<div class="collapse" id="clients">
+								<div class="collapse" {% if NavCustomerOpen is defined %}show{% endif %} id="clients">
 									<ul class="nav nav-collapse">
 										<li>
-											<a href="{# path('customers') #}">
+											<a href="{{ path('customers_index') }}">
 												<span class="sub-item">Liste des clients</span>
 											</a>
 										</li>
@@ -194,7 +194,7 @@
 								<h4 class="text-section">Configuration</h4>
 							</li>
 							<li class="nav-item">
-								<a href="{# path('user_users') #}">
+								<a href="{{ path('users_index') }}">
 									<i class="la la-users"></i>
 									<p>Utilisateurs</p>
 								</a>

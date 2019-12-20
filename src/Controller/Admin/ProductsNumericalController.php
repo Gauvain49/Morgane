@@ -7,6 +7,8 @@ use App\Entity\MgProductsNumerical;
 use App\Form\ProductDownloadableType;
 use App\Repository\MgProductsNumericalRepository;
 use App\Repository\MgProductsRepository;
+use App\Services\AppService;
+use App\Services\DeleteItems;
 use App\Services\DownloadFileService;
 use App\Services\qqFileUploader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,11 +22,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProductsNumericalController extends AbstractController
 {
     /**
-     * @Route("/{id}", name="products_numerical_index", requirements={"id"="\d+"})
+     * @Route("/{id}/edit", name="products_numerical_index", requirements={"id"="\d+"})
      */
     public function index(MgProducts $product, MgProductsRepository $repoProduct, MgProductsNumericalRepository $repoNumerical, Request $request)
     {
-    	$product_numerical = $repoProduct->findOneBy(['parent' => $product, 'type' => 'downloadable']);
+    	$product_numerical = $repoProduct->findOneBy(['parent' => $product, 'type' => [$product::TYPE_DOWNLOADABLE, $product::TYPE_DOWNLOADABLE_EXCLU]]);
     	$numerical = $repoNumerical->findOneByProduct($product_numerical);
         if (!is_null($numerical)) {
             $filename = $numerical->getUseFilename();
@@ -37,8 +39,15 @@ class ProductsNumericalController extends AbstractController
             $em = $this->getDoctrine()->getManager();
             foreach ($product_numerical->getNumericals() as $digital) {
                 $digital->setProduct($product_numerical);
+                if ($digital->getExclusive()) {
+                    $product_numerical->setType($product::TYPE_DOWNLOADABLE_EXCLU);
+                } else {
+                    $product_numerical->setType($product::TYPE_DOWNLOADABLE);
+                }
+                //dump($digital->getExclusive());
                 $em->persist($digital);
             }
+            //dd($product_numerical->getNumericals());
             $em->persist($product_numerical);
             $em->flush();
 
@@ -55,7 +64,8 @@ class ProductsNumericalController extends AbstractController
             'product' => $product,
             'numerical' => $numerical,
             'form' => $form->createView(),
-            'filename' => $filename
+            'filename' => $filename,
+            'NavCatalogOpen' => true
         ]);
     }
 
@@ -130,30 +140,26 @@ class ProductsNumericalController extends AbstractController
     /**
      * @Route("/{id}", name="products_numerical_delete", requirements={"id"="\d+"}, methods="DELETE")
      */
-    public function delete(Request $request, MgProductsNumerical $numerical, MgProductsRepository $repoProducts)
+    public function delete(Request $request, MgProductsNumerical $numerical, MgProductsRepository $repoProducts, DeleteItems $deleteItems, AppService $app)
     {
         $id_product = $numerical->getProduct()->getId();
         $product_numerical = $repoProducts->findOneBy(['id' => $id_product, 'type' => 'downloadable']);
         $id_parent = $product_numerical->getParent()->getId();
 
         $filename = $numerical->getFilename();
-        $field = hash_hmac('sha256', $numerical->getId(), 'XB240061119133vc79', false);
+        $field = $app->getHashHmac($numerical->getId());
         
         if ($this->isCsrfTokenValid('delete'.$numerical->getId(), $request->request->get('_token'))) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($product_numerical);
+            $em->remove($product_numerical);
             $em->remove($numerical);
             $em->flush();
             /**
              * Effacement du dossier du serveur            
              */
-            //On récupère le chemin du dossier
             $path = $this->getParameter('upload_directory_numericals') . '/' . $field;
-            $pathFile = $path . '/' . $filename;
-            if($path != "." && $path != "..") {
-                unlink($pathFile);
-                rmdir($path);
-            }
+
+            $deleteItems->deleteNumerical($path, $filename);
             $this->addFlash(
                 'success',
                 "Le format numérique est supprimé."

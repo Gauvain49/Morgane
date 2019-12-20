@@ -6,7 +6,18 @@
 {% block stylesheets %}
 <style type="text/css">
 	fieldset {
-		padding: 0;
+		padding: 0 !important;
+	}
+	fieldset.fieldset_property {
+		border-radius: 5px;
+		border: solid 1px #ccc;
+		padding: 15px !important;
+		margin:  15px 0;
+	}
+	fieldset.fieldset_property legend {
+		display: inline !important;
+		width: inherit;
+		padding: 0 7px;
 	}
 </style>
 {% endblock %}
@@ -122,6 +133,42 @@
 			</span>
 		</div></div>
 {% endblock %}
+{# Mise en forme du formulaire de propriété #}
+{% block _products_propertiesContents_widget %}
+	{{ form_widget(form) }}
+	<input type="hidden" id="widgets-counter" value="0">
+	<div class="form-group text-center">
+		<button type="button" id="add-property" class="btn btn-info">Ajouter une propriété</button>
+	</div>
+{% endblock %}
+{% block _products_propertiesContents_entry_row %}
+	{{ form_widget(form) }}
+{% endblock %}
+{% block _products_propertiesContents_entry_widget %}
+	{# <div class="form-group" id="{{id}}" data-lang=""> #}
+	<div class="form-group" id="block_{{id}}" data-lang="">
+		<div class="row">
+			<div class="col-10 align-items-end" id="block_inputs">
+				<div class="row align-items-end">
+					<div class="col">
+						{{ form_label(form.property) }}
+						{{ form_widget(form.property) }}
+					</div>
+					<div class="col">
+						{{ form_widget(form.value) }}
+						{{ form_errors(form.value) }}
+						{{ form_row(form.lang) }}
+					</div>
+				</div>
+			</div>
+			<div class="col-2 row align-items-end">
+				{# <button type="button" id="delete_{{id}}" data-action="delete" data-target="#{{id}}" class="btn btn-danger">X</button> #}
+				<button type="button" data-action="delete" data-target="#block_{{id}}" class="btn btn-danger">X</button>
+			</div>
+		</div>
+	</div>
+	{{ form_widget(form) }}
+{% endblock %}
 
 {% block javascripts %}
 	<!-- Summernote -->
@@ -157,6 +204,51 @@
 
 		multilanguage('products_contents', listLang, {{ languagesService.getLanguages|length }}, {{ languagesService.languageDefault.id }});
 	</script>
+	{# Gestion des propriétés #}
+	<script>
+	$('#add-property').click(function() {
+		//Je récupère les numéros des futurs champs que je vais créer
+		//const index = $('#products_properties_values div.form-group').length;
+		const index = +$('#widgets-counter').val();
+
+		console.log(index);
+
+		//Je récupre les prototype de l'entry
+		const tmpl = $('#products_propertiesContents').data('prototype').replace(/__name__/g, index);
+
+		//J'injecte ce code au sein des entrées
+		$('#products_propertiesContents').append(tmpl);
+		$('#widgets-counter').val(index + 1);
+		//On regarde quelle langue est sélectionnée par le select pour l'afficher.
+		var element = document.getElementsByClassName("choice_language_multiple");
+		for(var a = 0;a<element.length;a++) {
+			var select = element[a];
+			var option = select.selectedIndex;
+			var data = select.options[option].dataset.role;
+		}
+		var hidden = 'products_propertiesContents_' + index + '_lang';
+		var language = document.getElementById(hidden);
+		language.value = i;
+
+		//Je gère le bouton supprimer
+		handleDeleteButtons();
+	});
+
+	function handleDeleteButtons() {
+		$('button[data-action="delete"]').click(function() {
+			const target = this.dataset.target;
+			$(target).remove();
+		});
+	}
+
+	function updateCounter() {
+		const count = +$('#products_propertiesContents div.form-group').length;
+		$('#widgets-counter').val(count);
+	}
+
+	updateCounter();
+	handleDeleteButtons();
+	</script>
 	<script>
 	(function(e) {
 		var taxe = document.getElementById('products_taxe');
@@ -190,7 +282,6 @@
 	<!-- Attribution de l'editor summernote sur les champs summary et description -->
 	<script>
 	var div = document.getElementsByClassName('editor');
-	console.log(div);
 	for(var i = 0; i<div.length; i++) {
 		$('#products_contents_' + i + '_summary').summernote({
 			placeholder: 'Vous pouvez mettre ici une description courte du produit.',
@@ -221,5 +312,11 @@
 			//format: 'DD/MM/YYYY',
 			locale: 'fr'
 		});
+	</script>
+	<script>
+		var block = $('.properties').parents('fieldset');
+		for (var i = 0; i < block.length; i++) {
+			block[i].classList.add("fieldset_property");
+		}
 	</script>
 {% endblock %}

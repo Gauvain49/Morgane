@@ -9,6 +9,7 @@ use App\Entity\MgSuppliers;
 use App\Entity\MgTaxes;
 use App\Form\DataTransformer\CategorieToNumberTransformer;
 use App\Form\ProductsLangType;
+use App\Form\PropertiesValuesType;
 use App\Repository\MgCategoriesRepository;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -179,6 +180,7 @@ class ProductsType extends AbstractType
             ])
             ->add('supplier', EntityType::class, [
                 'label' => 'Fournisseur',
+                'required' => false,
                 'class' => MgSuppliers::class,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('s')
@@ -188,6 +190,7 @@ class ProductsType extends AbstractType
             ])
             ->add('gamme', EntityType::class, [
                 'label' => 'Gamme',
+                'required' => false,
                 'class' => MgGammes::class,
                 'query_builder' => function (
                     EntityRepository $er) {
@@ -197,6 +200,17 @@ class ProductsType extends AbstractType
                     ->where('l.lang = 1');
                 },
                 'choice_label' => 'gammesLangs[0].gamme_name'
+            ])
+            ->add('propertiesContents', CollectionType::class, [
+                'label' => 'Gestion des propriétés',
+                'label_attr' => [
+                    'class' => 'properties'
+                ],
+                'entry_type' => PropertiesValuesType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'delete_empty' => true,
+                'required' => false
             ])
             ->get('categories')
                 //->addModelTransformer($this->transformer)

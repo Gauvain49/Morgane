@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New MgCustomers{% endblock %}
+
+{% block body %}
+    <h1>Create new MgCustomers</h1>
+
+    {{ include('mg_customers/_form.html.twig') }}
+
+    <a href="{{ path('mg_customers_index') }}">back to list</a>
+{% endblock %}

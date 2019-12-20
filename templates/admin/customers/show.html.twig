@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MgCustomers{% endblock %}
+
+{% block body %}
+    <h1>MgCustomers</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ mg_customer.id }}</td>
+            </tr>
+            <tr>
+                <th>Compagny</th>
+                <td>{{ mg_customer.compagny }}</td>
+            </tr>
+            <tr>
+                <th>Birthday</th>
+                <td>{{ mg_customer.birthday ? mg_customer.birthday|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Notes</th>
+                <td>{{ mg_customer.notes }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('mg_customers_index') }}">back to list</a>
+
+    <a href="{{ path('mg_customers_edit', {'id': mg_customer.id}) }}">edit</a>
+
+    {{ include('mg_customers/_delete_form.html.twig') }}
+{% endblock %}

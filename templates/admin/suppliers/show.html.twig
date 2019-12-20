@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MgSuppliers{% endblock %}
+
+{% block body %}
+    <h1>MgSuppliers</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ mg_supplier.id }}</td>
+            </tr>
+            <tr>
+                <th>Supplier_name</th>
+                <td>{{ mg_supplier.supplierName }}</td>
+            </tr>
+            <tr>
+                <th>Supplier_address</th>
+                <td>{{ mg_supplier.supplierAddress }}</td>
+            </tr>
+            <tr>
+                <th>Supplier_zipcode</th>
+                <td>{{ mg_supplier.supplierZipcode }}</td>
+            </tr>
+            <tr>
+                <th>Supplier_town</th>
+                <td>{{ mg_supplier.supplierTown }}</td>
+            </tr>
+            <tr>
+                <th>Supplier_phone</th>
+                <td>{{ mg_supplier.supplierPhone }}</td>
+            </tr>
+            <tr>
+                <th>Supplier_email</th>
+                <td>{{ mg_supplier.supplierEmail }}</td>
+            </tr>
+            <tr>
+                <th>Supplier_web</th>
+                <td>{{ mg_supplier.supplierWeb }}</td>
+            </tr>
+            <tr>
+                <th>Supplier_logo</th>
+                <td>{{ mg_supplier.supplierLogo }}</td>
+            </tr>
+            <tr>
+                <th>Suppliers_notes</th>
+                <td>{{ mg_supplier.suppliersNotes }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('mg_suppliers_index') }}">back to list</a>
+
+    <a href="{{ path('mg_suppliers_edit', {'id': mg_supplier.id}) }}">edit</a>
+
+    {{ include('mg_suppliers/_delete_form.html.twig') }}
+{% endblock %}

@@ -7,6 +7,7 @@ use App\Entity\MgProducts;
 use App\Entity\MgProductsImages;
 use App\Repository\MgProductsImagesRepository;
 use App\Repository\MgProductsRepository;
+use App\Services\DeleteItems;
 use App\Services\MimeType;
 use App\Services\ResizeImg;
 use App\Services\qqFileUploader;
@@ -26,6 +27,7 @@ class ProductsImagesController extends AbstractController
     public function index(Request $request, MgProducts $product, MgProductsImagesRepository $repoImages, MimeType $mimeType)
     {
     	$images = $repoImages->findByProduct($product->getId());
+        //dump($images);
         $imgPath = [];
         foreach ($images as $value) {
             $imgPath[$value->getId()] = $repoImages->getImgBySize($this->getParameter('upload_directory_products') . '/', $value->getId(), $repoImages::SMALL, 'square');
@@ -34,7 +36,8 @@ class ProductsImagesController extends AbstractController
             'product' => $product,
             'id' => $product->getId(),
             'images' => $images,
-            'imgPath' => $imgPath
+            'imgPath' => $imgPath,
+            'NavCatalogOpen' => true
         ]);
     }
 
@@ -124,7 +127,7 @@ class ProductsImagesController extends AbstractController
     /**
      * @Route("/images/product-image-dell/{id}", name="images_delete", methods="DELETE")
      */
-    public function deleteImage(Request $request, MgProductsImages $image, MgProductsImagesRepository $repoImg)
+    public function deleteImage(Request $request, MgProductsImages $image, MgProductsImagesRepository $repoImg, DeleteItems $deleteItems)
     {
         if ($this->isCsrfTokenValid('delete'.$image->getId(), $request->request->get('_token'))) {
             $em = $this->getDoctrine()->getManager();
@@ -155,15 +158,8 @@ class ProductsImagesController extends AbstractController
                 $path .= $field . '/';
             }
             //... on vide ce qu'il contient, puis on le détruit.
-            if(is_dir($path)) {
-                $objects = scandir($path);
-                foreach($objects as $object) {
-                    if($object != "." && $object != "..") {
-                        unlink($path . $object);
-                    }
-                }
-                rmdir($path);
-            }
+            $deleteItems->deleteDirectoryAndHisFiles($path);
+
             $this->addFlash(
                 'success',
                 "L'image a bien été supprimée."

@@ -58,7 +58,8 @@ class ProductsStocksController extends AbstractController
         return $this->render('admin/products/stock/index.html.twig', [
             'product' => $product,
             'id' => $product->getId(),
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'NavCatalogOpen' => true
         ]);
     }
 }

@@ -4,8 +4,7 @@ security:
             algorithm: auto
 
     role_hierarchy:
-        ROLE_BUYER:       ROLE_VISITOR
-        ROLE_USER:        ROLE_BUYER
+        ROLE_USER:        ROLE_VISITOR
         ROLE_ADMIN:       ROLE_USER
         ROLE_SUPER_ADMIN: ROLE_ADMIN
 
@@ -48,5 +47,5 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/admin/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/admin, roles: ROLE_USER }
         - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }

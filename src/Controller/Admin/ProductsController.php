@@ -4,9 +4,15 @@ namespace App\Controller\Admin;
 
 use App\Entity\MgProducts;
 use App\Entity\MgProductsLang;
+use App\Form\ProductsAuthorsType;
 use App\Form\ProductsType;
+use App\Repository\MgAuthorsRepository;
 use App\Repository\MgCategoriesRepository;
+use App\Repository\MgProductsImagesRepository;
+use App\Repository\MgProductsNumericalRepository;
 use App\Repository\MgProductsRepository;
+use App\Services\AppService;
+use App\Services\DeleteItems;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,6 +30,7 @@ class ProductsController extends AbstractController
     {
         return $this->render('admin/products/index.html.twig', [
             'products' => $ProductsRepository->findBy(['type' => 'master'], ['id' => 'DESC']),
+            'NavCatalogOpen' => true
         ]);
     }
 
@@ -67,6 +74,10 @@ class ProductsController extends AbstractController
                 $cat = $repoCat->findOneById($category);
                 $product->addCategory($cat);
             }
+            foreach ($product->getPropertiesContents() as $propertyContent) {
+                $propertyContent->setProduct($product);
+                $entityManager->persist($propertyContent);
+            }
             $product->setSellOutOfStock(false);
             $product->setQuantity(0);
             //$this->getUser() reprend automatiquement dans un controller l'utilisateur connecté
@@ -74,12 +85,17 @@ class ProductsController extends AbstractController
             $entityManager->persist($product);
             $entityManager->flush();
 
-            return $this->redirectToRoute('products_index');
+            $this->addFlash(
+                'success', 'Création réussie !'
+            );
+
+            return $this->redirectToRoute('products_edit', ['id' => $product->getId()]);
         }
 
         return $this->render('admin/products/new.html.twig', [
             'product' => $product,
             'form' => $form->createView(),
+            'NavCatalogOpen' => true
         ]);
     }
 
@@ -89,8 +105,6 @@ class ProductsController extends AbstractController
     public function edit(Request $request, MgProducts $product, MgCategoriesRepository $repoCat): Response
     {
         $listeCat = $repoCat->findAllByArborescence('product');
-        //dump($listeCat);
-        //dd($listeCat);
         //Récupération des catégories déjà sélectionné (en attendant de toruver mieux)
         $cat_selected = [];
         $recup_cat = $product->getCategories();
@@ -101,9 +115,23 @@ class ProductsController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            foreach ($product->getContents() as $content) {
+                $content->setProduct($product);
+                $entityManager->persist($content);
+            }
+            foreach ($product->getPropertiesContents() as $propertyContent) {
+                $propertyContent->setProduct($product);
+                $entityManager->persist($propertyContent);
+            }
+            $product->addReviser($this->getUser());
+            $entityManager->flush();
 
-            return $this->redirectToRoute('products_index');
+            $this->addFlash(
+                'success', 'Modification réussie !'
+            );
+
+            return $this->redirectToRoute('products_edit', ['id' => $product->getId()]);
         }
 
         return $this->render('admin/products/edit.html.twig', [
@@ -111,18 +139,82 @@ class ProductsController extends AbstractController
             'form' => $form->createView(),
             'id' => $product->getId(),
             'catSelected' => $cat_selected,
+            'NavCatalogOpen' => true
+        ]);
+    }
+
+    /**
+     * @Route("/{id}/authors", name="products_authors", requirements={"id"="\d+"})
+     */
+    public function setAuthors(MgProducts $product, MgAuthorsRepository $repoAuthors, Request $request)
+    {
+        $authors = $repoAuthors->findAll();
+        $form = $this->createForm(ProductsAuthorsType::class, $product);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            foreach ($product->getAuthors() as $author) {
+                $product->addAuthor($author);
+            }
+            $entityManager->persist($product);
+            $entityManager->flush();
+
+            $this->addFlash(
+                'success', 'Mis a jour auteur réussie !'
+            );
+        }
+        return $this->render('admin/products/authors/index.html.twig', [
+            'id' => $product->getId(),
+            'product' => $product,
+            'form' => $form->createView(),
+            'authors' => $authors,
+            'NavCatalogOpen' => true
         ]);
     }
 
     /**
      * @Route("/{id}", name="products_delete", methods={"DELETE"})
      */
-    public function delete(Request $request, MgProducts $product): Response
+    public function delete(Request $request, MgProducts $product, MgProductsRepository $repo, MgProductsImagesRepository $repoImages, MgProductsNumericalRepository $numerical, DeleteItems $deleteItems, AppService $app): Response
     {
         if ($this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
+            $images = $repoImages->findByProduct($product->getId());
+            if (!empty($images)) {
+                foreach ($images as $value) {
+                    /**
+                     * Effacement des images du serveur            
+                     */
+                    //On récupère le chemin du dossier
+                    $path = $this->getParameter('upload_directory_products') . '/';
+                    $fields = str_split($value->getId());
+                    foreach($fields as $field) {
+                        $path .= $field . '/';
+                    }
+                    //... on vide ce qu'il contient, puis on le détruit.
+                    $deleteItems->deleteDirectoryAndHisFiles($path);
+                }
+            }
+
+            //On récupère tous les produits enfants pour les supprimer
+            $children = $repo->findByParent($product);
+            foreach ($children as $child) {
+                 //Effacement du fichier numérique associé
+                $product_numerical = $numerical->findOneByProduct($child);
+                if (!empty($product_numerical)) {
+                    $field = $app->getHashHmac($product_numerical->getId());
+                    $path = $this->getParameter('upload_directory_numericals') . '/' . $field;
+                    $deleteItems->deleteNumerical($path, $product_numerical->getFilename());
+                }
+                $entityManager->remove($child);
+            }
             $entityManager->remove($product);
             $entityManager->flush();
+
+            $this->addFlash(
+                'success',
+                "Le produit a bien été supprimée."
+            );
         }
 
         return $this->redirectToRoute('products_index');

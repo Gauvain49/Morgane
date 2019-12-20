@@ -1,4 +1,4 @@
-<form method="post" action="{{ path('products_delete', {'id': product.id}) }}" onsubmit="return confirm('Confirmez-vous la suppression de cette ligne ?');">
+<form method="post" action="{{ path('products_delete', {'id': product.id}) }}" onsubmit="return confirm('Confirmez-vous la suppression de ce produit ? Cela supprimera toutes ces déclinaisons, images et fichiers numériques associés.');">
     <input type="hidden" name="_method" value="DELETE">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
     <button class="btn btn-danger"><i class="btn-label fas fa-trash" title="Supprimer" style="font-size: 16px;"></i></button>

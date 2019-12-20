@@ -19,6 +19,18 @@ class MgUsersRepository extends ServiceEntityRepository
         parent::__construct($registry, MgUsers::class);
     }
 
+    /**
+     * Retourne les utilisateurs ayant accès au backoffice
+     */
+   /* public function getUsersAdmin()
+    {
+        return $this->createQueryBuilder('u')
+            ->where('role = $$')
+            ->getQuery()
+            ->getResult()
+        ;
+    }*/
+
     // /**
     //  * @return MgUsers[] Returns an array of MgUsers objects
     //  */

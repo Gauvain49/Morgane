@@ -17,15 +17,6 @@ class AppService extends AbstractController
         $parameters = $this->getDoctrine()->getRepository(MgParameters::class)->find(1);
         return $parameters;
     }
-    
-    /**
-     * Récupère le nom du site pour l'afficher sur toutes les pages de l'admin
-     **/
-    /*public function getAddressesSite()
-    {
-        $parameters = $this->getDoctrine()->getRepository(MgParametersAddresses::class)->findAll();
-        return $parameters;
-    }*/
 
     /**
      * Donne une URL Gravatar ou une balise d'image complète pour une adresse électronique spécifiée.
@@ -50,5 +41,13 @@ class AppService extends AbstractController
             $url .= ' />';
         }
         return $url;
+    }
+
+    /**
+     * Retourne le nom d'un élément sécurisé en hash_hmac
+     */
+    public function getHashHmac($item)
+    {
+        return hash_hmac('sha256', $item, 'XB240061119133vc79', false);
     }
 }

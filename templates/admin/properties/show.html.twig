@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MgProperties{% endblock %}
+
+{% block body %}
+    <h1>MgProperties</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ mg_property.id }}</td>
+            </tr>
+            <tr>
+                <th>Position</th>
+                <td>{{ mg_property.position }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('mg_properties_index') }}">back to list</a>
+
+    <a href="{{ path('mg_properties_edit', {'id': mg_property.id}) }}">edit</a>
+
+    {{ include('mg_properties/_delete_form.html.twig') }}
+{% endblock %}

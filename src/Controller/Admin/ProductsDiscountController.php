@@ -37,7 +37,8 @@ class ProductsDiscountController extends AbstractController
         return $this->render('admin/products/discount/index.html.twig', [
             'product' => $product,
             'id' => $product->getId(),
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'NavCatalogOpen' => true
         ]);
 	}
 }

@@ -1,0 +1,12 @@
+{{ form_start(form) }}
+<div class="row">
+	<div class="col-6">
+		{{ form_row(form.properties) }}
+	</div>
+	<div class="col-6">
+		{{ form_row(form.position) }}
+	</div>
+</div>
+    
+    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}

@@ -7,7 +7,7 @@
 					<a href="{{ path('dashboard') }}" class="big-logo">
 						<img src="{{ asset('admin/img/morgane-logo-m.png') }}" alt="logo Morgane" class="logo-img">
 					</a>
-					<a href="{# path('main') #}" class="logo">
+					<a href="{{ path('dashboard') }}" class="logo">
 						<img src="{{ asset('admin/img/logoheader.png') }}" alt="logo Morgane" class="navbar-brand">
 					</a>
 					<button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse" data-target="collapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -126,19 +126,19 @@
 											<div class="u-img"><img src="{{ asset('admin/img/profile.jpg') }}" alt="image profile"></div>
 											<div class="u-text">
 												<h4>{{ app.user.firstname }}</h4>
-												<p class="text-muted">{{ app.user.email }}</p><a href="{# path('user_profile', { 'id': app.user.id }) #}" class="btn btn-rounded btn-danger btn-sm">Voir le profil</a>
+												<p class="text-muted">{{ app.user.email }}</p><a href="{{ path('users_profile', { 'id': app.user.id }) }}" class="btn btn-rounded btn-danger btn-sm">Voir le profil</a>
 											</div>
 										</div>
 									</li>
 									<li>
 										<div class="dropdown-divider"></div>
-										<a class="dropdown-item" href="{# path('user_password') #}">Changer mon mot de passe</a>
+										<a class="dropdown-item" href="{{ path('users_password') }}"><i class="btn-label la la-key"></i> Changer mon mot de passe</a>
 										<!--<a class="dropdown-item" href="#">My Balance</a>
 										<a class="dropdown-item" href="#">Inbox</a>-->
 										<div class="dropdown-divider"></div>
 										<!--<a class="dropdown-item" href="#">Account Setting</a>
 										<div class="dropdown-divider"></div> -->
-										<a class="dropdown-item" href="{{ path('admin_logout') }}">Déconnexion</a>
+										<a class="dropdown-item" href="{{ path('admin_logout') }}"><i class="btn-label la la-power-off"></i> Déconnexion</a>
 									</li>
 								</ul>
 							</li>

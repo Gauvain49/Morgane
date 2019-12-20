@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Controller\Admin;
+
+use App\Entity\MgCustomers;
+use App\Form\CustomersType;
+use App\Repository\MgCustomersRepository;
+use App\Repository\MgUsersRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+/**
+ * @Route("/admin/customers", name="customers_")
+ */
+class CustomersController extends AbstractController
+{
+    /**
+     * @Route("/", name="index", methods={"GET"})
+     */
+    public function index(MgUsersRepository $usersRepository, MgCustomersRepository $customersRepository): Response
+    {
+        $customers = $usersRepository->findAll();
+        foreach ($customers as $value) {
+            dump($value->getRoles());
+        }
+        dd($customers);
+        return $this->render('admin/customers/index.html.twig', [
+            'mg_customers' => $customersRepository->findAll(),
+            'NavCustomerOpen' => true
+        ]);
+    }
+
+    /**
+     * @Route("/new", name="new", methods={"GET","POST"})
+     */
+    public function new(Request $request): Response
+    {
+        $customer = new MgCustomers();
+        $form = $this->createForm(CustomersType::class, $customer);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($customer);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('customers_index');
+        }
+
+        return $this->render('admin/customers/new.html.twig', [
+            'mg_customer' => $customer,
+            'form' => $form->createView(),
+            'NavCustomerOpen' => true
+        ]);
+    }
+
+    /**
+     * @Route("/{id}/edit", name="edit", methods={"GET","POST"})
+     */
+    public function edit(Request $request, MgCustomers $customer): Response
+    {
+        $form = $this->createForm(CustomersType::class, $customer);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->redirectToRoute('customers_index');
+        }
+
+        return $this->render('admin/customers/edit.html.twig', [
+            'mg_customer' => $customer,
+            'form' => $form->createView(),
+            'NavCustomerOpen' => true
+        ]);
+    }
+
+    /**
+     * @Route("/{id}", name="delete", methods={"DELETE"})
+     */
+    public function delete(Request $request, MgCustomers $customer): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$customer->getId(), $request->request->get('_token'))) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($customer);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('customers_index');
+    }
+}

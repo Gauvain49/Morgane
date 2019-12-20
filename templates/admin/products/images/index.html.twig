@@ -80,7 +80,8 @@
 					{% for image in images %}
 						<tr>
 							<td>
-							<figure class="figure mr-3" style="width: 120px"><img src="{{ asset('img/p/') ~ imgPath[image.id]}}" alt="" class="img-fluid img-thumbnail"></figure>
+							{# <figure class="figure mr-3" style="width: 120px"><img src="{{ asset('img/p/') ~ imgPath[image.id]}}" alt="" class="img-fluid img-thumbnail"></figure> #}
+							<figure class="figure mr-3" style="width: 120px"><img src="{{ asset('img/p/' ~ image.id|pathProduct ~ image.id ~ '_smallsquare' ~ image.mimeType|mimeType ) }}" alt="" class="img-fluid img-thumbnail"></figure>
 							</td>
 							<td class="text-center">
 								{% if image.cover == 1 %}

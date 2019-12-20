@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MgSuppliersRepository")
@@ -55,6 +56,14 @@ class MgSuppliers
 
     /**
      * @ORM\Column(type="string", length=100, nullable=true)
+     * @Assert\File(mimeTypes={
+     *          "image/png",
+     *          "image/jpeg",
+     *          "image/jpg",
+     *          "image/gif",
+     *          "application/pdf",
+     *          "application/x-pdf"
+     * })
      */
     private $supplier_logo;
 
@@ -162,12 +171,12 @@ class MgSuppliers
         return $this;
     }
 
-    public function getSupplierLogo(): ?string
+    public function getSupplierLogo()
     {
         return $this->supplier_logo;
     }
 
-    public function setSupplierLogo(?string $supplier_logo): self
+    public function setSupplierLogo($supplier_logo): self
     {
         $this->supplier_logo = $supplier_logo;
 

@@ -1,0 +1,12 @@
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+    {% if author.img %}
+    	<div class="form-check">
+		    <label class="form-check-label" for="dellImg">
+			    <input type="checkbox" class="form-check-input" id="dellImg" name="dellImg">
+			    <span class="form-check-sign">Suprimer l'image</span>
+			</label>
+    	</div>
+    {% endif %}
+    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}

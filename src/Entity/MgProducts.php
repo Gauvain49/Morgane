@@ -19,13 +19,14 @@ class MgProducts
     //ENUM de la colonne type
     const TYPE_MASTER = 'master';
     const TYPE_DOWNLOADABLE = 'downloadable';
+    const TYPE_DOWNLOADABLE_EXCLU = 'downloadable_exclu';
     const TYPE_ATTRIBUT = 'attribut';
 
     private $discountTypeValues = array(
         self::DISCOUNT_ON_AMOUNT, self::DISCOUNT_ON_PERCENT
     );
     private $typeValues = array(
-        self::TYPE_MASTER, self::TYPE_DOWNLOADABLE, self::TYPE_ATTRIBUT
+        self::TYPE_MASTER, self::TYPE_DOWNLOADABLE, self::TYPE_DOWNLOADABLE_EXCLU, self::TYPE_ATTRIBUT
     );
 
     /**
@@ -207,6 +208,16 @@ class MgProducts
      */
     private $numericals;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\MgAuthors", inversedBy="products")
+     */
+    private $authors;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MgPropertiesContents", mappedBy="product", orphanRemoval=true)
+     */
+    private $propertiesContents;
+
     public function __construct()
     {
         $this->reviser = new ArrayCollection();
@@ -220,6 +231,8 @@ class MgProducts
         $this->images = new ArrayCollection();
         $this->movementsStocks = new ArrayCollection();
         $this->numericals = new ArrayCollection();
+        $this->authors = new ArrayCollection();
+        $this->propertiesContents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -762,6 +775,63 @@ class MgProducts
             // set the owning side to null (unless already changed)
             if ($numerical->getProduct() === $this) {
                 $numerical->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MgAuthors[]
+     */
+    public function getAuthors(): Collection
+    {
+        return $this->authors;
+    }
+
+    public function addAuthor(MgAuthors $author): self
+    {
+        if (!$this->authors->contains($author)) {
+            $this->authors[] = $author;
+        }
+
+        return $this;
+    }
+
+    public function removeAuthor(MgAuthors $author): self
+    {
+        if ($this->authors->contains($author)) {
+            $this->authors->removeElement($author);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MgPropertiesContents[]
+     */
+    public function getPropertiesContents(): Collection
+    {
+        return $this->propertiesContents;
+    }
+
+    public function addPropertiesContent(MgPropertiesContents $propertiesContent): self
+    {
+        if (!$this->propertiesContents->contains($propertiesContent)) {
+            $this->propertiesContents[] = $propertiesContent;
+            $propertiesContent->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removePropertiesContent(MgPropertiesContents $propertiesContent): self
+    {
+        if ($this->propertiesContents->contains($propertiesContent)) {
+            $this->propertiesContents->removeElement($propertiesContent);
+            // set the owning side to null (unless already changed)
+            if ($propertiesContent->getProduct() === $this) {
+                $propertiesContent->setProduct(null);
             }
         }
 

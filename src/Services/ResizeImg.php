@@ -3,7 +3,7 @@ namespace App\Services;
 
 class ResizeImg
 {
-	public function resizeImg($img, $img_dest, $ext, $max, $square = false, $center = false) {
+	public function resizeImg($img, $img_dest, $ext, $max, $square = false, $center = true) {
         $size = getimagesize($img);
         
         $src_w = $size[0];

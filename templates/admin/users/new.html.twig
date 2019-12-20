@@ -1,0 +1,130 @@
+{% extends 'admin/base.html.twig' %}
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
+{% block title %}
+	Liste des utilisateurs
+{% endblock %}
+{% block body %}
+<div class="page-header">
+	<h4 class="page-title">Gestion des utilisateurs</h4>
+	<ul class="breadcrumbs">
+		<li class="nav-home">
+			<a href="{{ path('dashboard') }}">
+				<i class="flaticon-home"></i>
+			</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			Configuration
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			<a href="{{ path('users_index') }}users">Utilisateurs</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			Ajouter un utilisateur
+		</li>
+	</ul>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header d-flex">
+				<h4>Ajouter un utilisateur</h4>
+			</div>
+			<div class="card-body">
+				{{ form_start(form) }}
+					{{ form_widget(form) }}
+				{{ form_end(form) }}
+			</div>
+		</div>
+	</div>
+</div>
+	<div class="table-responsive">
+		<table class="table table-striped">
+			<tr>
+				<th></th>
+				<th>Super-Administrateur</th>
+				<th>Administrateur</th>
+				<th>Utilisateur</th>
+				<th>Contributeur</th>
+			</tr>
+			<tr>
+				<th>Publier un contenu</th>
+		  		<td><img src="images/check.png" width="24" height="24"></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<th>Créer un contenu</th>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td><img src="images/check.png" width="24" height="24"></td>
+			</tr>
+			<tr>
+				<th>Modifier tous les contenus</th>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<th>Modifier ses contenus</th>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td><img src="images/check.png" width="24" height="24"></td>
+			</tr>
+			<tr>
+				<th>Valider un contenu</th>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<th>Vu sur tous les contenus</th>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td></td>
+			</tr>
+			<tr>
+				<th>Vu sur ses contenus</th>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td><img src="images/check.png" width="24" height="24"></td>
+			</tr>
+			<tr>
+				<th>Archiver un contenu</th>
+		  		<td><img src="images/check.png" width="24" height="24"></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<th>Supprimer un contenu</th>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<th>Créer un nouvel utilisateur</th>
+				<td><img src="images/check.png" width="24" height="24"></td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+		</table>
+	</div>
+{% endblock %}

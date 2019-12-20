@@ -5,10 +5,17 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MgUsersRepository")
+ * @UniqueEntity(
+ *  fields={"username"},
+ *  fields={"email"},
+ *  message="Cette information est déjà utilisée, merci de la modifier !"
+ * )
  */
 class MgUsers implements UserInterface
 {
@@ -21,12 +28,18 @@ class MgUsers implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\NotBlank(message="Vous devez choisir un identifiant !")
      */
     private $username;
 
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Assert\Regex(
+     *     pattern="#^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$#",
+     *     match=true,
+     *     message="Votre mot de passe n'est pas sécurisé : 8 caractères minimum, au moins une majuscule et un chiffre." 
+     * )
      */
     private $password;
 
@@ -79,6 +92,11 @@ class MgUsers implements UserInterface
      * @ORM\ManyToMany(targetEntity="App\Entity\MgProducts", mappedBy="reviser")
      */
     private $getProductsRevisers;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\MgCustomers", mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $customers;
 
     public function __construct()
     {
@@ -145,6 +163,11 @@ class MgUsers implements UserInterface
         $this->firstname = $firstname;
 
         return $this;
+    }
+
+    public function getCompleteName(): ?string
+    {
+        return $this->firstname . ' ' . $this->lastname;
     }
 
     public function getEmail(): ?string
@@ -297,6 +320,23 @@ class MgUsers implements UserInterface
         if ($this->getProductsRevisers->contains($getProductsReviser)) {
             $this->getProductsRevisers->removeElement($getProductsReviser);
             $getProductsReviser->removeReviser($this);
+        }
+
+        return $this;
+    }
+
+    public function getCustomers(): ?MgCustomers
+    {
+        return $this->customers;
+    }
+
+    public function setCustomers(MgCustomers $customers): self
+    {
+        $this->customers = $customers;
+
+        // set the owning side of the relation if necessary
+        if ($customers->getUser() !== $this) {
+            $customers->setUser($this);
         }
 
         return $this;

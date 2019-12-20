@@ -1,0 +1,85 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Listes fournisseurs/marques{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <h4 class="page-title">Gestion fournisseurs et marques</h4>
+    <ul class="breadcrumbs">
+        <li class="nav-home">
+            <a href="{{ path('dashboard') }}">
+                <i class="flaticon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow"></i>
+        </li>
+        <li class="nav-item">
+            Fournisseurs et marques
+        </li>
+    </ul>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <h4 class="card-title">Gestion fournisseurs et marques</h4>
+                    <div class="card-tools">
+                        <a href="{{ path('suppliers_new') }}" class="btn btn-info font-weight-bold"><span class="btn-label"><i class="flaticon-plus"></i></span>Ajouter</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="display table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Logo</th>
+                                <th>nom</th>
+                                <th>Adresse</th>
+                                <th>Téléphone</th>
+                                <th>Email</th>
+                                <th>site web</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for supplier in suppliers %}
+                            <tr>
+                                <td>{{ supplier.id }}</td>
+                                <td>
+                                    {% if supplier.supplierLogo != '' %}
+                                    <figure class="figure mr-3" style="width: 90px">
+                                        <img src="{{ asset('uploads/suppliers/') ~ supplier.id }}/{{supplier.supplierLogo }}" alt="" class="img-fluid img-thumbnail">
+                                    </figure>
+                                    {% endif %}
+                                </td>
+                                <td>{{ supplier.supplierName }}</td>
+                                <td>{{ supplier.supplierAddress }}<br>{{ supplier.supplierZipcode }}<br>{{ supplier.supplierTown }}</td>
+                                <td>{{ supplier.supplierPhone }}</td>
+                                <td>{{ supplier.supplierEmail }}</td>
+                                <td>{{ supplier.supplierWeb }}</td>
+                                <td class="text-center">
+                                    <div class="d-inline-flex">
+                                        <div class="p-1">
+                                            <a href="{{ path('suppliers_edit', {'id': supplier.id}) }}" class="btn btn-primary" title="Éditer"><i class="btn-label fas fa-pen" style="font-size: 16px;"></i></a>
+                                        </div>
+                                        <div class="p-1">{{ include('admin/suppliers/_delete_form.html.twig') }}</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="8">Aucun enregistrement dans la base de données</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modifier fournisseur ou marque{% endblock %}
+{% form_theme form _self %}
+
+{% block body %}
+<div class="page-header">
+	<h4 class="page-title">Modifier fournisseur ou marque</h4>
+	<ul class="breadcrumbs">
+		<li class="nav-home">
+			<a href="{{ path('dashboard') }}">
+				<i class="flaticon-home"></i>
+			</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			<a href="{{ path('suppliers_index')}}">Fournisseur ou marque</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			Modifier
+		</li>
+	</ul>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<div class="card-head-row">
+					<h4 class="card-title">Modifier fournisseur ou marque</h4>
+					<div class="card-tools">
+						<a href="{{ path('suppliers_new') }}" class="btn btn-info font-weight-bold"><span class="btn-label"><i class="flaticon-plus"></i></span>Ajouter</a>
+					</div>
+				</div>
+			</div>
+			<div class="card-body">
+				{{ include('admin/suppliers/_form.html.twig', {'button_label': 'Modifier'}) }}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block javascripts %}
+<script type="text/javascript">
+	jQuery(document).on('change', '.custom-file-input', function() {
+		$(this).parent().find('label').text($(this).val().replace('C:\\fakepath\\', ''));
+	});
+</script>
+{% endblock %}

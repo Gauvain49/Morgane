@@ -1,0 +1,107 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}
+	Liste des utilisateurs
+{% endblock %}
+{% block body %}
+<div class="page-header">
+	<h4 class="page-title">Utilisateurs</h4>
+	<ul class="breadcrumbs">
+		<li class="nav-home">
+			<a href="{{ path('dashboard') }}">
+				<i class="flaticon-home"></i>
+			</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			Configuration
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			Utilisateurs
+		</li>
+	</ul>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<div class="card-head-row">
+					<h4 class="card-title">Utilisateurs</h4>
+					<div class="card-tools">
+						<a href="{{ path('users_new') }}" class="btn btn-info font-weight-bold"><span class="btn-label"><i class="flaticon-plus"></i></span> Ajouter un utilisateur</a>
+					</div>
+				</div>
+			</div>
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="display table table-striped table-hover">
+						<thead>
+							<tr>
+								<th scope="col">Nom</th>
+								<th scope="col">E-mail</th>
+								<th scope="col">Statut</th>
+								<th scope="col">Profil</th>
+								<th class="text-center"></th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th scope="col">Nom</th>
+								<th scope="col">E-mail</th>
+								<th scope="col">Statut</th>
+								<th scope="col">Profil</th>
+								<th scope="col">&nbsp;</th>
+							</tr>
+						</tfoot>
+						<tbody>
+							{% for user in users %}
+							<tr>
+								<td>{{ user.completeName }}</td>
+								<td>{{ user.email }}</td>
+								<td>Status</td>
+								<td>
+									{% if user.active == 0 %}
+									<span style="color:#F00;">bloqué !</span>
+									{% else %}
+									Actif
+									{% endif %}
+								</td>
+								<td class="text-right">
+									<div class="d-inline-flex text-left" style="max-width: 200px;">
+										{% if 'ROLE_SUPER_ADMIN' in app.user.roles or user.id == app.user.id  %}
+										<div class="p-1">
+											<a href="{{ path('users_profile', {'id':user.id}) }}" class="btn btn-primary" title="Éditer">
+												<i class="btn-label fas fa-pen" style="font-size: 16px;"></i>
+											</a>
+										</div>
+							  			{% endif %}
+										{% if user.id == app.user.id %}
+							  			<div class="p-1">
+											<a href="{{ path('users_password') }}" class="btn btn-warning" title="Modifier votre mot de passe">
+												<i class="btn-label la la-key" style="font-size: 16px;"></i>
+											</a>
+										</div>
+										{% endif %}
+								  		{% if 'ROLE_SUPER_ADMIN' in app.user.roles and user.id != app.user.id  %}
+											<div class="p-1">
+												{{ include('admin/users/_delete_form.html.twig') }}
+											</div>
+										{% endif %}
+									</div>
+								</td>
+							</tr>
+							{% else %}
+							<p>Il n'y a pas d'utilisateur inscrit</p>
+							{% endfor %}
+					  	</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

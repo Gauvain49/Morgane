@@ -1,0 +1,57 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Ajouter un auteur{% endblock %}
+{% form_theme form _self %}
+{% block body %}
+<div class="page-header">
+	<h4 class="page-title">Ajouter un auteur</h4>
+	<ul class="breadcrumbs">
+		<li class="nav-home">
+			<a href="{{ path('dashboard') }}">
+				<i class="flaticon-home"></i>
+			</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			<a href="{{ path('authors_index')}}">Auteur</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			Ajouter un auteur
+		</li>
+	</ul>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h4 class="card-title">Ajouter un auteur</h4>
+			</div>
+			<div class="card-body">
+				{{ include('admin/authors/_form.html.twig') }}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block javascripts %}
+	<!-- Summernote -->
+	<script src="{{ asset('admin/js/plugin/summernote/summernote-bs4.min.js') }}"></script>
+	<script type="text/javascript">
+		jQuery(document).on('change', '.custom-file-input', function() {
+			$(this).parent().find('label').text($(this).val().replace('C:\\fakepath\\', ''));
+		});
+	</script>
+	<script type="text/javascript">
+		$('#authors_bio').summernote({
+			placeholder: 'Biographie de l\'auteur...',
+			fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New'],
+			tabsize: 2,
+			height: 300
+		});
+	</script>
+{% endblock %}
