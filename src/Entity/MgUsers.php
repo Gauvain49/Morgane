@@ -98,10 +98,22 @@ class MgUsers implements UserInterface
      */
     private $customers;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MgPosts", mappedBy="user")
+     */
+    private $posts;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MgPostsLang", mappedBy="reviser")
+     */
+    private $postsLangs;
+
     public function __construct()
     {
         $this->productAdds = new ArrayCollection();
         $this->getProductsRevisers = new ArrayCollection();
+        $this->posts = new ArrayCollection();
+        $this->postsLangs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -189,7 +201,8 @@ class MgUsers implements UserInterface
     {
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        $roles[] = 'ROLE_ADMIN_USER';
+        $roles[] = 'ROLE_VISITOR';
 
         return array_unique($roles);
     }
@@ -337,6 +350,68 @@ class MgUsers implements UserInterface
         // set the owning side of the relation if necessary
         if ($customers->getUser() !== $this) {
             $customers->setUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MgPosts[]
+     */
+    public function getPosts(): Collection
+    {
+        return $this->posts;
+    }
+
+    public function addPost(MgPosts $post): self
+    {
+        if (!$this->posts->contains($post)) {
+            $this->posts[] = $post;
+            $post->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePost(MgPosts $post): self
+    {
+        if ($this->posts->contains($post)) {
+            $this->posts->removeElement($post);
+            // set the owning side to null (unless already changed)
+            if ($post->getUser() === $this) {
+                $post->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MgPostsLang[]
+     */
+    public function getPostsLangs(): Collection
+    {
+        return $this->postsLangs;
+    }
+
+    public function addPostsLang(MgPostsLang $postsLang): self
+    {
+        if (!$this->postsLangs->contains($postsLang)) {
+            $this->postsLangs[] = $postsLang;
+            $postsLang->setReviser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePostsLang(MgPostsLang $postsLang): self
+    {
+        if ($this->postsLangs->contains($postsLang)) {
+            $this->postsLangs->removeElement($postsLang);
+            // set the owning side to null (unless already changed)
+            if ($postsLang->getReviser() === $this) {
+                $postsLang->setReviser(null);
+            }
         }
 
         return $this;

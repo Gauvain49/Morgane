@@ -70,7 +70,7 @@ class ProductsImagesController extends AbstractController
         $id_image = $productImg->getId();
 
         // liste des extensions valides, ex. array("jpeg", "xml", "bmp")
-        $allowedExtensions = array();
+        $allowedExtensions = array('jpg', 'jpeg', 'gif', 'png');
         // taille max du fichier en bytes
         $sizeLimit = 10 * 1024 * 1024;
         $uploader = new qqFileUploader($id_image, $allowedExtensions, $sizeLimit);
@@ -92,11 +92,16 @@ class ProductsImagesController extends AbstractController
         }
         $result = $uploader->handleUpload($field);
         $_SESSION['resultat'][] = $result;
-        //On récupère et donne ensuite le vrai type mime
-        $size = getimagesize($field . $result['newFilename']);
-        $productImg->setMimeType($size['mime']);
-        $em->persist($productImg);
-        $em->flush();
+        if (!array_key_exists('error', $result)) {
+            //On récupère et donne ensuite le vrai type mime
+            $size = getimagesize($field . $result['newFilename']);
+            $productImg->setMimeType($size['mime']);
+            $em->persist($productImg);
+            $em->flush();
+        } else {
+            $em->remove($productImg);
+            $em->flush();
+        }
         // to pass data through iframe you will need to encode all html tags
         //echo htmlspecialchars(json_encode($result), ENT_NOQUOTES);
         return new JsonResponse($result);

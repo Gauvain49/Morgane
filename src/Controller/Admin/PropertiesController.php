@@ -23,6 +23,7 @@ class PropertiesController extends AbstractController
     {
         return $this->render('admin/properties/index.html.twig', [
             'properties' => $propertiesRepository->findAll(),
+            'NavCatalogOpen' => true
         ]);
     }
 
@@ -58,6 +59,7 @@ class PropertiesController extends AbstractController
         return $this->render('admin/properties/new.html.twig', [
             'property' => $property,
             'form' => $form->createView(),
+            'NavCatalogOpen' => true,
         ]);
     }
 
@@ -88,6 +90,7 @@ class PropertiesController extends AbstractController
         return $this->render('admin/properties/edit.html.twig', [
             'property' => $property,
             'form' => $form->createView(),
+            'NavCatalogOpen' => true,
         ]);
     }
 

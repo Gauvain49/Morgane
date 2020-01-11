@@ -21,13 +21,9 @@ class CustomersController extends AbstractController
      */
     public function index(MgUsersRepository $usersRepository, MgCustomersRepository $customersRepository): Response
     {
-        $customers = $usersRepository->findAll();
-        foreach ($customers as $value) {
-            dump($value->getRoles());
-        }
-        dd($customers);
+        $customers = $usersRepository->getUsersByRoles('VISITOR');
         return $this->render('admin/customers/index.html.twig', [
-            'mg_customers' => $customersRepository->findAll(),
+            'mg_customers' => $customers,
             'NavCustomerOpen' => true
         ]);
     }

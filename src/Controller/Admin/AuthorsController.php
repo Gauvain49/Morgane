@@ -23,6 +23,7 @@ class AuthorsController extends AbstractController
     {
         return $this->render('admin/authors/index.html.twig', [
             'authors' => $mgAuthorsRepository->findAll(),
+            'NavCatalogOpen' => true,
         ]);
     }
 
@@ -66,6 +67,7 @@ class AuthorsController extends AbstractController
         return $this->render('admin/authors/new.html.twig', [
             'author' => $author,
             'form' => $form->createView(),
+            'NavCatalogOpen' => true,
         ]);
     }
 
@@ -120,6 +122,7 @@ class AuthorsController extends AbstractController
         return $this->render('admin/authors/edit.html.twig', [
             'author' => $author,
             'form' => $form->createView(),
+            'NavCatalogOpen' => true,
         ]);
     }
 

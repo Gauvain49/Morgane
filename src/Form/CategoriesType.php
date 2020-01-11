@@ -34,9 +34,9 @@ class CategoriesType extends AbstractType
                 'multiple' => false,
                 'expanded' => false,
             ])
-            ->add('position', IntegerType::class, [
+            /*->add('position', IntegerType::class, [
                 'required' => false
-            ])
+            ])*/
             ->add('active', CheckboxType::class, [
                 'label' => 'Afficher',
                 'attr' => [

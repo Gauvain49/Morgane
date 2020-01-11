@@ -1,0 +1,194 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Transfert de fichier{% endblock %}
+{% block stylesheets %}
+	<link rel="stylesheet" type="text/css" href="{{ asset('admin/css/fileuploader.css') }}">
+		<script>
+		// Helper function to get parameters from the query string.
+		function getUrlParam( paramName ) {
+			var reParam = new RegExp( '(?:[\?&]|&)' + paramName + '=([^&]+)', 'i' );
+			var match = window.location.search.match( reParam );
+
+			return ( match && match.length > 1 ) ? match[1] : null;
+		}
+		// Simulate user action of selecting a file to be returned to CKEditor.
+		function returnFileUrl(url) {
+
+			var funcNum = getUrlParam( 'CKEditorFuncNum' );
+			//var fileUrl = '/path/to/file.txt';
+			var fileUrl = $(url).val();
+			//var fileUrl = url;
+			window.opener.CKEDITOR.tools.callFunction( funcNum, fileUrl );
+			window.close();
+		}
+		// Simulate user action of selecting a file to be returned to CKEditor.
+		function returnFileUrlClic(url) {
+
+			var funcNum = getUrlParam( 'CKEditorFuncNum' );
+			//var fileUrl = '/path/to/file.txt';
+			//var fileUrl = $('#taille').val();
+			var fileUrl = url;
+			window.opener.CKEDITOR.tools.callFunction( funcNum, fileUrl );
+			window.close();
+		}
+	</script>
+	<style>
+	body {
+		background-color: #e1e1e1;
+		font-family: verdana, sans-serif;
+	}
+	.main-panel {
+		width: 100%;
+		float: none;
+	}
+	.main-panel > .content {
+		margin-top: 0;
+		padding: 10px;
+	}
+	#content-browser {
+		width: 98%;
+		margin: 0;
+	}
+	small {
+		font-size: 0.7em;
+	}
+	</style>
+{% endblock %}
+{% block mainheader %}{% endblock %}
+{% block navigation %}{% endblock %}
+{% block body %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<form name="posts_images" method="post" id="file-uploader">
+					<div class="row d-flex justify-content-end align-items-end mb-2">
+						<div class="col-md-10">
+							<input type="file" name="image" id="image" multiple>
+						</div>
+						<div class="col-md-2">
+						    <button type="submit" class="btn btn-primary">Transférer</button>
+						</div>
+					</div>
+				</form>
+				<noscript>          
+				<p>Veuillez activer JavaScript pour pouvoir charger des fichiers.</p>
+				<!-- or put a simple form for upload here -->
+				</noscript>
+				<div id="loadBar"></div>
+			</div>
+		</div>
+		<div class="card-body">
+			<div class="row">
+			{% for attachement in attachements %}
+				{% if attachement.mimeType == 'image/jpeg' or attachement.mimeType == 'image/png' %}
+					{% set dimension = attachement.sizes|unserialize %}
+					{% set size = dimension[0] ~ ' x ' ~ dimension[1] %}
+					{% set width = dimension[0] %}
+					{% set height = dimension[1] %}
+					<div class="col-2">
+						<div class="card">
+							<div class="card-header">
+								<select name="taille_{{ attachement.id }}" id="taille_{{ attachement.id }}">
+									<option value="{{ asset('uploads/medias/') ~ attachement.filename }}">{{ size }}</option>
+									{% if width >= 150 %}
+									<option value="{{ asset('uploads/medias/thumb_150/') ~ attachement.filename }}">150 x {{height|newHeight(width, 150) }}</option>
+									{% endif %}
+									{% if width >= 300 %}
+									<option value="{{ asset('uploads/medias/thumb_300/') ~ attachement.filename }}">300 x {{height|newHeight(width, 300) }}</option>
+									{% endif %}
+									{% if width >= 850 %}
+									<option value="{{ asset('uploads/medias/thumb_850/') ~ attachement.filename }}">850 x {{height|newHeight(width, 850) }}</option>
+									{% endif %}
+								</select>
+								<button onclick="returnFileUrl('#taille_{{ attachement.id }}')" class="btn-primary">ok</button>
+							</div>
+							<img class="card-img-top" src="{{ asset('uploads/medias/thumb/') ~ attachement.filename }}" onclick="returnFileUrlClic('{{ asset('uploads/medias/thumb/') ~ attachement.filename }}')">
+							<div class="card-body">
+								<small>{% for content in attachement.contents %}
+									{% if content.lang.id == 1 %}
+										{{ content.title }}
+									{% endif %}{% endfor %}
+								</small>
+							</div>
+						</div>
+					</div>
+				{% else %}
+				<div id="view-files">
+					<ul>
+						<li>
+							<div class="files">
+								<img src="images/application-vnd.opendocument.text.png" width="128" height="128" onclick="returnFileUrlClic('<?php echo PROTOCOL . BASE_URL; ?>uploads/<?php echo $_media_lang[$media->id_post()]->post_lang_slug(); ?>')">
+							</div>
+							<small><?php echo $media->post_lang_title(); ?><br>
+							<?php echo dateFRavHeure($media->post_add()); ?></small>
+						</li>
+					</ul>    
+				</div>
+			{% endif %}
+			{% else %}
+			<p>Aucun fichier chargé sur le serveur</p>
+			{% endfor %}
+			</div>			
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block javascripts %}
+<script src="{{ asset('admin/js/fileuploader.js') }}"></script>
+<script type="text/javascript">
+	/**
+	* SCRIPT D'UPLOAD DE FICHIER
+	**/
+	$(document).ready(function(){
+		var uploader = new qq.FileUploader({
+			 // pass the dom node (ex. $(selector)[0] for jQuery users)
+		    element: document.getElementById('file-uploader'),
+		    // path to server-side upload script
+		    action: "{{ path('medias_upload') }}",
+		    // additional data to send, name-value pairs
+		    params: {
+		    	type: 'media',
+		    },
+			    // validation    
+		    // ex. ['jpg', 'jpeg', 'png', 'gif'] or []
+		    allowedExtensions: ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'xls', 'xlsx'],        
+		    // each file size limit in bytes
+		    // this option isn't supported in all browsers
+		    sizeLimit: 0, // max size   
+		    minSizeLimit: 0, // min size
+	    	abortOnFailure: true, // Fail all files if one doesn't meet the criteria
+			    // set to true to output server response to console
+		    debug: true,
+			    // events         
+		    // you can return false to abort submit
+		    onSubmit: function(id, fileName){
+		    	//$("#fileName").text(fileName);
+		    },
+		    onProgress: function(id, fileName, loaded, total){
+		    	var pourcent = Math.ceil((100/total) * loaded);
+		    	$(".qq-progress-bar").css({'width' : pourcent + "%"}).text(pourcent + "%");
+		    },
+		    onComplete: function(id, fileName, responseJSON){
+		    	console.log(responseJSON.success);
+		    	//console.log(responseJSON);
+		    	if(responseJSON.success == true) {
+		    		window.location.reload();
+		    	}
+		    },
+		    onCancel: function(id, fileName){},
+		    onError: function(id, fileName, xhr){},
+
+		    messages: {
+	            typeError: "Le(s) fichier(s) que vous avez sélectionné ont un type incorrect. Seuls les fichiers {extensions} sont autorisés.",
+	            sizeError: "{file} est trop lourd, la taille maximum est {sizeLimit}.",
+	            minSizeError: "{file} est trop léger, la taille minimum est {minSizeLimit}.",
+	            emptyError: "{file} est vide, veuillez choisir un autre fichier.",
+	            onLeave: "Les fichiers sont téléchargés, si vous quittez maintenant le transfert sera annulé."
+	        },
+		    showMessage: function(message){ alert(message); }     
+		});
+	});
+
+</script>
+{% endblock %}

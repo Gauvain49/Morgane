@@ -23,6 +23,7 @@ class GammesController extends AbstractController
     {
         return $this->render('admin/gammes/index.html.twig', [
             'gammes' => $GammesRepository->findAll(),
+            'NavCatalogOpen' => true,
         ]);
     }
 
@@ -55,6 +56,7 @@ class GammesController extends AbstractController
         return $this->render('admin/gammes/new.html.twig', [
             'gamme' => $gamme,
             'form' => $form->createView(),
+            'NavCatalogOpen' => true,
         ]);
     }
 
@@ -79,6 +81,7 @@ class GammesController extends AbstractController
         return $this->render('admin/gammes/edit.html.twig', [
             'gamme' => $gamme,
             'form' => $form->createView(),
+            'NavCatalogOpen' => true,
         ]);
     }
 

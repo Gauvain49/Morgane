@@ -1,0 +1,18 @@
+		{% set link = '' %}
+		{% set title = '' %}
+		{% for content in menu.contents %}
+			{% if content.lang.id == 1 %}
+			{% set link = content.slug %}
+			{% set title = content.title %}
+			{% endif %}
+		{% endfor %}
+		<li {% if menu.children is defined %}class="drop"{% endif %}>
+			<a href="{{ path('main') ~  link }}">{{ title }}</a>
+			{% if menu.children is defined %}
+				<ul>
+				{% for menu in menu.children %}
+					{% include('main/partials/menu.html.twig') %}
+				{% endfor %}
+				</ul>
+			{% endif %}
+		</li>

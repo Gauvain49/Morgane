@@ -90,7 +90,7 @@
 {% block _products_categories_entry_widget %}
 	<div class="form-check p-0">
 		<label class="form-check-label" {% for key, styles in attr %} {% for k, style in styles %} {{ key }}="{{ k }}:{{ style }}" {% endfor %} {% endfor %}>
-			<input class="form-check-input group-categories" type="checkbox" name="{{full_name}}" id="{{id}}" value="{{value}}">
+			<input class="form-check-input group-categories" type="checkbox" name="{{full_name}}" id="{{id}}" value="{{value}}" {% if checked == true %}checked{% endif %}>
 			<span class="form-check-sign">{{ label }}</span>
 		</label>
 	</div>
@@ -311,7 +311,7 @@
 
 	<!-- Attribution des checked aux catégories -->
 	<script>
-		var selected = ["{{ catSelected|join('", "')|raw }}"];
+		{#var selected = ["{{ catSelected|join('", "')|raw }}"];
 		var a = document.getElementsByClassName('group-categories');
 		for(var i = 0; i < a.length; i++) {
 			var b = a[i].value;
@@ -319,7 +319,7 @@
 			if(index != -1) {
 				a[i].setAttribute('checked', '');
 			}
-		}
+		}#}
 	</script>
 	<script>
 		var block = $('.properties').parents('fieldset');

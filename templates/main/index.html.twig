@@ -1,56 +1,83 @@
 {% extends 'base.html.twig' %}
-
-{% block title %}Bienvenue !{% endblock %}
-{# le block suivant permet de garder une couleur noir pour la police du menu, utile pour la page d'accueil... #}
 {% block bgHeader %}{% endblock %}
-{% block slider %}
-	<!-- Start Slider area -->
-    <div class="slider-area brown__nav slider--15 slide__activation slide__arrow01 owl-carousel owl-theme">
-		<!-- Start Slider area -->
-		<div class="slide animation__style10 bg-image--1 fullscreen align__center--left">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-12">
-						<div class="slider__content">
-							<div class="contentbox">
-								<h2>{{ appService.params.title }},<br> <span>{{ appService.params.slogan }}</h2>
-								<p>Notre mission : soutenir les nouveaux auteurs dans les aléas de l’édition, les aider à accomplir une aventure souvent méconnue, conquérir un cercle de lecteurs plus large, proposer une distribution fluide, rapide et étendue, cibler des professionnels du livre influents.<br>
-								<a href="Pourquoi-nous-choisir.html">En savoir plus</a></p>
-								<div class="depot-manuscrit">
-									<p>
-										<strong>
-											<a href="http://www.livrestoryeditions.com/manuscript/envoyez-votre-manuscrit" class="btn btn-warning shopbtn">Déposer son manuscrit</a>
-										</strong>
-									</p>
-								</div>
-							</div>
+{% block main %}
+<div class="homePage">
+	<section class="homePage homeNewsItem clearfix">
+		<header>
+			<h1>Nos nouveautés</h1>
+		</header>
+		{% set langDefault = languagesService.languageDefault.id %}
+		{% for product in products %}
+		{% if product.type == 'master' and product.gamme.id == 1 %}
+			{% set slug = '' %}
+			{% for content in product.contents %}
+				{% if content.lang.id == langDefault %}
+					{% set slug = content.slug %}
+				{% endif %}
+			{% endfor %}
+		<article class="vignetteProduit">
+			<div>
+				<h2>
+					{{ product.supplier.supplierName }}
+				</h2>
+				<p class="imgProduit">
+					<a href="{# path('product_detail', {'slug': slug}) #}">
+					{% if product.id in imgPath|keys %}
+						<img src="{{ asset('img/p/') ~ imgPath[product.id] }}" alt="{% for content in product.contents %}{% if content.lang.id == langDefault %}{{ content.name }}{% endif %}{% endfor %}">
+					{% else %}
+						<img src="{{ asset('img/p/fr.jpg') }}" alt="{% for content in product.contents %}{% if content.lang.id == langDefault %}{{ content.name }}{% endif %}{% endfor %}">
+					{% endif %}
+					</a>
+				</p>
+				<div class="des">
+					<p class="titreProduit">
+						<a href="{# path('product_detail', {'slug': slug}) #}">
+						{% for content in product.contents %}
+							{% if content.lang.id == langDefault %}
+							{{ content.name }}
+							{% endif %}
+						{% endfor %}
+						</a>
+					</p>
+					<div class="desShort">
+						{% for content in product.contents %}
+							{% if content.lang.id == langDefault %}
+							{{ content.summary|raw }}
+							{% endif %}
+						{% endfor %}
+					</div>
+					<div class="tarifProduit">
+						{% if product.discount != '' %}
+						<div class="zonePromo">
+							<p class="pourcentPromo">
+							{% set discount = product.discount|discountPriceAT(product.discountType, product.discountOnTaxe, product.taxe.taxeRate, product.sellingPrice, product.sellingPriceAllTaxes) %}
+								{{ (discount - product.sellingPriceAllTaxes)|number_format(2, ',', ' ') }} €
+							</p>
+							<p class="prixBarre">
+							{{ product.sellingPriceAllTaxes|number_format(2, ',', ' ') }} €
+							</p>
 						</div>
+						{% endif %}
+						<p class="prix">
+							{#
+							<a href="{{ path('product_detail', {'slug': slug}) }}">Prix Spotlight : <b>{{ product.discount|discountPriceAT(product.discountType, product.discountOnTaxe, '20', product.sellingPrice, product.sellingPriceAllTaxes)|number_format(2, ',', ' ') }} €</b>
+							</a>
+							#}
+							<a href="">Prix Spotlight : <b>{{ discount|number_format(2, ',', ' ')  }} €</b></a>
+						</p>
+
 					</div>
 				</div>
+				<p class="selectionAdd">
+					<a href="#">
+						<img src="{{ asset('images/icon-selection.png') }}" width="18" height="17" alt="">Ajouter à ma sélection
+					</a>
+				</p>
 			</div>
-		</div>
-		<!-- End Single Slide -->
-	    <!-- Start Single Slide -->
-		<!-- <div class="slide animation__style10 bg-image--7 fullscreen align__center--left">
-		    <div class="container">
-		       	<div class="row">
-		       		<div class="col-lg-12">
-		       			<div class="slider__content">
-		        			<div class="contentbox">
-		        				<h2>Buy <span>your </span></h2>
-		        				<h2>favourite <span>Book </span></h2>
-		        				<h2>from <span>Here </span></h2>
-			                 	<a class="shopbtn" href="#">shop now</a>
-		        			</div>
-		       			</div>
-		       		</div>
-		       	</div>
-		    </div>
-			    </div> -->
-	    <!-- End Single Slide -->
-	</div>
-	<!-- End Slider area -->
-{% endblock %}
-{% block main %}
+		</article>
+		{% endif %}
+		{% endfor %}
 
+	</section>
+</div>
 {% endblock %}

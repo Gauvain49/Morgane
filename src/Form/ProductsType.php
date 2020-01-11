@@ -7,7 +7,7 @@ use App\Entity\MgGammes;
 use App\Entity\MgProducts;
 use App\Entity\MgSuppliers;
 use App\Entity\MgTaxes;
-use App\Form\DataTransformer\CategorieToNumberTransformer;
+//use App\Form\DataTransformer\CategorieToNumberTransformer;
 use App\Form\ProductsLangType;
 use App\Form\PropertiesValuesType;
 use App\Repository\MgCategoriesRepository;
@@ -27,12 +27,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ProductsType extends AbstractType
 {
-    private $transformer;
+    /*private $transformer;
 
     public function __construct(CategorieToNumberTransformer $transformer)
     {
         $this->transformer = $transformer;
-    }
+    }*/
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -70,13 +70,22 @@ class ProductsType extends AbstractType
                 'query_builder' => function(MgCategoriesRepository $repo) {
                     return $repo->findAllByArborescence('product');
                 }*/
-            ->add('categories', ChoiceType::class, [
-                'choices' => $options['checkbox'],
-                'choice_value' => function($categories) {
+            ->add('categories', EntityType::class, [
+                'class' => MgCategories::class,
+                'query_builder' => function(EntityRepository $er) {
+                    return $er->createQueryBuilder('c')
+                            ->join('c.contents', 'l')
+                            ->addSelect('l')
+                            ->where('l.lang = 1')
+                            ->andWhere('c.type = :type')
+                            ->setParameter('type', 'product');
+                },
+                //'choices' => $options['checkbox'],
+                /*'choice_value' => function($categories) {
                     if(!is_integer($categories)) {
                         return $categories->getId();
                     }
-                },
+                },*/
                 'choice_label' => 'contents[0].name',
                 'choice_attr' => function($categories, $key, $value) {
                     if ($categories->getLevel() > 0) {
@@ -138,8 +147,8 @@ class ProductsType extends AbstractType
                 'time_widget' => 'single_text',
                 'required' => false,
                 'help' => 'Date à laquelle le produit est disponible à la vente.',
-                'date_widget' => 'single_text',
-                'time_widget' => 'single_text',
+                //'date_widget' => 'single_text',
+                //'time_widget' => 'single_text',
                 'html5' => true
             ])
             ->add('date_publish', DateTimeType::class, [
@@ -150,8 +159,8 @@ class ProductsType extends AbstractType
                 'time_widget' => 'single_text',
                 'required' => false,
                 'help' => 'Date à laquelle le produit apparaît dans le catalogue.',
-                'date_widget' => 'single_text',
-                'time_widget' => 'single_text',
+                //'date_widget' => 'single_text',
+                //'time_widget' => 'single_text',
                 'html5' => true
             ])
             ->add('offline', CheckboxType::class, [
@@ -212,7 +221,7 @@ class ProductsType extends AbstractType
                 'delete_empty' => true,
                 'required' => false
             ])
-            ->get('categories')
+            /*->get('categories')
                 //->addModelTransformer($this->transformer)
                 ->addModelTransformer(new CallbackTransformer(
                     function ($categoriesAsString) {
@@ -237,7 +246,7 @@ class ProductsType extends AbstractType
                         //return implode(', ', $categoriesAsArray);
                         return $categoriesAsArray;
                     }
-                ))
+                ))*/
         ;
     }
 
@@ -246,8 +255,8 @@ class ProductsType extends AbstractType
         $resolver->setDefaults([
             'data_class' => MgProducts::class,
         ])
-            ->setRequired(
+            /*->setRequired(
             'checkbox'
-        );
+        )*/;
     }
 }

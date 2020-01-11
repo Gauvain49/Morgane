@@ -1,0 +1,172 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion {% if role == 'page' %}des pages{% else %}des articles{% endif %}{% endblock %}
+{% form_theme form _self %}
+
+{% block stylesheets %}
+<style type="text/css">
+	fieldset {
+		padding: 0 !important;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+	<h4 class="page-title">Gestion {% if role == 'page' %}des pages{% else %}des articles{% endif %}</h4>
+	<ul class="breadcrumbs">
+		<li class="nav-home">
+			<a href="{{ path('dashboard') }}">
+				<i class="flaticon-home"></i>
+			</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			<a href="{{ path('posts_index', {'role' : role})}}">{% if role == 'page' %}Pages{% else %}Articles{% endif %}</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			Ajouter {% if role == 'page' %}une page{% else %}un article{% endif %}
+		</li>
+	</ul>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h4 class="card-title">Ajouter {% if role == 'page' %}une page{% else %}un article{% endif %}</h4>
+			</div>
+			<div class="card-body">
+				{% if languagesService.getLanguages|length > 1 %}
+					{% set iteration = 0 %}
+				<!-- champ de sélection des langues -->
+				<div class="choiceLanguage contentWrapperInput">
+					<button onclick="event.preventDefault(); return addDisplay(this);" class="btn btn-primary"></button>
+					<select name="choiceLanguage" class="choice_language_multiple selectHidden skipThese">
+						{% for lang in languagesService.getLanguages %}
+						<option data-role="{{ lang.langIsoCode }}" id="id_langue_name_{{ iteration }}" value="{{ iteration }}">{{ lang.langName}}</option>
+						{% set iteration = iteration + 1 %}
+					{% endfor %}
+					</select>
+				</div>
+				{% endif %}
+    			{{ include('admin/posts/_form.html.twig') }}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block _posts_contents_entry_row %}
+	{{ form_widget(form) }}
+{% endblock %}
+{% block _posts_categories_entry_widget %}
+	<div class="form-check p-0">
+		<label class="form-check-label" {% for key, styles in attr %} {% for k, style in styles %} {{ key }}="{{ k }}:{{ style }}" {% endfor %} {% endfor %}>
+			<input class="form-check-input" type="checkbox" name="{{full_name}}" id="{{id}}" value="{{value}}">
+			<span class="form-check-sign">{{ label }}</span>
+		</label>
+	</div>
+{% endblock %}
+{% block _posts_date_publish_date_widget %}
+	<div class="input-group" style="width: 200px">{{ form_widget(form) }}
+		<div class="input-group-append">
+			<span class="input-group-text">
+				<i class="la la-calendar-o"></i>
+			</span>
+		</div>
+	</div>
+{% endblock %}
+{% block _posts_date_publish_time_widget %}
+	<div class="input-group pl-2" style="width: 150px">{{ form_widget(form) }}
+		<div class="input-group-append">
+			<span class="input-group-text">
+				<i class="la la-clock-o"></i>
+			</span>
+		</div>
+	</div>
+{% endblock %}
+{% block _posts_date_expire_date_widget %}
+	<div class="input-group" style="width: 200px">{{ form_widget(form) }}
+		<div class="input-group-append">
+			<span class="input-group-text">
+				<i class="la la-calendar-o"></i>
+			</span>
+		</div>
+	</div>
+{% endblock %}
+{% block _posts_date_expire_time_widget %}
+	<div class="input-group pl-2" style="width: 150px">{{ form_widget(form) }}
+		<div class="input-group-append">
+			<span class="input-group-text">
+				<i class="la la-clock-o"></i>
+			</span>
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	<!-- Moment JS -->
+	<script src="{{ asset('admin/js/plugin/moment/moment.min.js') }}"></script>
+		<!-- DateTimePicker -->
+	<script src="{{ asset('admin/js/plugin/datepicker/bootstrap-datetimepicker.min.js') }}"></script>
+	<!-- Bootstrap Toggle -->
+	<script src="{{ asset('admin/js/plugin/bootstrap-toggle/bootstrap-toggle.min.js') }}"></script>
+	<!-- CK Editor -->
+	<script src="{{ asset('admin/ckeditor/ckeditor.js') }}"></script>
+	<!-- Multilanguage -->
+	<script src="{{ asset('admin/js/multilanguage.js') }}"></script>
+	<script type="text/javascript">
+		//Création du tableau recueillant les langues
+		const listLang = new Object();
+		const listLangIso = new Object();
+		{% for lang in languagesService.getLanguages %}
+		listLang[{{lang.id}}] = '{{lang.langName}}';
+		listLangIso[{{lang.id}}] = '{{lang.langIsoCode}}';
+		{% endfor %}
+
+		//Function pour calculer la taille du tableau
+		Object.size = function(arr) 
+		{
+		    var size = 0;
+		    for (var key in arr) 
+		    {
+		        if (arr.hasOwnProperty(key)) size++;
+		    }
+		    return size;
+		};
+		var langLength = Object.size(listLang);
+
+		multilanguage('posts_contents', listLang, {{ languagesService.getLanguages|length }}, {{ languagesService.languageDefault.id }});
+	</script>
+    <script >
+		//moment.locale('fr-ca'); 
+		//$.datepicker.setDefaults($.datepicker.regional["fr"]);
+		//jQuery.datetimepicker.setLocale('fr');
+		$('#posts_date_publish_time').datetimepicker({
+			format: 'H:mm',
+			//format: 'DD/MM/YYYY',
+			locale: 'fr'
+		});
+		$('#posts_date_expire_time').datetimepicker({
+			format: 'H:mm',
+			//format: 'DD/MM/YYYY',
+			locale: 'fr'
+		});
+	</script>
+	<script type="text/javascript">
+		var counter = 0;//On implémente le compteur
+		{% for lang in languagesService.getLanguages %}
+		var editor = CKEDITOR.replace('posts_contents_' + counter + '_content', {
+			filebrowserBrowseUrl: '{{ path('medias_editorUpload') }}',
+			//filebrowserBrowseUrl: 'post/browser',
+			//filebrowserImageBrowseLinkUrl: 'browser.php',
+			filebrowserUploadUrl: 'uploader-files.php'
+			});
+		counter++;
+		{% endfor %}
+	</script>
+{% endblock %}

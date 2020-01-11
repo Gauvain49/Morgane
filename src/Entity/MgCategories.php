@@ -83,12 +83,18 @@ class MgCategories
      */
     private $products;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\MgPosts", mappedBy="categories")
+     */
+    private $posts;
+
     public function __construct()
     {
         $this->date_add = new \Datetime();
         $this->children = new ArrayCollection();
         $this->contents = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->posts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -282,6 +288,34 @@ class MgCategories
         if ($this->products->contains($product)) {
             $this->products->removeElement($product);
             $product->removeCategory($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MgPosts[]
+     */
+    public function getPosts(): Collection
+    {
+        return $this->posts;
+    }
+
+    public function addPost(MgPosts $post): self
+    {
+        if (!$this->posts->contains($post)) {
+            $this->posts[] = $post;
+            $post->addCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removePost(MgPosts $post): self
+    {
+        if ($this->posts->contains($post)) {
+            $this->posts->removeElement($post);
+            $post->removeCategory($this);
         }
 
         return $this;

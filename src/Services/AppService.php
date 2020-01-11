@@ -2,8 +2,8 @@
 namespace App\Services;
 
 use App\Entity\MgParameters;
-/*use App\Entity\MgParametersAddresses;
-use App\Entity\MgPosts;*/
+use App\Entity\MgParametersAddresses;
+/*use App\Entity\MgPosts;*/
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 //use Symfony\Component\HttpFoundation\Session\Session;
 
@@ -15,6 +15,15 @@ class AppService extends AbstractController
     public function getParams()
     {
         $parameters = $this->getDoctrine()->getRepository(MgParameters::class)->find(1);
+        return $parameters;
+    }
+    
+    /**
+     * Récupère le nom du site pour l'afficher sur toutes les pages de l'admin
+     **/
+    public function getAddressesSite()
+    {
+        $parameters = $this->getDoctrine()->getRepository(MgParametersAddresses::class)->findAll();
         return $parameters;
     }
 

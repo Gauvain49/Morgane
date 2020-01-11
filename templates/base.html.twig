@@ -12,22 +12,26 @@
 	<link rel="apple-touch-icon" href="images/icon.png">
 
 	{% block fonts %}
-	<!-- Google font (font-family: 'Roboto', sans-serif; Poppins ; Satisfy) -->
-	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet"> 
-	<link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,500,600,600i,700,700i,800" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
 	{% endblock %}
 
 	<!-- Stylesheets -->
-	<link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
-	<link rel="stylesheet" href="{{ asset('css/plugins.css') }}">
-	<link rel="stylesheet" href="{{ asset('css/style.css') }}">
+	<link rel="stylesheet" href="{{ asset('css/init.css') }}">
+	<link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+	<link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+	<link rel="stylesheet" href="{{ asset('css/magnific-popup.css') }}">
 
-	<!-- Cusom css -->
-   <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+	<!--[if lt IE 9]>
+	<script src="{{ asset('js/html5-3.6-respond-1.1.0.min.js') }}"></script>
+	<![endif]-->
 
 	<!-- Modernizer js -->
 	<script src="{{ asset('js/vendor/modernizr-3.5.0.min.js') }}"></script>
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	
+	<script src="{{ asset('js/plugins.js') }}"></script>
+	<!-- Magnific Popup core JS file -->
+	<script src="{{ asset('js/jquery.magnific-popup.js') }}"></script>
 
     {% block stylesheets %}{% endblock %}
     {% block JS %}
@@ -37,6 +41,27 @@
 				window.print();
 			}
 		}
+		</script>
+		<script type="text/javascript">
+		$(document).ready(function() {
+			$('.imagesProduits').magnificPopup({
+				delegate: 'a',
+				type: 'image',
+				tLoading: 'Loading image #%curr%...',
+				mainClass: 'mfp-img-mobile',
+				gallery: {
+					enabled: true,
+					navigateByImgClick: true,
+					preload: [0,1] // Will preload 0 - before current, and 1 after the current image
+				},
+				image: {
+					tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+					titleSrc: function(item) {
+						return item.el.attr('title');
+					}
+				}
+			});
+		});
 		</script>
     {% endblock %}
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -54,7 +79,7 @@
 	   	{% if is_granted('ROLE_USER') %}
 		<div id="zoneAdmin">
 		    <div id="zoneHeader">
-		    <div id="logoMorgane"><img src="{{ asset('admin/assets/img/morganeresponsive.png') }}" width="75" height="35"></div>
+		    <div id="logoMorgane"><img src="{{ asset('admin/img/morganeresponsive.png') }}" width="75" height="35"></div>
 		    <div id="accesSite">
 		    {#
 		        if(isset($_GET['postvisu'])) {
@@ -81,237 +106,76 @@
 		</div>
 	   	{% endif %}
     {% endif %}
-    {% block body %}
-	<div class="wrapper" id="wrapper">
-		<!-- Header -->
-		<header id="wn__header" class="{% block bgHeader %}oth-page {% endblock %} header__area header__absolute sticky__header">
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-md-6 col-sm-6 col-6 col-lg-2">
-						<div class="logo">
-							<a href="{{ path('home') }}" style="display: block; height: 100%;">
-								<img src="{{ asset('images/logo/logo-livre-story.png') }}" alt="Livre Story Editions">
-							</a>
-						</div>
-					</div>
-					<div class="col-lg-8 d-none d-lg-block">
-						{# render(controller('App\\Controller\\HomeController::displayMenuScreen')) #}
-					</div>
-					<div class="col-md-6 col-sm-6 col-6 col-lg-2">
-						<ul class="header__sidebar__right d-flex justify-content-end align-items-center">
-							{% if app.user and is_granted('ROLE_VISITOR') %}
-							<li class="setting__bar__icon"><a class="setting__active {% if app.user %}user-active{% endif %}" href="#">{% if app.user %}{{ app.user.firstname}} {{ app.user.lastname }}{% endif %}</a>
-								<div class="searchbar__content setting__block">
-									<div class="content-inner">
-										<div class="switcher-currency">
-											<strong class="label switcher-label">
-												<span>Mon compte</span>
-											</strong>
-											<div class="switcher-options">
-												<div class="switcher-currency-trigger">
-													<div class="setting__menu">
-														<span><a href="{# path('customer_profil') #}">Mes informations</a></span>
-														<span><a href="#">Mes commandes</a></span>
-														<span><a href="{# path('admin_logout') #}">Déconnexion</a></span>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</li>
-							{% else %}
-								<li class="setting__bar__icon"><a href="{{ path('login') }}" title="Accès à mon compte"></a></li>
-							{% endif %}
-							<li class="shopcart"><a class="cartbox_active" href="{# path('cart') #}"><span class="product_qun">{# cartService.totalQuantity #}</span></a>
-								<!-- Start Shopping Cart -->
-								<div class="block-minicart minicart__active">
-									<div class="minicart-content-wrapper">
-										<div class="micart__close">
-											<span>Fermer</span>
-										</div>
-										<div class="items-total d-flex justify-content-between">
-											<span>{# cartService.totalQuantity #} article{# if cartService.totalQuantity > 1 %}s{% endif #}</span>
-											<span>Total de votre panier</span>
-										</div>
-										<div class="total_amount text-right">
-											<span>{# cartService.totalCart #} €</span>
-										</div>
-										{# if cartService.totalCart > 0 %}
-										<div class="mini_action checkout">
-											<a class="checkout__btn" href="cart.html">Payer</a>
-										</div>
-										{% endif #}
-										<!-- <div class="single__items">
-											<div class="miniproduct">
-												<div class="item01 d-flex">
-													<div class="thumb">
-														<a href="product-details.html"><img src="images/product/sm-img/1.jpg" alt="product images"></a>
-													</div>
-													<div class="content">
-														<h6><a href="product-details.html">Voyage Yoga Bag</a></h6>
-														<span class="prize">$30.00</span>
-														<div class="product_prize d-flex justify-content-between">
-															<span class="qun">Qty: 01</span>
-															<ul class="d-flex justify-content-end">
-																<li><a href="#"><i class="zmdi zmdi-settings"></i></a></li>
-																<li><a href="#"><i class="zmdi zmdi-delete"></i></a></li>
-															</ul>
-														</div>
-													</div>
-												</div>
-												<div class="item01 d-flex mt--20">
-													<div class="thumb">
-														<a href="product-details.html"><img src="images/product/sm-img/3.jpg" alt="product images"></a>
-													</div>
-													<div class="content">
-														<h6><a href="product-details.html">Impulse Duffle</a></h6>
-														<span class="prize">$40.00</span>
-														<div class="product_prize d-flex justify-content-between">
-															<span class="qun">Qty: 03</span>
-															<ul class="d-flex justify-content-end">
-																<li><a href="#"><i class="zmdi zmdi-settings"></i></a></li>
-																<li><a href="#"><i class="zmdi zmdi-delete"></i></a></li>
-															</ul>
-														</div>
-													</div>
-												</div>
-												<div class="item01 d-flex mt--20">
-													<div class="thumb">
-														<a href="product-details.html"><img src="images/product/sm-img/2.jpg" alt="product images"></a>
-													</div>
-													<div class="content">
-														<h6><a href="product-details.html">Compete Track Tote</a></h6>
-														<span class="prize">$40.00</span>
-														<div class="product_prize d-flex justify-content-between">
-															<span class="qun">Qty: 03</span>
-															<ul class="d-flex justify-content-end">
-																<li><a href="#"><i class="zmdi zmdi-settings"></i></a></li>
-																<li><a href="#"><i class="zmdi zmdi-delete"></i></a></li>
-															</ul>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div> -->
-										<div class="mini_action cart">
-											<a class="cart__btn" href="{# path('cart') #}">Voir votre panier</a>
-										</div>
-									</div>
-								</div>
-								<!-- End Shopping Cart -->
-							</li>
-							<li class="shop_search"><a class="search__active" href="#"></a></li>
-						</ul>
-					</div>
-				</div>
-				{#
-				<div class="top-links-area">
-					{% if app.user and is_granted('ROLE_VISITOR') %}
-					<div class="user-connect"><a href="{{ path('customer_profil') }}">{{ app.user.firstname }} {{ app.user.lastname }}</a></div>
-					<div class="user-acompte"><a href="{{ path('customer_profil') }}">Accédez à votre compte</a></div>
-					{% endif %}
-					<div class="{% if app.user and is_granted('ROLE_VISITOR') %}mini-cart-login{% else %}mini-cart{% endif %}">
-						<a href="{{ path('cart') }}" class="mybag-link">
-							<i class="icon-mini-cart"></i>
-							<span class="cart-info">
-								<span class="cart-qty">Votre panier : {{ appService.totalCart }} € {{ app.session.get('cart')|length }}</span>
-							</span>
-						</a>
-					</div>
-				</div>
-				#}
-				<!-- Start Mobile Menu -->
-				<div class="row d-none">
-					<div class="col-lg-12 d-none">
-						{# render(controller('App\\Controller\\HomeController::displayMenuMobile')) #}
-					</div>
-				</div>
-				<!-- End Mobile Menu -->
-	            <div class="mobile-menu d-block d-lg-none">
-	            </div>
-	            <!-- Mobile Menu -->	
-			</div>
-		</header>
-
-		<!-- //Header -->
-		<!-- Start Search Popup -->
-		<div class="brown--color box-search-content search_active block-bg close__top">
-			<form id="search_mini_form" class="minisearch" action="#">
-				<div class="field__search">
-					<input type="text" placeholder="Rechercher un titre ou un auteur...">
-					<div class="action">
-						<a href="{# path('cart') #}"><i class="zmdi zmdi-search"></i></a>
-					</div>
-				</div>
+	<div class="header-container">
+		<header class="wrapper clearfix">
+			<h1 class="title"><a href="../">{{ appService.params.title }}</a></h1>
+			<h2>{{ appService.params.title }}</h2>
+			<p class="headerTel">107 avenue Maginot - 37100 TOURS - <span>☎ 02 47 54 42 00</span></p>
+			<h3 class="headerDescription">Vente - Location - Installation - Prestations</h3>
+			<form name="form1" method="post" action="recherche.php">
+				<input type="search" name="search" id="search" placeholder="Rechercher un produit...">
+				<input name="submitSearch" type="submit" id="submitSearch" value="Rechercher">
 			</form>
-			<div class="close__wrap">
-				<span>close</span>
+		</header>
+		<div class="topHeader">
+			<div class="listeSelection">
+				<p><a href="selection.php"><img src="{{ asset('images/icon-selection.png') }}" width="18" height="17" alt="">{# if cartService.totalQuantity > 1 %}Ma sélection de {{ cartService.totalQuantity }} produit{% if cartService.totalQuantity > 1 %}s{% endif %}{% else %}Ma sélection est vide{% endif #}</a></p>
 			</div>
 		</div>
-		<!-- End Search Popup -->
-		{#{% for label, messages in app.flashes %}
-			{% for message in messages %}
-				<div class="alert alert-{{label}}">
-					{{message|raw}}
-				</div>
-			{% endfor %}
-		{% endfor %}#}
-		{% block slider %}{% endblock %}
-		{% block main %}
-		{% endblock %}
+		{{ render(controller('App\\Controller\\MenusController::displayMenuCat')) }}
 	</div>
-    {% endblock %}
-    <footer class="footer__area bg__cat--8 brown--color" id="wn__footer">
-    	<div class="footer-static-top">
-    		<div class="container">
-    			<div class="row">
-    				<div class="col-lg-12">
-    					<div class="footer__widget footer__menu">
-    						<div class="ft__logo">
-    							<a href="{{ path('home') }}"><img src="{{ asset('images/logo/logo-livre-story.png') }}" alt=""></a>
-    						</div>
-    						{#<div class="footer__content">
-								<ul class="social__net social__net--2 d-flex justify-content-center">
-									<li><a href="#"><i class="bi bi-facebook"></i></a></li>
-									<li><a href="#"><i class="bi bi-google"></i></a></li>
-									<li><a href="#"><i class="bi bi-twitter"></i></a></li>
-									<li><a href="#"><i class="bi bi-linkedin"></i></a></li>
-									<li><a href="#"><i class="bi bi-youtube"></i></a></li>
-								</ul>
-							</div>#}
-    					</div>
-    				</div>
-    			</div>
-    		</div>
-    	</div>
-    	<div class="copyright__wrapper">
-    		<div class="container">
-				<div class="row">
-					<div class="col-lg-6 col-md-6 col-sm-12">
-						<div class="copyright">
-							<div class="copy__right__inner text-left">
-								<p>Copyright <i class="fa fa-copyright"></i> <a href="{{ path('home') }}">Livre Story Éditions - </a> Tous droits réservés</p>
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-6 col-md-6 col-sm-12">
-						<div class="payment text-right">
-							<img src="{{ asset('images/icons/payment.png') }}" alt="" />
-						</div>
-					</div>
+	<div class="main-container">
+		<div class="main wrapper clearfix">
+			{% block main %}
+		    {% endblock %}
+		</div>
+    </div>
+    <div class="footer-container">
+		<footer class="wrapper clearfix">
+			<div class="activite">
+					<p>Présent  depuis   1980, nos magasins ne cessent d'évoluer pour vous proposer un service à   la mesure d'un secteur d'activité en perpétuelle évolution. </p>
+					<p> Nos équipes se   tiennent à votre entière disposition pour satisfaire tous vos besoins, qu'ils   soient techniques ou commerciaux.</p>
+					<p> Nous disposons d'un large choix   en exposition de <strong>table de mixage, ampli, lecteur CD, platine vinyl</strong>...,   ainsi que d'un auditorium où vous pourrez apprécier notre gamme d'enceintes.</p>
+					<p> Pour les jeux de lumière, nous   disposons d'un <strong>show-room</strong> où plus de 30 appareils sont en démonstration   permanente.</p>
+					<p>Toutes ces gammes de produits   satisferont aussi bien le professionnel le plus exigeant que les passionnés et   les débutants.</p>
+					<p> Nous vous offrons également un <strong>grand choix de lampes</strong>. Environ 500 références aux meilleures   conditions du marché, de l'éclairage général à l'éclairage   professionnel. <strong>Incandescence, halogène, dichroïque, décharge...</strong></p>
+			</div>
+			<div class="donneesFooter">
+				{% for address in appService.getAddressesSite %}
+				<div style="float: left;">
+					<p><strong>
+						{% for title in address.addressesTitles %}
+							{% if title.lang.id == 1 %}
+								{{ title.addressTitle }}
+							{% endif %}
+						{% endfor %}
+					</strong></p>
+					<p>
+						{{ address.address|nl2br }}<br>
+						{{ address.zipcode }} {{ address.town }}
+					</p>
+					<p>Tél : {{ address.phone }}</p>
+					<p><strong>Horaires d'ouverture :</strong><br>
+						{{ address.openingTime|nl2br }}
+					</p>
+				</div>
+				{% endfor %}
+				<div>
+					<p><strong>Responsable</strong> : David Cotet</p>
+					<p><a href="contact.php">Contact</a> | <a href="#">Mentions Légales</a></p>
+					<p>Siret : 401 507 348 00019<br>APE : 4743Z</p>
+					<p>Tous droits réservés - {{ "now"|date("Y") }}</p>
 				</div>
 			</div>
-    	</div>
-    </footer>
-    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>-->
-	<script src="{{ asset('js/vendor/jquery-3.2.1.min.js') }}"></script>
-	<script src="{{ asset('js/popper.min.js') }}"></script>
-	<script src="{{ asset('js/bootstrap.min.js') }}"></script>
-	<script src="{{ asset('js/plugins.js') }}"></script>
-	<script src="{{ asset('js/active.js') }}"></script>
-    {% block javascripts %}{% endblock %}
+		</footer>
+	</div>
+</div>
+
+<!--<script>
+        var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+        (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+        g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+        s.parentNode.insertBefore(g,s)}(document,'script'));
+    </script>-->
 </body>
 </html>

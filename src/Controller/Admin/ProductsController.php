@@ -14,6 +14,7 @@ use App\Repository\MgProductsRepository;
 use App\Services\AppService;
 use App\Services\DeleteItems;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -60,36 +61,57 @@ class ProductsController extends AbstractController
     {
         $product = new MgProducts();
         $content = new MgProductsLang();
-        $listeCat = $repoCat->findAllByArborescence('product');
-        $form = $this->createForm(ProductsType::class, $product, ['checkbox' => $listeCat]);
+        //$listeCat = $repoCat->findAllByArborescence('product');
+        //$form = $this->createForm(ProductsType::class, $product, ['checkbox' => $listeCat]);
+        $form = $this->createForm(ProductsType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            foreach ($product->getContents() as $content) {
-                $content->setProduct($product);
-                $entityManager->persist($content);
-            }
-            foreach ($product->getCategories() as $category) {
-                $cat = $repoCat->findOneById($category);
-                $product->addCategory($cat);
-            }
-            foreach ($product->getPropertiesContents() as $propertyContent) {
-                $propertyContent->setProduct($product);
-                $entityManager->persist($propertyContent);
-            }
-            $product->setSellOutOfStock(false);
-            $product->setQuantity(0);
-            //$this->getUser() reprend automatiquement dans un controller l'utilisateur connecté
-            $product->setUser($this->getUser());
-            $entityManager->persist($product);
-            $entityManager->flush();
+            $task = $form->getData();
+            //dd($task);
+            if (($task->getMinQuantity() < $task->getSalesUnit()) && ($task->getMinQuantity() > 0)) {
+                $form->get('min_quantity')->addError(new FormError("Ne peut etre inférieure à unité de vente'"));
 
-            $this->addFlash(
-                'success', 'Création réussie !'
-            );
+                $this->addFlash(
+                    'danger', 'Le produit contient des erreurs.'
+                );
+            } elseif(($task->getMaxQuantity() < $task->getSalesUnit()) && ($task->getMaxQuantity() > 0)) {
+                $form->get('max_quantity')->addError(new FormError("Ne peut etre inférieure à unité de vente'"));
 
-            return $this->redirectToRoute('products_edit', ['id' => $product->getId()]);
+                $this->addFlash(
+                    'danger', 'Le produit contient des erreurs.'
+                );
+            } else {
+                //Si l'unité de vente est rempli mais pas le minimum commande, ce dernier prend la valeur de l'unité de vente
+                if (!empty($task->getSalesUnit()) && empty($task->getMinQuantity())) {
+                    $product->setMinQuantity($task->getSalesUnit());
+                }
+                $entityManager = $this->getDoctrine()->getManager();
+                foreach ($product->getContents() as $content) {
+                    $content->setProduct($product);
+                    $entityManager->persist($content);
+                }
+                foreach ($product->getCategories() as $category) {
+                    $cat = $repoCat->findOneById($category);
+                    $product->addCategory($cat);
+                }
+                foreach ($product->getPropertiesContents() as $propertyContent) {
+                    $propertyContent->setProduct($product);
+                    $entityManager->persist($propertyContent);
+                }
+                $product->setSellOutOfStock(false);
+                $product->setQuantity(0);
+                //$this->getUser() reprend automatiquement dans un controller l'utilisateur connecté
+                $product->setUser($this->getUser());
+                $entityManager->persist($product);
+                $entityManager->flush();
+
+                $this->addFlash(
+                    'success', 'Création réussie !'
+                );
+
+                return $this->redirectToRoute('products_edit', ['id' => $product->getId()]);
+            }
         }
 
         return $this->render('admin/products/new.html.twig', [
@@ -104,14 +126,15 @@ class ProductsController extends AbstractController
      */
     public function edit(Request $request, MgProducts $product, MgCategoriesRepository $repoCat): Response
     {
-        $listeCat = $repoCat->findAllByArborescence('product');
+        /*$listeCat = $repoCat->findAllByArborescence('product');
         //Récupération des catégories déjà sélectionné (en attendant de toruver mieux)
         $cat_selected = [];
         $recup_cat = $product->getCategories();
         foreach ($recup_cat as $value) {
             $cat_selected[] = $value->getId();
-        }
-        $form = $this->createForm(ProductsType::class, $product, ['checkbox' => $listeCat]);
+        }*/
+        //$form = $this->createForm(ProductsType::class, $product, ['checkbox' => $listeCat]);
+        $form = $this->createForm(ProductsType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -138,7 +161,7 @@ class ProductsController extends AbstractController
             'product' => $product,
             'form' => $form->createView(),
             'id' => $product->getId(),
-            'catSelected' => $cat_selected,
+            //'catSelected' => $cat_selected,
             'NavCatalogOpen' => true
         ]);
     }

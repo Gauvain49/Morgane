@@ -61,8 +61,15 @@
                     <div class="col-3">
                         <h6>Arborescence</h6>
                         <ul class="list-group">
-                            {% for name, categorie in arborescence %}
-                            <li class="list-group-item text-muted small">{{ name|raw }}</li>
+                            {# for name, categorie in arborescence #}
+                            {% for cat in treeStructure %}
+                            <li class="list-group-item text-muted small">
+                                {% for content in cat.contents %}
+                                    {% if content.lang.id == languagesService.languageDefault.id %}
+                                        {% if cat.level > 1 %}{% for i in 1..(cat.level - 1) %}—{% endfor %}{% endif %} {{ content.name }}
+                                    {% endif %}
+                                {% endfor %}
+                            </li>
                             {% else %}
                             <li class="list-group-item text-muted small">Racine</li>
                             {% endfor %}
@@ -75,13 +82,14 @@
                                     <tr>
                                         <th>Id</th>
                                         <th>Nom</th>
-                                        <th>Position</th>
-                                        <th>Enfants</th>
-                                        <th>Active</th>
+                                        <th class="text-center">Position</th>
+                                        <th class="text-center">Enfants</th>
+                                        <th class="text-center">Active</th>
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    {% set position = 1 %}
                                 {% for category in categories %}
                                     <tr>
                                         <td>{{ category.id }}</td>
@@ -92,8 +100,8 @@
                                                 {% endif %}
                                             {% endfor %}
                                         </td>
-                                        <td>{{ category.position }}</td>
-                                        <td>
+                                        <td class="text-center">{% if position != categories|length %}<a href="{{ path('categories_position_edit', {'id': category.id, 'update': 'down'}) }}" title="Descendre la position">&#9660;</a>{% else %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}&nbsp;&nbsp;{{ position }}&nbsp;&nbsp;{% if position != 1 %}<a href="{{ path('categories_position_edit', {'id': category.id, 'update': 'up'}) }}" title="Monter la position">&#9650;</a>{% else %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}</td>
+                                        <td class="text-center">
                                             {% if children[category.id] > 0 %}
                                             <a href="{{ path('categories_index', {'type': type, 'parent': category.id}) }}">
                                                 <span class="badge badge-primary">{{ children[category.id] }}</span>
@@ -102,7 +110,7 @@
                                                 <span class="badge badge-light">{{ children[category.id] }}</span>
                                             {% endif %}
                                         </td>
-                                        <td>{{ category.active ? '<i class="la la-check" style="color: #009A07; font-weight: bold; font-size: 15px;">' : '<i class="la la-close" style="color: #CF0000; font-weight: bold; font-size: 15px;">' }}</td>
+                                        <td class="text-center">{{ category.active ? '<i class="la la-check" style="color: #009A07; font-weight: bold; font-size: 15px;">' : '<i class="la la-close" style="color: #CF0000; font-weight: bold; font-size: 15px;">' }}</td>
                                         <td class="text-right">
                                             <div class="d-inline-flex">
                                                 <div class="p-1">
@@ -112,6 +120,7 @@
                                             </div>
                                         </td>
                                     </tr>
+                                    {% set position = position + 1 %}
                                 {% else %}
                                     <tr>
                                         <td colspan="9">Aucun enregistrement dans la base de données.</td>

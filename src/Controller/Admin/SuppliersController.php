@@ -23,6 +23,7 @@ class SuppliersController extends AbstractController
     {
         return $this->render('admin/suppliers/index.html.twig', [
             'suppliers' => $suppliersRepository->findAll(),
+            'NavCatalogOpen' => true,
         ]);
     }
 
@@ -66,6 +67,7 @@ class SuppliersController extends AbstractController
         return $this->render('admin/suppliers/new.html.twig', [
             'supplier' => $supplier,
             'form' => $form->createView(),
+            'NavCatalogOpen' => true,
         ]);
     }
 
@@ -123,6 +125,7 @@ class SuppliersController extends AbstractController
         return $this->render('admin/suppliers/edit.html.twig', [
             'supplier' => $supplier,
             'form' => $form->createView(),
+            'NavCatalogOpen' => true,
         ]);
     }
 

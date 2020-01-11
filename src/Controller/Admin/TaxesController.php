@@ -22,6 +22,7 @@ class TaxesController extends AbstractController
     {
         return $this->render('admin/taxes/index.html.twig', [
             'taxes' => $mgTaxRepository->findAll(),
+            'NavCatalogOpen' => true,
         ]);
     }
 
@@ -45,6 +46,7 @@ class TaxesController extends AbstractController
         return $this->render('admin/taxes/new.html.twig', [
             'taxe' => $taxe,
             'form' => $form->createView(),
+            'NavCatalogOpen' => true,
         ]);
     }
 
@@ -65,6 +67,7 @@ class TaxesController extends AbstractController
         return $this->render('admin/taxes/edit.html.twig', [
             'taxe' => $taxe,
             'form' => $form->createView(),
+            'NavCatalogOpen' => true,
         ]);
     }
 

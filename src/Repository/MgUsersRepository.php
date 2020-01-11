@@ -22,14 +22,15 @@ class MgUsersRepository extends ServiceEntityRepository
     /**
      * Retourne les utilisateurs ayant accès au backoffice
      */
-   /* public function getUsersAdmin()
+    public function getUsersByRoles($role)
     {
         return $this->createQueryBuilder('u')
-            ->where('role = $$')
+            ->where('u.roles LIKE :role')
+            ->setParameter('role', '%' . $role . '%')
             ->getQuery()
             ->getResult()
         ;
-    }*/
+    }
 
     // /**
     //  * @return MgUsers[] Returns an array of MgUsers objects

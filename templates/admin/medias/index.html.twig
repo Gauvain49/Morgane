@@ -1,0 +1,137 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Médiathèque{% endblock %}
+{% block stylesheets %}
+	<link rel="stylesheet" type="text/css" href="{{ asset('admin/css/fileuploader.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+	<h4 class="page-title">Médiathèque</h4>
+	<ul class="breadcrumbs">
+		<li class="nav-home">
+			<a href="{{ path('dashboard') }}">
+				<i class="flaticon-home"></i>
+			</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			Médiathèque
+		</li>
+	</ul>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h4 class="card-title">Médiathèque</h4>
+				<form name="posts_images" method="post" id="file-uploader">
+					<div class="row d-flex justify-content-end align-items-end mb-2">
+						<div class="col-md-10">
+							<input type="file" name="image" id="image" multiple>
+						</div>
+						<div class="col-md-2">
+						    <button type="submit" class="btn btn-primary">Transférer</button>
+						</div>
+					</div>
+				</form>
+				<noscript>          
+				<p>Veuillez activer JavaScript pour pouvoir charger des fichiers.</p>
+				<!-- or put a simple form for upload here -->
+				</noscript>
+				<div id="loadBar"></div>
+			</div>
+			<div class="card-body">
+				{% if medias|length > 0 %}
+					<div class="row">
+					{% for media in medias %}
+						{% if media.mimeType == 'image/jpeg' or media.mimeType == 'image/png' %}
+						<div class="col-2">
+							<div class="card">
+								{# <img class="card-img-top" src="{{ media.filename | imagine_filter('thumb') }}">#}
+								<img class="card-img-top" src="{{ asset('uploads/medias/thumb/') ~ media.filename }}">
+								<div class="card-body mb-0 pb-0">
+									<p class="card-text">
+										{% for content in media.contents %}
+										{% if content.lang.id == 1 %}
+											{{ content.title }}
+										{% endif %}
+										{% endfor %}
+									</p>
+								</div>
+								<div class="d-flex justify-content-end align-items-center m-0 p-0">
+                                    <a href="{# path('medias-edit', {'id': media.id}) #}" class="card-link" style="font-size: 20px;"><i class="la la-edit"></i></a>
+                                    {{ include('admin/medias/_delete_form.html.twig') }}
+                                </div>
+							</div>
+						</div>
+						{% endif %}
+					{% endfor %}
+					</div>
+				{% else %}
+					<p>Aucun média ajouté.</p>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block javascripts %}
+<script src="{{ asset('admin/js/fileuploader.js') }}"></script>
+<script type="text/javascript">
+	/**
+	* SCRIPT D'UPLOAD DE FICHIER
+	**/
+	$(document).ready(function(){
+		var uploader = new qq.FileUploader({
+			 // pass the dom node (ex. $(selector)[0] for jQuery users)
+		    element: document.getElementById('file-uploader'),
+		    // path to server-side upload script
+		    action: "{{ path('medias_upload') }}",
+		    // additional data to send, name-value pairs
+		    params: {
+		    	type: 'media',
+		    },
+			    // validation    
+		    // ex. ['jpg', 'jpeg', 'png', 'gif'] or []
+		    allowedExtensions: ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'xls', 'xlsx'],        
+		    // each file size limit in bytes
+		    // this option isn't supported in all browsers
+		    sizeLimit: 0, // max size   
+		    minSizeLimit: 0, // min size
+	    	abortOnFailure: true, // Fail all files if one doesn't meet the criteria
+			    // set to true to output server response to console
+		    debug: true,
+			    // events         
+		    // you can return false to abort submit
+		    onSubmit: function(id, fileName){
+		    	//$("#fileName").text(fileName);
+		    },
+		    onProgress: function(id, fileName, loaded, total){
+		    	var pourcent = Math.ceil((100/total) * loaded);
+		    	$(".qq-progress-bar").css({'width' : pourcent + "%"}).text(pourcent + "%");
+		    },
+		    onComplete: function(id, fileName, responseJSON){
+		    	console.log(responseJSON.success);
+		    	//console.log(responseJSON);
+		    	if(responseJSON.success == true) {
+		    		window.location.reload();
+		    	}
+		    },
+		    onCancel: function(id, fileName){},
+		    onError: function(id, fileName, xhr){},
+
+		    messages: {
+	            typeError: "Le(s) fichier(s) que vous avez sélectionné ont un type incorrect. Seuls les fichiers {extensions} sont autorisés.",
+	            sizeError: "{file} est trop lourd, la taille maximum est {sizeLimit}.",
+	            minSizeError: "{file} est trop léger, la taille minimum est {minSizeLimit}.",
+	            emptyError: "{file} est vide, veuillez choisir un autre fichier.",
+	            onLeave: "Les fichiers sont téléchargés, si vous quittez maintenant le transfert sera annulé."
+	        },
+		    showMessage: function(message){ alert(message); }     
+		});
+	});
+</script>
+{% endblock %}

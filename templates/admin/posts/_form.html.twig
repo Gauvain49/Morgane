@@ -1,0 +1,25 @@
+{{ form_start(form) }}
+<div class="row">
+	<div class="col-md-8">
+		{{ form_row(form.contents) }}
+		{% if role == 'page' %}
+		{{ form_row(form.parent) }}
+		{% endif %}
+		{% if role == 'post' %}
+		{{ form_row(form.categories) }}
+		{% endif %}
+	</div>
+	<div class="col-md-4 border-left">
+		{{ form_row(form.date_publish) }}
+		{{ form_row(form.date_expire) }}
+		{# form_row(form.dell_password) #}
+		{{ form_row(form.password) }}
+		{{ form_row(form.comment) }}
+	</div>
+</div>
+<div class="col-md-12 row">
+	{{ form_row(form.post_draft) }}
+	{{ form_row(form.post_view) }}
+	{{ form_row(form.post_publish) }}
+</div>
+{{ form_end(form) }}

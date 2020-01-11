@@ -1,0 +1,153 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion du menu{% endblock %}
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('admin/jquery-ui/jquery-ui.css') }}">
+<style type="text/css">
+	#list_menu {
+		list-style-type: none;
+	}
+	#list_menu li.ui-state-default {
+		margin: 10px 0;
+		padding: 10px;
+		color: #666;
+		border-radius: 3px;
+		width: 33%;
+		cursor: move;
+	}
+	.ui-state-highlight {
+		margin: 10px 0;
+		padding: 20px;
+		border-radius: 3px;
+		height: 25px;
+		width: 33%;
+	}
+	.retourParent, .versEnfants {
+		display: block;
+		width: 40px;
+		padding: 0;
+	}
+	.retourParent a, .versEnfants a {
+		display: block;
+		width: 25px;
+		height: 23px;
+		background-color: #fff;
+		border-radius: 50%;
+		border: solid 1px #ccc;
+		text-align: center;
+		padding: 0 0 2px 0;
+	}
+	.versEnfants {
+		float: right;
+	}
+	.retourParent {
+		float: left;
+		margin-right: 5px;
+	} */
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <h4 class="page-title">Gestion du menu</h4>
+    <ul class="breadcrumbs">
+        <li class="nav-home">
+            <a href="{{ path('dashboard') }}">
+                <i class="flaticon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow"></i>
+        </li>
+		<li class="nav-item">
+			Contenus
+		</li>
+        <li class="separator">
+            <i class="flaticon-right-arrow"></i>
+        </li>
+		<li class="nav-item">
+			<a href="{{ path('posts_index', {'role' : 'page'})}}">Pages du site</a>
+		</li>
+		<li class="separator">
+			<i class="flaticon-right-arrow"></i>
+		</li>
+		<li class="nav-item">
+			Gestion du menu</a>
+		</li>
+    </ul>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<div class="card-headrow">
+					<h4 class="card-title">Gestion du menu</h4>
+					<a href="{{ path('posts_new', {'role' : 'page'}) }}" class="btn btn-info font-weight-bold"><span class="btn-label"><i class="flaticon-plus"></i></span> Ajouter une page</a>					
+				</div>
+			</div>
+			<div class="card-body">
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item active" aria-current="page">
+							{% if breadcrumb|length > 0 %}
+							<a href="{{ path('posts_position') }}">Racine</a>
+							{% else %}
+							Racine
+							{% endif %}
+						</li>
+						{% for k, v in breadcrumb %}
+							{% if k != parent %}
+							<li class="breadcrumb-item"><a href="{{ path('post-position', {'parent': k}) }}">{{ v }}</a></li>
+							{% else %}
+							<li class="breadcrumb-item active" aria-current="page">{{ v }}</li>
+							{% endif %}
+						{% endfor %}
+					</ol>
+				</nav>
+				<form action="" id="gestion_menu" method="post" class="gestionDatas shadow--2">
+					<p><small class="form-text text-muted">Faites glisser une page vers le haut ou le bas avec votre souris pour lui donner la position souhaitée dans le menu.</small></p>
+					<ul id="list_menu">
+						{% for post in posts %}
+							{% set title = '' %}
+							{% for lang in post.contents %}
+								{% if lang.lang.id == 1 %}
+								{% set title = lang.title %}
+								{% endif %}
+							{% endfor %}
+							<li class="ui-state-default d-flex"><input type="hidden" class="positionInput" name="position[{{ post.id }}]" value="{{ post.position }}"><a href="{{ path('posts_edit', {'id': post.id}) }}"><i class="la la-pencil"></i>&nbsp;</a> {{ title }}{% if childrens[post.id] > 0 %}<a href="{{ path('posts_position', {'parent': post.id}) }}" title="{{ childrens[post.id] }} enfant{% if childrens[post.id] > 0 %}s{% endif %}" class="badge badge-count text-right">{{ childrens[post.id] }} >{% endif %}</a></li>
+						{% endfor %}
+					</form>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+{% block javascripts %}
+<script>
+	$( function() {
+	    $( "#list_menu" ).sortable({
+	      	placeholder: "ui-state-highlight",
+			update: function(event, ui){
+				var list = ui.item.parent("ul");
+				var pos = 0;
+				$(list.find("li")).each(function(){
+					pos++;
+					$(this).find("input.positionInput").val(pos);
+				});
+		    	$.ajax({type:"POST", data:$("#gestion_menu").serialize(), url:"{{ path('posts_update_position')}}",
+		    		success: function(data){
+		    			$("#post").html(data);
+		    		},
+		    		error: function() {
+		    			$("#post").html('Une erreur');
+		    		}
+		    	});
+	    		return true;
+			}
+		});
+	    $( "#list_menu" ).disableSelection();
+	});
+</script>
+{% endblock %}

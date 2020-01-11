@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+{% block title %}Vous n'avez pas accès à cette page.{% endblock %}
+	{% block main %}
+	<!-- Start Bradcaump area -->
+	<div class="ht__bradcaump__area bg-image--6">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="bradcaump__inner text-center">
+						<h2 class="bradcaump-title">404 - Page non trouvée !</h2>
+						<!-- <nav class="bradcaump-content">
+							<a href="#" class="breadcrumb_item"></a>
+							<span class="brd-separator">/</span>
+							<span class="breadcrumb_item active">My Account</span>
+						</nav> -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="cart-main-area section-padding--lg bg--white">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 col-sm-12 ol-lg-12">
+					<h1>Vous n'avez pas accès à cette partie du site !</h1>
+					<p>Cette page contient des ressources accessibles en accès privé.<p>
+					<a href="{{ path('main') }}" class="btn btn-primary">Retour à l'accueil</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endblock %}

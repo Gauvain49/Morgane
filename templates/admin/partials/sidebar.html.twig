@@ -84,7 +84,7 @@
 									<p>Clients</p>
 									<span class="caret"></span>
 								</a>
-								<div class="collapse" {% if NavCustomerOpen is defined %}show{% endif %} id="clients">
+								<div class="collapse {% if NavCustomerOpen is defined %}show{% endif %}" id="clients">
 									<ul class="nav nav-collapse">
 										<li>
 											<a href="{{ path('customers_index') }}">
@@ -123,20 +123,20 @@
 									<p>Pages du site</p>
 									<span class="caret"></span>
 								</a>
-								<div class="collapse" id="page">
+								<div class="collapse {% if NavContentPageOpen is defined %}show{% endif %}" id="page">
 									<ul class="nav nav-collapse">
 										<li>
-											<a href="{# path('post-index', {'role' : 'page'}) #}">
+											<a href="{{ path('posts_index', {'role' : 'page'}) }}">
 												<span class="sub-item">Liste des pages</span>
 											</a>
 										</li>
 										<li>
-											<a href="{# path('post-new', {'role' : 'page'}) #}">
+											<a href="{{ path('posts_new', {'role' : 'page'}) }}">
 												<span class="sub-item">Ajouter une page</span>
 											</a>
 										</li>
 										<li>
-											<a href="{# path('post-position') #}">
+											<a href="{{ path('posts_position') }}">
 												<span class="sub-item">Gestion du menu</span>
 											</a>
 										</li>
@@ -144,7 +144,7 @@
 								</div>
 							</li>
 							<li class="nav-item">
-								<a href="{# path('medias-list') #}">
+								<a href="{{ path('medias_index') }}">
 									<i class="la la-photo"></i>
 									<p>Médiathèque</p>
 								</a>
@@ -155,25 +155,25 @@
 									<p>Articles</p>
 									<span class="caret"></span>
 								</a>
-								<div class="collapse" id="posts">
+								<div class="collapse {% if NavContentPostOpen is defined %}show{% endif %}" id="posts">
 									<ul class="nav nav-collapse">
 										<li>
 											<span>
-												<a href="{# path('post-index', {'role' : 'post'}) #}">
+												<a href="{{ path('posts_index', {'role' : 'post'}) }}">
 													<span class="sub-item">Liste des articles</span>
 												</a>
 											</span>
 										</li>
 										<li>
 											<span>
-												<a href="{# path('post-new', {'role' : 'post'}) #}">
+												<a href="{{ path('posts_new', {'role' : 'post'}) }}">
 													<span class="sub-item">Ajouter un article</span>
 												</a>
 											</span>
 										</li>
 										<li>
 											<span>
-												<a href="{# path('category-list', {'type': 'post'}) #}">
+												<a href="{{ path('categories_index', {'type': 'post'}) }}">
 													<span class="sub-item">Catégories d'articles</span>
 												</a>
 											</span>

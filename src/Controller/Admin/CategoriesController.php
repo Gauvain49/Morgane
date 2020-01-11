@@ -23,8 +23,9 @@ class CategoriesController extends AbstractController
      */
     public function index($type, $parent, MgCategoriesRepository $categoriesRepository, MgCategoryLangRepository $repoLang, TreeStructure $tree): Response
     {
+        $entityManager = $this->getDoctrine()->getManager();
         $categories = $categoriesRepository->findBy(['parent' => $parent, 'type' => $type], ['position' => 'ASC']);
-        $treeCategories = $categoriesRepository->findBy(['type' => $type], ['position' => 'ASC']);
+        //$treeCategories = $categoriesRepository->findBy(['type' => $type], ['tree_structure' => 'ASC']);
         $children = [];//Tableau pour compter les enfants
         $array = [];//Tableau pour créer l'arborescence
         $filAriane = [];//Tableau du fil d'ariane
@@ -36,7 +37,7 @@ class CategoriesController extends AbstractController
         }
 
         //Création de l'arborescence parents/enfants
-        foreach ($treeCategories as $category) {
+        /*foreach ($treeCategories as $category) {
             $enfant = $categoriesRepository->findOneById($category->getParent());
             $principal = $categoriesRepository->findOneById($category->getId());
             $lang = $repoLang->findOneByCat(array('cat' => $principal));
@@ -46,7 +47,7 @@ class CategoriesController extends AbstractController
                 'nom' => $lang->getName()
             ];
         }
-        $arborescence = $tree->treeStructure(1, 0, $array, '—');
+        $arborescence = $tree->treeStructure(1, 0, $array, '—');*/
 
         //Création du fil d'ariane
         $parentID = $parent;
@@ -61,13 +62,41 @@ class CategoriesController extends AbstractController
         }
         $filAriane = array_reverse($filAriane, true);
 
+        if ($type == 'product') {
+            $NavContentOpen = 'NavCatalogOpen';
+        } else {
+            $NavContentOpen = 'NavContentPostOpen';
+        }
+
+/*foreach ($mg_categories as $key => $value) {
+$c = new MgCategories();
+    $b = $categoriesRepository->find($value['parent_id']);
+    $c->setParent($b);
+    $c->setPosition($value['position']);
+    $c->setActive($value['active']);
+    $c->setForceDisplay($value['force_display']);
+    $c->setType($value['type']);
+    $d = new \Datetime($value['date_add']);
+    $c->setDateAdd($d);
+    $da = !is_null($value['date_up']) ? new \Datetime($value['date_up']) : null;
+    $c->setDateUp($da);
+    $c->setLevel($value['level']);
+    $entityManager->persist($c);
+}
+    $entityManager->flush();*/
+
+
+        $treeStructure = $categoriesRepository->fetchByTreeStructure();
+
         return $this->render('admin/categories/index.html.twig', [
             'categories' => $categories,
             'type' => $type,
             'children' => $children,
-            'arborescence' => $arborescence,
+            //'arborescence' => $arborescence,
             'filAriane' => $filAriane,
-            'parent' => $parent
+            'parent' => $parent,
+            'treeStructure' => $treeStructure,
+            $NavContentOpen => true
         ]);
     }
 
@@ -99,32 +128,57 @@ class CategoriesController extends AbstractController
         foreach ($arborescence as $key => $value) {
             $checkbox[$key] = $repoCat->find($value);
         }
+        //Variable pour savoir s'il faudra mettre à jour plusieur position après cet enregistrement.
+        $updatePositionCascad = false;
 
         $form = $this->createForm(CategoriesType::class, $category, ['checkbox' => $checkbox]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             //$task = $form->getData();
+            //dd($task->getParent()->getId());
             $entityManager = $this->getDoctrine()->getManager();
+            $level = $repoCat->setLevel($category->getParent());
+            $position = $repoCat->setPosition($form->getData()->getParent(), $type);
+            if ($form->getData()->getParent()->getId() != 1) {
+                //Il faudra éventuellement mettre à jour la position de plusieurs catégories
+                $updatePositionCascad = true;
+                $fetchCategories = $repoCat->setPositionCascad($position, null, $type);
+                foreach ($fetchCategories as $updatePosition) {
+                    $newPosition = $updatePosition->getPosition() + 1;
+                    $updatePosition->setPosition($newPosition);
+                    $updatePosition->setTreeStructure($newPosition);
+                    $entityManager->persist($updatePosition);
+                }
+            }
             foreach ($category->getContents() as $content) {
                 $content->setCat($category);
                 $entityManager->persist($content);
             }
-            if (is_null($form->getData()->getPosition())) {
-                $category->setPosition($repoCat->setPosition($category->getParent()));
-            }
+            $category->setPosition($position);
             $category->setType($type);
-            $category->setLevel($repoCat->setLevel($category->getParent()));
+            $category->setLevel($level);
             $entityManager->persist($category);
             $entityManager->flush();
 
+            $this->addFlash(
+                'success', 'Création réussie !'
+            );
+
             return $this->redirectToRoute('categories_index', ['type' => $type]);
+        }
+
+        if ($type == 'product') {
+            $NavContentOpen = 'NavCatalogOpen';
+        } else {
+            $NavContentOpen = 'NavContentPostOpen';
         }
 
         return $this->render('admin/categories/new.html.twig', [
             'category' => $category,
             'form' => $form->createView(),
-            'type' => $type
+            'type' => $type,
+            $NavContentOpen => true
         ]);
     }
 
@@ -135,8 +189,16 @@ class CategoriesController extends AbstractController
     {
         //Création de l'arborescence pour améliorer
         //la présentation de choix de catégorie parente
+        $type = $category->getType();
         $categories = $repoCat->findByType($category->getType());
+        $positionOrigine = $category->getPosition();
+        $parentOrigine = $category->getParent();
+        $parent = $category->getParent()->getId();
         $array = [];
+
+        //$machin = $repoCat->fetchChildren($category->getId(), $category->getType());
+        //$chose = $repoCat->getChildren();
+        //dump($chose);
         foreach ($categories as $cat) {
             $enfant = $repoCat->findOneById($cat->getParent());
             $principal = $repoCat->findOneById($cat->getId());
@@ -155,18 +217,97 @@ class CategoriesController extends AbstractController
         }
         $form = $this->createForm(CategoriesType::class, $category, ['checkbox' => $checkbox]);
         $form->handleRequest($request);
+        //Variable pour savoir s'il faudra mettre à jour plusieur position après cet enregistrement.
+        $updatePositionCascad = false;
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            
+            //Si le parent a changé, il faudra redéfinir des positions
+            if ($form->getData()->getParent()->getId() != $parent) {
+                $updatePositionCascad = true;
+                // mise à jour du niveau
+                $level = $repoCat->setLevel($category->getParent());
+                $category->setLevel($level);
+            }
+            foreach ($category->getContents() as $content) {
+                $content->setCat($category);
+                $entityManager->persist($content);
+            }
+            //On remonte d'un niveau toutes les catégories enfants en leur attribuant l'ex parent de la catégorie actuel
+            $catChildrenSameLevel = $repoCat->findBy(['parent' => $category->getId()]);
+            foreach ($catChildrenSameLevel as $catChildSameLevel) {
+                $catChildSameLevel->setParent($parentOrigine);
+                $newLevel = $repoCat->setLevel($parentOrigine);
+                $catChildSameLevel->setLevel($newLevel);
+                $entityManager->persist($catChildSameLevel);
+            }
+            if ($updatePositionCascad) {
+                $categories = $repoCat->findByType($category->getType());
+                $array = [];
+                foreach ($categories as $cat) {
+                    $enfant = $repoCat->findOneById($cat->getParent());
+                    $principal = $repoCat->findOneById($cat->getId());
+                    $lang = $repoLang->findOneByCat(array('cat' => $principal));
+                    $array[] = [
+                        'parent' => $enfant->getId(),
+                        'id' => $cat->getId(),
+                        'nom' => $lang->getName()
+                    ];
+                }
+                $arborescence = $tree->treeStructure(1, 0, $array, '—');
+                $position = 1;
+                foreach ($arborescence as $value) {
+                    $updateCatCascad = $repoCat->find($value);
+                    $updateCatCascad->setPosition($position);
+                    $entityManager->persist($updateCatCascad);
+                    $position++;
+                }
+            }
+            $entityManager->persist($category);
+            $entityManager->flush();
 
-            return $this->redirectToRoute('categories_edit', ['id' => $category->getId()]);
+            $this->addFlash(
+                'success', 'Modification réussie !'
+            );
+
+            return $this->redirectToRoute('categories_index', ['type' => $type]);
+        }
+
+        if ($type == 'product') {
+            $NavContentOpen = 'NavCatalogOpen';
+        } else {
+            $NavContentOpen = 'NavContentPostOpen';
         }
 
         return $this->render('admin/categories/edit.html.twig', [
             'category' => $category,
             'form' => $form->createView(),
-            'type' => $category->getType()
+            'type' => $category->getType(),
+            $NavContentOpen => true
         ]);
+    }
+
+    /**
+     * @Route("/{id}/update-position/{update}", name="categories_position_edit", methods={"GET","POST"})
+     */
+    public function updatePosition(Request $request, $update, MgCategories $category, MgCategoriesRepository $repoCat)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $parent = $category->getParent()->getId();
+        //On récupère la position actuel de la catégorie
+        if ($update == 'down' || $update == 'up') {
+            $updatePosition = $repoCat->switchPosition($category, $update);
+            foreach ($updatePosition as $id => $newPosition) {
+                $upCategory = $repoCat->find($id);
+                $upCategory->setPosition($newPosition);
+                $entityManager->persist($upCategory);
+            }
+            $entityManager->flush();
+
+        }
+
+        return $this->redirectToRoute('categories_index', ['type' => $category->getType(), 'parent' => $parent]);
     }
 
     /**
@@ -181,9 +322,19 @@ class CategoriesController extends AbstractController
             $children = $repo->findByParent($category);
             foreach ($children as $child) {
                 $child->setParent($category->getParent());
+                $newLevel = $repo->setLevel($parentOrigine);
+                $child->setLevel($newLevel);
                 $entityManager->persist($child);
-                $entityManager->flush();
             }
+            //On remonte d'un cran toutes les positions supérieures
+            $upperPosition = $repo->getPositionUpper($category->getPosition(), $category->getType());
+            foreach ($upperPosition as $oneCategory) {
+                if ($oneCategory->getId() != $category->getId()) {
+                    $newPosition = $oneCategory->getPosition() - 1;
+                    $oneCategory->setPosition($newPosition);
+                    $entityManager->persist($oneCategory);
+                }
+            }            
             $entityManager->remove($category);
             $entityManager->flush();
         }
