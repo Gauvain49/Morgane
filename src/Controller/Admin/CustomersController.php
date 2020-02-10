@@ -3,6 +3,9 @@
 namespace App\Controller\Admin;
 
 use App\Entity\MgCustomers;
+use App\Entity\MgUsers;
+use App\Form\CustomerUserAdminType;
+use App\Form\CustomerUserType;
 use App\Form\CustomersType;
 use App\Repository\MgCustomersRepository;
 use App\Repository\MgUsersRepository;
@@ -21,9 +24,9 @@ class CustomersController extends AbstractController
      */
     public function index(MgUsersRepository $usersRepository, MgCustomersRepository $customersRepository): Response
     {
-        $customers = $usersRepository->getUsersByRoles('VISITOR');
+        $customers = $usersRepository->getUsersByRoles('ROLE_VISITOR');
         return $this->render('admin/customers/index.html.twig', [
-            'mg_customers' => $customers,
+            'users' => $customers,
             'NavCustomerOpen' => true
         ]);
     }
@@ -55,9 +58,9 @@ class CustomersController extends AbstractController
     /**
      * @Route("/{id}/edit", name="edit", methods={"GET","POST"})
      */
-    public function edit(Request $request, MgCustomers $customer): Response
+    public function edit(Request $request, MgUsers $user): Response
     {
-        $form = $this->createForm(CustomersType::class, $customer);
+        $form = $this->createForm(CustomerUserAdminType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -67,7 +70,7 @@ class CustomersController extends AbstractController
         }
 
         return $this->render('admin/customers/edit.html.twig', [
-            'mg_customer' => $customer,
+            'user' => $user,
             'form' => $form->createView(),
             'NavCustomerOpen' => true
         ]);

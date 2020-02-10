@@ -1,0 +1,31 @@
+<div class="card">
+	<div class="card-body">
+		{{ form_start(form) }}
+		{{ form_row(form.gender)}}
+		{{ form_row(form.address_firstname)}}
+		{{ form_row(form.address_lastname)}}
+		{{ form_row(form.address_compagny)}}
+		{{ form_row(form.address)}}
+		{{ form_row(form.zipcode)}}
+		{{ form_row(form.town)}}
+		{{ form_row(form.country)}}
+		<p class="text-muted">Renseignez au moins un numéro de téléphone pour faciliter votre livraison.</p>
+		{{ form_row(form.phone)}}
+		{{ form_row(form.mobile)}}
+		{% if slug == false %}
+		<div class="form-check text-muted">
+			<label class="form-check-label">
+				<input type="checkbox" name="sameAddress" id="sameAddress">
+				<span class="form-check-sign">Mon adresse de livraison est différente.</span>
+			</label>
+		</div>
+		{% endif %}
+	</div>
+	<div class="card-footer p-4">
+		<p class="card-text">
+			<input type="submit" class="btn btn-primary" value="Enregistrer">
+		</p>
+	</div>
+</div>
+
+{{ form_end(form) }}

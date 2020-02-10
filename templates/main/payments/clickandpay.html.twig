@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Votre panier d'achat{% endblock %}
+{% block JS %}
+<!-- Javascript library. Should be loaded in head section -->
+<script 
+	src="{{ endpoint }}/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js"
+	kr-public-key="{{ publicKey }}"
+	kr-post-url-success="{{ path(postUrlSuccess) }}">
+</script>
+<!-- theme and plugins. should be loaded after the javascript library -->
+  <!-- not mandatory but helps to have a nice payment form out of the box -->
+  <link rel="stylesheet" href="{{ endpoint }}/static/js/krypton-client/V4.0/ext/classic-reset.css">
+  <script src="{{ endpoint }}/static/js/krypton-client/V4.0/ext/classic.js"></script>
+{% endblock %}
+{% block main %}
+	{% for label, messages in app.flashes %}
+		{% for message in messages %}
+			<div class="alert alert-{{label}}">
+				{{message|raw}}
+			</div>
+		{% endfor %}
+	{% endfor %}
+    <div class="formClicAndPay">
+        <h1>Paiement de votre commande</h1>
+        <span><img src="{{ asset('img/payments/clickandpay.png') }}" alt="clicandpay"></span>
+        <!-- payment form -->
+        <div class="kr-embedded" kr-form-token="{{ formToken }}">
+
+            <!-- payment form fields -->
+            <div class="kr-pan"></div>
+            <div class="kr-expiry"></div>
+            <div class="kr-security-code"></div>  
+
+            <!-- payment form submit button -->
+            <button class="kr-payment-button"></button>
+
+            <!-- error zone -->
+            <div class="kr-form-error"></div>
+        </div>        
+    </div>
+
+  <div class="securityClicandPay">
+      <h2>Sécurité</h2>
+      <p>Les champs de saisies pour effectuer votre paiement sont entièrement sécurisés par la plateforme <a href="https://clicandpay.groupecdn.fr/vads-payment/">Clic&Pay</a>, agréée PCI DSS. A aucun moment, vos coordonnées bancaires n'apparaissent en clair ou sont visibles par le site.</p>
+  </div>
+{% endblock %}

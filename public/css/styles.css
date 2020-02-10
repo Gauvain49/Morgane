@@ -35,7 +35,7 @@ body {
 	left: 0;
 	width: 100%;
 	background: #494849;
-	height: 23px;
+	height: 47px;
 	border-bottom: solid 1px #666;
 }
 .listeSelection {
@@ -142,14 +142,14 @@ header input[type='search'] {
 	border: none;
 	border-left: solid 1px #ccc;
 }
-header input[type='submit'] {
+header button {
 	color: #FFF;
 	background: #000;
 	border: none;
 	height: 40px;
 	width: 100px;
 }
-header input[type='submit']:hover {
+header button:hover {
 	background-color: #f00;
 }
 /*=========================================
@@ -187,7 +187,7 @@ header input[type='submit']:hover {
 	padding: 0;
 }
 .header-container nav ul.menuPrincipal a.lienFacebook {
-	margin-left: 70px;
+	/* margin-left: 70px; */
 }
 .header-container nav ul.menuPrincipal a:link, .header-container nav ul.menuPrincipal a:visited {
 	color: #333;
@@ -852,4 +852,200 @@ footer .donneesFooter a:link, footer .donneesFooter a:visited {
 footer .donneesFooter a:hover, footer .donneesFooter a:active {
 	color: #eee;
 	text-decoration: underline;
+}
+/**
+ * Panier
+ */
+.product-thumbnail {
+	width: 150px;
+}
+.product-thumbnail img {
+	max-width: 100%;
+}
+/*============================================
+ * Basket
+ *============================================*/
+.contentBasket table {
+	/*display: block;*/
+	width: 100%;
+	/*overflow-x: auto;*/
+	border: 1px solid #e1e1e1;
+	font-size: 14px;
+	line-height: 2em;
+}
+.contentBasket th {
+	background: #f6f6f6;
+	color: #333;
+	border-top: medium none;
+	font-weight: bold;
+	padding: 20px 10px;
+	text-align: center;
+	text-transform: uppercase;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+.contentBasket td {
+	border-top: medium none;
+	border-bottom: solid 1px #eaeaea;
+	border-right: solid 1px #eaeaea;
+	font-size: 13px;
+	padding: 20px 10px;
+	text-align: center;
+	vertical-align: middle;
+}
+.contentBasket td.product-quantity {
+	width: 180px;
+}
+.contentBasket td.product-quantity form {
+	margin: 0;
+}
+.contentBasket td.product-quantity a, .pleaseSubmit a {
+	font-size: 14px;
+	transition: 0.3s;
+	color: #000;
+	text-decoration: none;
+	padding: 3px;
+}
+.contentBasket td.product-quantity a:hover, .pleaseSubmit a:hover {
+	color: #e59285;
+	outline: none;
+}
+.contentBasket td.product-quantity input {
+	background: #e5e5e5 none repeat scroll 0 0;
+	border: medium none;
+	border-radius: 3px;
+	color: #333;
+	font-size: 15px;
+	font-weight: normal;
+	height: 40px;
+	padding: 0 5px 0 10px;
+	width: 40px;
+}
+.totalBasket table {
+	/*display: block;*/
+	margin-top: 20px;
+	width: 50%;
+	/*overflow-x: auto;*/
+	border: 1px solid #e1e1e1;
+	font-size: 14px;
+	line-height: 2em;
+	background: #f6f6f6;
+	float: right;
+}
+.totalBasket th {
+	color: #333;
+	border-top: medium none;
+	padding: 10px 10px;
+	text-align: center;
+	/* text-transform: uppercase; */
+	vertical-align: middle;
+	white-space: nowrap;
+}
+.totalBasket td {
+	color: #333;
+	font-weight: bold;
+	border-top: medium none;
+	/* padding: 20px 10px; */
+	text-align: center;
+	/* text-transform: uppercase; */
+	vertical-align: middle;
+	white-space: nowrap;
+}
+.totalBasket tr.totalCart {
+	font-weight: bold;
+	text-transform: uppercase;
+	background-color: #1679C3;
+}
+.totalBasket tr.totalCart th, .totalBasket tr.totalCart td {
+	color: #fff;
+}
+.pleaseSubmit {
+	/* display: block; */
+	/* width: 100%; */
+	clear: both;
+	margin: 15px 0;
+	padding: 15px;
+	background: #f6f6f6;
+}
+.pleaseSubmit .validCart {
+	display: inline-block;
+	border-radius: 3px;
+	background-color: #1679C3;
+	padding: 10px;
+	transition: 0.3s;
+}
+.pleaseSubmit .validCart:hover {
+	background-color: #135180;
+}
+.pleaseSubmit .validCart a {
+	color: #fff;
+	font-weight: bold;
+}
+.choosePayment {
+	clear: both;
+}
+.choosePayment .moyenPaiement {
+	border-collapse: collapse;
+	margin: 10px auto;
+	background-color: #fff;
+}
+.choosePayment .moyenPaiement tr {
+	margin: 10px auto;
+	border-radius: 5px;
+	border: solid 1px #ccc;
+}
+.choosePayment .moyenPaiement td {
+	padding: 5px;
+	text-align: left;
+	vertical-align: middle;
+}
+.choosePayment .moyenPaiement .moyenPaiementTitre {
+	display: block;
+	font-weight: bold;
+}
+.choosePayment .moyenPaiement .moyenPaiementDescription {
+	color: #666;
+	font-size: .90em;
+}
+.choosePayment .moyenPaiement span.moyenPaiementImg {
+	display: block;width: 100px;
+	margin: 10px;
+	text-align: center;
+}
+.choosePayment .moyenPaiement span.moyenPaiementImg img {
+	max-width: 100%;
+}
+.choosePayment .moyenPaiement .valideCommande a {
+	display: block;
+	background-color: #1679C3;
+	padding: 5px;
+	border-radius: 5px;
+	color: #fff;
+	text-align: center;
+	font-size: 0.8em;
+	text-decoration: none;
+	transition: 0.3s;
+}
+.choosePayment .moyenPaiement .valideCommande a:hover {
+	background-color: #135180;
+}
+
+/*============================================
+ * Payment ClicAndPay
+ *============================================*/
+ .formClicAndPay {
+ }
+ .securityClicandPay {
+ 	padding: 10px;
+ 	border: solid 1px #888888;
+ }
+.securityClicandPay h2 {
+	background: transparent url('../img/cadenas.JPG') left center no-repeat;
+	line-height: 32px;
+	padding-left: 40px;
+	text-transform: uppercase;
+}
+.securityClicandPay p {
+	color: #747474;
+	margin: 15px;
 }

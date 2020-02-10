@@ -1,0 +1,123 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Mode de paiements{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <h4 class="page-title">Gestion des modes de paiements</h4>
+    <ul class="breadcrumbs">
+        <li class="nav-home">
+            <a href="{{ path('dashboard') }}">
+                <i class="flaticon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow"></i>
+        </li>
+        <li class="nav-item">
+            Modes de paiements
+        </li>
+    </ul>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <h4 class="card-title">Gestion des modes de paiements</h4>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table data-order='[[ 0, "desc" ]]' id="basic-datatables" class="display table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Description</th>
+                                <th>Position</th>
+                                <th>Par défaut</th>
+                                <th>Actif</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for payment in payments %}
+                            <tr>
+                                <td>{{ payment.title }}</td>
+                                <td>{{ payment.description }}</td>
+                                <td>{{ payment.position }}</td>
+                                <td>
+                                    {% if payment.paymentDefault == 1 %}
+                                        <span class="badge badge-success"><i class="la la-check"></i></span>
+                                    {% else %}
+                                        <a href="">
+                                            <span class="badge badge-danger">
+                                                <i class="la la-close"></i>
+                                            </span>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ path('payment_display', {'id': payment.id}) }}" class="jsDisplay">
+                                    {% if payment.actif == 1 %}
+                                        <span class="badge badge-success"><i class="la la-check"></i></span>
+                                    {% else %}
+                                        <span class="badge badge-danger">
+                                                <i class="la la-close"></i>
+                                            </span>
+                                    {% endif %}
+                                    </a>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-inline-flex">
+                                        <div class="p-1">
+                                            <a href="{{ path(payment.linkSetting) }}" class="btn btn-primary" title="Configurer"><i class="btn-label fas fa-pen" style="font-size: 16px;"></i></a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="7">Aucun auteur dans la base de données</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    function onClickBtnDisplay(event){
+        event.preventDefault();
+
+        const url = this.href;
+        const color = this.querySelector('span');
+        const icone = this.querySelector('i');
+        const iconeClass = icone.className;
+
+        axios.get(url).then(function(response) {
+            if(icone.classList.contains('la-close')) {
+                icone.classList.replace('la-close', 'la-check');
+                color.classList.replace('badge-danger', 'badge-success');
+                //icone.style.color = '#009A07';
+            } else {
+                icone.classList.replace('la-check', 'la-close');
+                color.classList.replace('badge-success', 'badge-danger');
+                //icone.style.color = '#CF0000';
+            }
+        }).catch(function(error) {
+            if(error.response.status === 403) {
+                window.alert("Une erreur s'est produite !")
+            }
+        });
+    }
+    document.querySelectorAll('a.jsDisplay').forEach(function(link){
+        link.addEventListener('click', onClickBtnDisplay);
+    });
+</script>
+{% endblock %}

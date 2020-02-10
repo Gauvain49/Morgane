@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 	<!-- Favicons -->
-	<link rel="shortcut icon" href="{{ asset('admin/assets/img/favicon.ico') }}" type="image/x-icon">
+	<link rel="shortcut icon" href="{{ asset('admin/img/favicon.ico') }}" type="image/x-icon">
 	<link rel="apple-touch-icon" href="images/icon.png">
 
 	{% block fonts %}
@@ -90,13 +90,13 @@
 		            $texte = 'Retour sur Morgane';
 		        }
 		    #}
-		      <p><a href="{{ path('dashboard') }}" style="text-decoration: none;"><?php echo $texte; ?>Retour sur Morgane</a></p>
+		      <p><a href="{{ path('dashboard') }}" style="text-decoration: none;">Retour sur Morgane</a></p>
 		    </div>
 		    <div id="utilisateurConnecte">
 		        <ul>
 		            <li class="salutations">Bienvenue {{ app.user.firstname }}
 		                <ul>
-		                    <li><a href="../admin/user-edit/<?php echo $userAuth->id_user(); ?>">Mon Compte</a></li>
+		                    <li><a href="">Mon Compte</a></li>
 		                </ul>
 		            </li>
 		            <li class="deconnexion"><a href="{{ path('admin_logout') }}">Se déconnecter</a></li>
@@ -112,14 +112,21 @@
 			<h2>{{ appService.params.title }}</h2>
 			<p class="headerTel">107 avenue Maginot - 37100 TOURS - <span>☎ 02 47 54 42 00</span></p>
 			<h3 class="headerDescription">Vente - Location - Installation - Prestations</h3>
-			<form name="form1" method="post" action="recherche.php">
+			<!--<form name="form1" method="post" action="recherche.php">
 				<input type="search" name="search" id="search" placeholder="Rechercher un produit...">
 				<input name="submitSearch" type="submit" id="submitSearch" value="Rechercher">
-			</form>
+			</form>-->
+			{{ render(controller('App\\Controller\\SearchController::search')) }}
 		</header>
 		<div class="topHeader">
 			<div class="listeSelection">
-				<p><a href="selection.php"><img src="{{ asset('images/icon-selection.png') }}" width="18" height="17" alt="">{# if cartService.totalQuantity > 1 %}Ma sélection de {{ cartService.totalQuantity }} produit{% if cartService.totalQuantity > 1 %}s{% endif %}{% else %}Ma sélection est vide{% endif #}</a></p>
+				<p>
+				{% if app.user %}
+					Bienvenue {{ app.user.firstname }} | <a href="{{ path('account_logout') }}">Déconnexion</a>
+				{% else %}
+					<a href="{{ path('account_login') }}"><img src="{{ asset('images/icon-login.png') }}" alt=""></a>
+				{% endif %}
+				<a href="{{ path('cart') }}"><img src="{{ asset('images/icon-selection.png') }}" width="18" height="17" alt="">Panier : {% if cartService.totalQuantity > 1 %}{{ cartService.totalQuantity }} produit{% if cartService.totalQuantity > 1 %}s{% endif %}{% else %}0{% endif %}</a></p>
 			</div>
 		</div>
 		{{ render(controller('App\\Controller\\MenusController::displayMenuCat')) }}
@@ -170,7 +177,7 @@
 		</footer>
 	</div>
 </div>
-
+{% block javascripts %}{% endblock %}
 <!--<script>
         var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
         (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];

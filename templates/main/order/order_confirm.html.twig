@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+{% block title %}Merci pour votre commande{% endblock %}
+{% block main %}
+	<!-- Start Bradcaump area -->
+	<div class="cart-main-area section-padding--lg bg--white">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 col-sm-12 ol-lg-12">
+					<div class="card">
+						<div class="card-header">
+							<h2>{{ order.user.firstname }} {{ order.user.lastname }}</h2>
+							<p>Commande n°{{ order.num }} - Mode de paiement : {% for payment in order.orderpayments %}{{ payment.paymentmode.title }}{% endfor %}</p>
+						</div>
+						<div class="contentBasket">
+							{% if nbItems.master > 0 %}
+							<table>
+								<thead>
+									<tr>
+										<th colspan="4">{{ nbItems.master }} article{% if nbItems.master > 1 %}s{% endif %} à expédier</th>
+									</tr>
+								</thead>
+								<tbody>
+								{% for item in order.orderscontents %}
+								{% if item.format != 'downloadable' %}
+								<tr>
+									<td class="product-thumbnail">
+										<span class="imageArea">
+											{% if item.product in images|keys %}
+											<img src="{{ asset('img/p/') ~ images[item.product] }}" alt="{{ item.designation }}">
+											{% else %}
+											<img src="{{ asset('assets/img/p/fr.jpg') }}" alt="{{ item.designation }}">
+											{% endif %}
+										</span>
+									</td>
+									<td scope="row">{{ item.designation }}</td>
+									<td class="text-right" style="max-width: 200px;">Quantité : {{ item.quantity }}</td>
+									<td class="text-right" style="max-width: 200px;">{{ item.totalpricealltaxes|number_format(2, ',', ' ') }} €</td>
+								</tr>
+								{% endif %}
+								{% endfor %}
+								</tbody>
+							</table>
+							{% endif %}
+							{% if nbItems.downloadable > 0 %}
+							<table class="table table-borderless">
+								<thead>
+									<tr>
+										<th colspan="4">{{ nbItems.downloadable }} Ebook{% if nbItems.downloadable > 1 %}s{% endif %} à télécharger<br>
+											<p class="text-muted">Vous pouvez charger les ebooks dans <a href="{{ path('customer-load-numerical') }}">votre compte.</a></p></th>
+									</tr>
+								</thead>
+								<tbody>
+								{% for item in order.mgorderscontents %}
+								{% if item.format == 'downloadable' %}
+								<tr>
+									<td class="picture">
+										<span class="imageArea">
+											{% if images.item.product.id is defined %}
+											<img src="{{ asset('assets/img/p/') ~ images[item.product.id]['cover']|pathProduct ~ images[item.product.id]['cover'] }}_smallsquare.jpg" alt="{{ item.designation }}" class="img-thumbnail" style="width: 90px;">
+											{% else %}
+											<img src="{{ asset('assets/img/p/fr.jpg') }}" alt="{{ item.designation }}" class="img-thumbnail" style="width: 90px;">
+											{% endif %}
+										</span>
+									</td>
+									<td scope="row">{{ item.designation }}</td>
+									<td class="text-right" style="max-width: 200px;">Quantité : {{ item.quantity }}</td>
+									<td class="text-right" style="max-width: 200px;">{{ item.totalpricealltaxes|number_format(2, ',', ' ') }} €</td>
+								</tr>
+								{% endif %}
+								{% endfor %}
+								</tbody>
+							</table>
+							{% endif %}
+						</div>
+						<div class="totalBasket">
+							<table>
+								<tr>
+									<td class="text-right" style="border: 0;"><strong>Total de vos achats</strong></td>
+									<td class="text-right" style="border: 0;"><strong>{{ order.totalpricealltaxes|number_format(2, ',', ' ') }} €</strong></td>
+								</tr>
+								<tr>
+									<td class="text-right" style="border: 0;"><strong>Frais de livraison</strong></td>
+									<td class="text-right" style="border: 0;"><strong>{{ (order.totalshippingprice + order.totalshippingtaxes)|number_format(2, ',', ' ') }} €</strong></td>
+								</tr>
+								<tr class="totalCart">
+									<td class="text-right" style="border: 0;"><strong>Total de votre commande</strong></td>
+									<td class="text-right" style="border: 0;"><strong>{{ (order.totalpricealltaxes + order.totalshippingprice + order.totalshippingtaxes)|number_format(2, ',', ' ') }} €</strong></td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

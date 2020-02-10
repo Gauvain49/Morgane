@@ -108,12 +108,24 @@ class MgUsers implements UserInterface
      */
     private $postsLangs;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\MgGenders", inversedBy="users")
+     */
+    private $gender;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MgOrders", mappedBy="user")
+     */
+    private $orders;
+
     public function __construct()
     {
         $this->productAdds = new ArrayCollection();
         $this->getProductsRevisers = new ArrayCollection();
         $this->posts = new ArrayCollection();
         $this->postsLangs = new ArrayCollection();
+        $this->date_add = new \Datetime();
+        $this->orders = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -411,6 +423,49 @@ class MgUsers implements UserInterface
             // set the owning side to null (unless already changed)
             if ($postsLang->getReviser() === $this) {
                 $postsLang->setReviser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getGender(): ?MgGenders
+    {
+        return $this->gender;
+    }
+
+    public function setGender(?MgGenders $gender): self
+    {
+        $this->gender = $gender;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MgOrders[]
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(MgOrders $order): self
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders[] = $order;
+            $order->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(MgOrders $order): self
+    {
+        if ($this->orders->contains($order)) {
+            $this->orders->removeElement($order);
+            // set the owning side to null (unless already changed)
+            if ($order->getUser() === $this) {
+                $order->setUser(null);
             }
         }
 

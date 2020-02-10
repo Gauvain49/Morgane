@@ -4,9 +4,9 @@
 		{% for menu in categories %}
 			{% include('main/partials/menuCat.html.twig') %}
 		{% endfor %}
-		<li><a href="{# path('partenaires') #}">Partenaires</a></li>
-		<li><a href="{# path('contact', {'slug': 'contact'}) #}" style="border-right: 0">Contact</a></li>
-		<li><a href="https://www.facebook.com/SpotLight-532593600424396/" target="blank" class="lienFacebook"><img src="{{ asset('assets/images/facebook.png') }}"></a></li>
-		<li><a href="https://www.instagram.com/spotlight37100/?hl=fr" target="blank" class="lienInstagram"><img src="{{ asset('assets/images/instagram.png') }}"></a></li>
+		<li><a href="{{ path('page', {'slug' : 'partenaires'}) }}">Partenaires</a></li>
+		<li><a href="{{ path('contact') }}" style="border-right: 0">Contact</a></li>
+		<li><a href="https://www.facebook.com/SpotLight-532593600424396/" target="blank" class="lienFacebook"><img src="{{ asset('images/facebook.png') }}"></a></li>
+		<li><a href="https://www.instagram.com/spotlight37100/?hl=fr" target="blank" class="lienInstagram"><img src="{{ asset('images/instagram.png') }}"></a></li>
 	</ul>
 </nav>

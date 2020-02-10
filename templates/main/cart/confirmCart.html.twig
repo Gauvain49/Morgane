@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Votre panier d'achat{% endblock %}
+
+{% block main %}
+	{% for label, messages in app.flashes %}
+		{% for message in messages %}
+			<div class="alert alert-{{label}}">
+				{{message|raw}}
+			</div>
+		{% endfor %}
+	{% endfor %}
+	{% if cart|length > 0 %}
+	<div class="contentBasket">
+		<h1 style="font-family: 'itc_avant_garde_gothicbook';">Confirmation de votre panier</h1>
+		<table>
+			<thead>
+				<tr class="title-top">
+					<th class="product-thumbnail">Image</th>
+					<th class="product-name">Produit</th>
+					<th class="product-price">Prix</th>
+					<th class="product-quantity">Quantité</th>
+					<th class="product-subtotal">Total</th>
+					<th class="product-remove">Supprimer</th>				
+				</tr>
+			</thead>
+			<tbody>
+				{% for key, item in cart %}
+				<tr>
+					<td class="product-thumbnail">
+						{% if key in images|keys %}
+						<img src="{{ asset('img/p/') ~ images[key] }}" alt="{{ item.title }}">
+						{% else %}
+						<img src="{{ asset('img/p/fr.jpg') }}" alt="{{ item.title }}">
+						{% endif %}
+					</td>
+					<td class="product-name">
+						<strong>{{ item.title }}</strong> {% if item['product'].type != 'downloadable' %}<i>- Format papier</i>{% else %}<i>- Ebook</i>{% endif %}
+					</td>
+					<td class="product-price">
+						{% if item.amount['grossPriceAllTaxes'] != item.amount['priceNetAllTaxes'] %}
+						<span class="price">
+							<span style="text-decoration: line-through; font-size: 0.80em; color: #aaa;">{{ item.amount['grossPriceAllTaxes']|number_format(2, ',', ' ') }} €</span>
+							{{ item.amount['priceNetAllTaxes']|number_format(2, ',', ' ') }} €
+						</span>
+						{% else %}
+							<span class="price">{{ item.amount['priceNetAllTaxes']|number_format(2, ',', ' ') }} €</span>
+						{% endif %}
+					</td>
+					<td class="product-quantity">
+						<div class="lineCart">
+							<input name="qty" type="text" id="qty" autocomplete="off" value="{{ item.qty }}" onfocus="if(this.value=='1')this.value='';" readonly />
+						</div>
+					</td>
+					<td class="product-subtotal">{{ (item.amount['priceNetAllTaxes'] * item.qty)|number_format(2, ',', ' ') }} €</td>
+					<td class="product-remove"><a href="{{ path('cart_dell_line', {'id' : key}) }}"><img src="{{ asset('img/delete.png') }}" width="13" height="16"></a></td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	<div class="totalBasket">
+		<table>
+			<tr>
+				<th>Total du panier</th>
+				<td>{{ cartService.totalCart|number_format(2, ',', ' ') }} €</td>
+			</tr>
+			<tr>
+				<th>Livraison</th>
+				<td>{{ (cartService.getShipping['price']+cartService.getShipping['taxes'])|number_format(2, ',', ' ') }} €</td>
+			</tr>
+			<tr class="totalCart">
+				<th>Total de la commande</th>
+				<td>{{ (cartService.totalCart + cartService.getShipping['price']+cartService.getShipping['taxes'])|number_format(2, ',', ' ') }} €</td>
+			</tr>
+		</table>
+	</div>
+	<div class="choosePayment">
+		{% if app.user.customers.addresses|length > 0 %}
+		<p><strong>Veuillez choisir un mode de paiement ci-dessous :</strong></p>
+		<table class="moyenPaiement">
+		    {% for payment in payments %}
+		    <tr>
+		        <td><span class="moyenPaiementImg"><img src="{{ asset('img/payments/') }}{{ payment.logo }}" alt="" /></span></td>
+		        <td><span class="moyenPaiementTitre">{{ payment.title }}</span><span class="moyenPaiementDescription">{{ payment.description }}</span></td>
+		        <td>
+			       	<div class="valideCommande">
+		               	<p><a href="{{ path(payment.linkSubmit) }}" class="btn btn-primary">Choisir ce mode de paiement &raquo;</a></p>
+		           	</div>
+		        </td>
+		    </tr>
+		    {% endfor %}
+		</table>
+		{% endif %}
+	</div>
+	{% else %}
+	<div>
+		<p colspan="6">Votre panier est vide.</p>
+	</div>
+	{% endif %}
+{% endblock %}

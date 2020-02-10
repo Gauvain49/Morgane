@@ -24,6 +24,22 @@ class MgCategoriesRepository extends ServiceEntityRepository
         $this->tree = $tree;
     }
 
+    public function buildMenuCat($lang)
+    {
+        return $this->createQueryBuilder('c')
+            ->join('c.contents', 'l')
+            ->addSelect('l')
+            ->andWhere('c.active = 1')
+            ->andWhere('l.lang = :lang')
+            ->andWhere('c.id != 1')
+            ->setParameter('lang', $lang)
+            ->orderBy('c.position', 'ASC')
+            //->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     /**
      * Attribution du niveau d'arborescence d'une catégorie
      */
@@ -238,20 +254,8 @@ class MgCategoriesRepository extends ServiceEntityRepository
         foreach ($checkbox2 as $key => $value) {
             $checkbox3[$key] = $this->find($value);
         }
-        //dump($checkbox3);
         return $checkbox3;
-        /*$in = implode(', ', $checkbox2);
-        $q = $this->createQueryBuilder('c');
-        return    $q->join('c.contents', 'l')
-            ->addSelect('l')
-            ->where($q->expr()->in('c.id', $in))
-            ->andWhere('l.lang = 1')
-            ->orderBy('c.parent', 'ASC')
-            ->getQuery()
-            ->getResult()
-        ;*/
 
-        //return $q;
     }
 
     public function fetchByTreeStructure()
@@ -267,6 +271,23 @@ class MgCategoriesRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
         ;
+    }
+
+    /**
+     * Récupère une categorie par son slug
+     **/
+    public function getOneBySlug($slug, $lang)
+    {
+        return $this->createQueryBuilder('c')
+            ->join('c.contents', 'l')
+            ->addSelect('l')
+            ->where('l.slug = :slug')
+            ->andWhere('l.lang = :lang')
+            ->setParameter('slug', $slug)
+            ->setParameter('lang', $lang)
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
     }
 
     // /**

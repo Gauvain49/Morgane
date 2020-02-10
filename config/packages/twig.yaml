@@ -6,3 +6,4 @@ twig:
     globals:
         appService: '@App\Services\AppService'
         languagesService: '@App\Services\Languages'
+        cartService: '@App\Services\CartService'

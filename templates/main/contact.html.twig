@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pour nous contacter{% endblock %}
+{% form_theme form _self %}
+	{% block stylesheets %}
+	<style>
+		fieldset {
+			border: none;
+		}
+		#contact_civility {
+			display: flex;
+			padding: 15px 0 0 15px;
+		}
+		#contact_civility .form-check {
+			margin-right: 2.25em;
+			/*float: left;*/
+		}
+		#contact_civility .form-check label {
+			padding-left: 0;
+			/*float: left;*/
+		}
+	</style>
+	{% endblock %}
+{% block main %}
+	<h1>Contactez-nous !</h1>
+	<aside id="donnees_contact">
+		<div class="adressePostal">
+			<h2>Pour nous écrire</h2>
+			{% for address in addresses %}
+				<p class="titre">
+				{% for title in address.addressesTitles %}
+					{% if title.lang.id == 1 %}
+						{{ title.addressTitle }}
+					{% endif %}
+				{% endfor %}
+				</p>
+				<p class="street-address">{{ address.address }}</p>
+				<p><span class="postal-code">{{ address.zipcode }}</span> <span class="locality">{{ address.town }}</span></p>
+				<p class="tel"><b>Téléphone :</b>{{ address.phone }}</p>
+				<hr>
+			{% endfor %}
+		</div>
+	</aside>
+	<section id="formulaire_contact" style="margin-left: 250px;">
+		<p style="border-bottom: solid 1px #999999;">Besoin d'un conseil ? D'une information ? N'hésitez pas à nous contacter en utilisant le formulaire ci-dessous.</p>
+		{% for label, messages in app.flashes %}
+			{% for message in messages %}
+				<p class="error">
+					{{message|raw}}
+				</p>
+			{% endfor %}
+		{% endfor %}
+		{{ form_start(form) }}
+			<p>
+				{{ form_row(form.civility) }}
+			<p>
+			<p>
+				{{ form_row(form.name) }}
+			</p>
+			<p>
+				{{ form_row(form.firstname) }}
+			</p>
+			<p>
+				{{ form_row(form.email) }}
+			</p>
+			<p>
+				{{ form_row(form.phone) }}
+			</p>
+			<p>
+				{{ form_row(form.subject) }}
+			</p>
+			<p>
+				{{ form_row(form.message) }}
+			</p>
+			<small class="text-muted">En soumettant ce formulaire, les informations saisies peuvent être traitées dans le cadre d'une relation commerciale qui peut en découler.<br>Toutefois, les informations renseignées dans le formulaire restent strictement privées : {{ appService.params.title }} ne les enregistrent pas dans une base de données et elles ne seront transmises à aucun tiers.</small>
+			<div class="contact-btn">
+				<button type="submit" class="btn btn-primary">Envoyer</button>
+			</div>
+			{{ form_end(form) }}
+		</div>
+	</section>
+{% endblock %}

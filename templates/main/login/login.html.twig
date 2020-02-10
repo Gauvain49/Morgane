@@ -1,18 +1,15 @@
 {% extends 'base.html.twig' %}
 
 {% block main %}
-	<div class="ht__bradcaump__area bg-image--6">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-12">
-					<div class="bradcaump__inner text-center">
-						<h2 class="bradcaump-title">Mon compte</h2>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
 	<section class="my_account_area pt--80 pb--55 bg--white">
+	{% for label, messages in app.flashes %}
+		{% for message in messages %}
+			<div class="alert alert-{{label}}">
+				{{message|raw}}
+			</div>
+		{% endfor %}
+	{% endfor %}
+
 		<div class="container">
 			{% if hasError %}
 			<div class="alert alert-danger">
@@ -28,7 +25,7 @@
 				<div class="col-lg-6 col-12">
 					<div class="my__account__wrapper">
 						<h3 class="account__title">J'ai déjà un compte</h3>
-					    <form action="{{ path('login') }}" method="post">
+					    <form action="{{ path('account_check_login') }}" method="post">
 					    	<div class="account__form">
 						        <div class="input__box">
 						            <label for="email">Mon adresse email<span>*</span></label>
@@ -45,7 +42,7 @@
 						            faut appliquer des remises exceptionnelles réservées au visiteur 
 						            #}
 						            {% if app.session.get('cart')|length > 0 %}
-						            	<input type="hidden" name="_target_path" value="{{ path('cart_check_discount')}}">
+						            	<input type="hidden" name="_target_path" value="{{ path('cart_check_discount') }}">
 						            {% endif %}
 						            <button class="btn btn-primary" type="submit">Connexion</button>
 						            <label class="label-for-checkbox">
@@ -61,7 +58,7 @@
 						</form>
 					</div>
 				</div>
-		    	{# <div class="col-lg-6 col-12">
+		    	<div class="col-lg-6 col-12">
 		    		<div class="my__account__wrapper">
 		    			<h3 class="account__title">Je crée mon compte</h3>
 				        {{ form_start(form) }}
@@ -70,13 +67,12 @@
 					        	{{ form_row(form.email) }}</p>
 					        </div>
 					        <div class="form__btn">
-					           	<button class="btn btn-primary" type="submit">Créer un compte</button>
+					        	<button class="btn">{{ button_label|default('Créer un compte') }}</button>
 					        </div>
 					    </div>
 				        {{ form_end(form) }}
 		    		</div>
-			    </div> #}
-			{# include('main/login/_form.html.twig') #}
+			    </div>
 			</div>
 		</div>
 	</section>

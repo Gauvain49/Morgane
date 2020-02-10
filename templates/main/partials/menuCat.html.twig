@@ -1,16 +1,8 @@
-		{% set link = '' %}
-		{% set title = '' %}
-		{% for content in menu.contents %}
-			{% if content.lang.id == languagesService.languageDefault.id %}
-			{% set link = content.cat.id ~ '-' ~ content.slug %}
-			{% set title = content.name %}
-			{% endif %}
-		{% endfor %}
-		<li {% if menu.children is defined %}class="drop"{% endif %}>
-			<a href="{# path('catalog-by-cat', {'cat': link}) #}">{{ title }}</a>
-		{% if menu.children is defined %}
+		<li {% if menu.catChildren is defined %}class="drop"{% endif %}>
+			<a href="{{ path('catalog', {'slug': menu.contents[0].slug}) }}">{{ menu.contents[0].name }}</a>
+		{% if menu.catChildren is defined %}
 			<ul class="menuSecondaire">
-				{% for menu in menu.children %}
+				{% for menu in menu.catChildren %}
 					{% include('main/partials/menuCat.html.twig') %}
 				{% endfor %}
 			</ul>

@@ -20,7 +20,7 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         admin:
-            #pattern: ^/admin
+            pattern: ^/admin
             anonymous: true
             provider: app_user_provider
 
@@ -36,6 +36,18 @@ security:
                 secret:   '%kernel.secret%'
                 lifetime: 2419200 # 4 weeks in seconds
                 path:     /
+        main:
+            anonymous: true
+            provider: app_user_provider
+
+            form_login:
+                login_path: account_login
+                check_path: account_check_login
+
+            logout:
+                path: account_logout
+                target: home
+
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication

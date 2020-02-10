@@ -3,9 +3,10 @@
 namespace App\Controller;
 
 use App\Repository\MgCategoriesRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use App\Services\Languages;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class MenusController extends Controller
+class MenusController extends AbstractController
 {
 
     /**
@@ -59,22 +60,21 @@ class MenusController extends Controller
     /**
      * Créer le menu de navigation du front avec les principales catégories
      */
-    public function displayMenuCat(MgCategoriesRepository $categoriesRepository)
+    public function displayMenuCat(MgCategoriesRepository $categoriesRepository, Languages $languages)
     {
-        //$categories = $this->getDoctrine()->getRepository(MgCategories::class)->findBy(['active' => 1]);
-        $categories = $categoriesRepository->findBy(['type' => 'product', 'active' => 1], ['position' => 'ASC']);
+        $categories = $categoriesRepository->buildMenuCat($languages->languageDefault());
         //On exclu la catégorie racine
         //unset($categories[0]);
-        /*$categories_by_id = [];
+        $categories_by_id = [];
         foreach ($categories as $categorie) {
             $categories_by_id[$categorie->getId()] = $categorie;
         }
         foreach ($categories as $key => $item) {
             if ($item->getParent()->getId() > 1) {
-                $categories_by_id[$item->getParent()->getId()]->children[] = $item;
+                $categories_by_id[$item->getParent()->getId()]->catChildren[] = $item;
                 unset($categories[$key]);
             }
-        }*/
+        }
 
         //dd($categories);
         return $this->render('main/partials/_navMainCat.html.twig', [

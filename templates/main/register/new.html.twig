@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}S'inscrire{% endblock %}
+{% block stylesheets %}
+<style>
+	fieldset {
+		border: none;
+		margin-left: 15px;
+	}
+</style>
+{% endblock %}
+{% form_theme form _self %}
+
+{% block main %}
+	<div class="ht__bradcaump__area bg-image--8">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="bradcaump__inner text-center">
+						<h2 class="bradcaump-title">Mon compte</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<section class="my_account_area pt--80 pb--55 bg--white">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="my__account__wrapper">
+						<h3 class="account__title">Créer votre compte</h3>
+							{{ include('main/register/_form.html.twig') }}
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+{% endblock %}
+{# block _customers_gender_widget %}
+	<div class="form-group">
+		{{ form_widget(form) }}
+	</div>
+{% endblock #}
+{# block _customers_gender_entry_widget %}
+	<div class="form-check form-check-inline">
+		<label for="" class="form-check-label">
+			<input type="radio" name="{{ full_name }}" class="form-check-input" value="{{ value }}" required>{{ label }}
+		</label>
+	</div>
+{% endblock #}
+{# Pour retirer les 0  des CollectionsType#}
+{% block _customer_user_customers_addresses_entry_row %}
+		{{ form_widget(form) }}
+{% endblock %}
+{% block javascripts %}
+<script type="text/javascript">
+	var noeud = document.getElementById('customer_user_customers_addresses');
+	//On récupère le contenu des divs à créer
+	var contents = noeud.getAttribute('data-prototype');
+	var counter = 0;//On implémente le compteur
+	truc = document.getElementById('customer_user_customers_addresses_0');
+	console.log(truc);
+	if (truc == null) {
+
+	var content = contents.replace(/__name__/g, counter);
+	noeud.insertAdjacentHTML('beforebegin', content);
+	}
+
+	//customer_user_customers_addresses_0
+
+	//customer_user_customers_0_addresses
+	/*var addressNoeud = document.getElementById('customer_user_customers_0_addresses');
+	//On récupère le contenu des divs à créer
+	var addressContents = addressNoeud.getAttribute('data-prototype');
+	console.log(addressContents);
+	var addressContent = addressContents.replace(/__name__/g, counter);
+	addressNoeud.insertAdjacentHTML('beforebegin', addressContent);*/
+
+</script>
+{% endblock %}

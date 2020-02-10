@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+{% set title = '' %}
+{% set content = '' %}
+	{# si la page est null, c'est qu'on appel les partenaires #}
+	{% if page == null %}
+		{% set title = 'Nos partenaires' %}
+		{% set content = '' %}
+	{% else %}
+		{% for lang in page.contents %}
+			{% set title = lang.title %}
+			{% set content = lang.content %}
+		{% endfor %}
+	{% endif %}
+{% block title %}{{ title }}{% endblock %}
+{% block main %}
+	<div id="listePartenaires">
+		{% for supplier in suppliers %}
+		<div>
+			<figure>
+				<span><img src="{{ asset('uploads/suppliers/') ~ supplier.id }}/{{supplier.supplierLogo }}" alt="{{ supplier.supplierName }}" style="max-width: 100%;"></span>
+				<figcaption>
+					{{ supplier.supplierName }}
+				</figcaption>
+			</figure>
+		</div>
+		{% else %}
+		<p>Aucun partenaire.</p>
+		{% endfor %}
+	</div>
+{% endblock %}

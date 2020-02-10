@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -28,12 +30,6 @@ class MgCustomers
     private $customer_group;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\MgCivilities", inversedBy="customers")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $gender;
-
-    /**
      * @ORM\Column(type="string", length=100, nullable=true)
      */
     private $compagny;
@@ -47,6 +43,16 @@ class MgCustomers
      * @ORM\Column(type="text", nullable=true)
      */
     private $notes;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MgCustomersAddresses", mappedBy="customer", orphanRemoval=true)
+     */
+    private $addresses;
+
+    public function __construct()
+    {
+        $this->addresses = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -73,18 +79,6 @@ class MgCustomers
     public function setCustomerGroup(?MgCustomersGroups $customer_group): self
     {
         $this->customer_group = $customer_group;
-
-        return $this;
-    }
-
-    public function getGender(): ?MgCivilities
-    {
-        return $this->gender;
-    }
-
-    public function setGender(?MgCivilities $gender): self
-    {
-        $this->gender = $gender;
 
         return $this;
     }
@@ -121,6 +115,37 @@ class MgCustomers
     public function setNotes(?string $notes): self
     {
         $this->notes = $notes;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MgCustomersAddresses[]
+     */
+    public function getAddresses(): Collection
+    {
+        return $this->addresses;
+    }
+
+    public function addAddress(MgCustomersAddresses $address): self
+    {
+        if (!$this->addresses->contains($address)) {
+            $this->addresses[] = $address;
+            $address->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAddress(MgCustomersAddresses $address): self
+    {
+        if ($this->addresses->contains($address)) {
+            $this->addresses->removeElement($address);
+            // set the owning side to null (unless already changed)
+            if ($address->getCustomer() === $this) {
+                $address->setCustomer(null);
+            }
+        }
 
         return $this;
     }

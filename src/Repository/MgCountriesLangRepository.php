@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\MgCivilities;
+use App\Entity\MgCountriesLang;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
- * @method MgCivilities|null find($id, $lockMode = null, $lockVersion = null)
- * @method MgCivilities|null findOneBy(array $criteria, array $orderBy = null)
- * @method MgCivilities[]    findAll()
- * @method MgCivilities[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method MgCountriesLang|null find($id, $lockMode = null, $lockVersion = null)
+ * @method MgCountriesLang|null findOneBy(array $criteria, array $orderBy = null)
+ * @method MgCountriesLang[]    findAll()
+ * @method MgCountriesLang[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class MgCivilitiesRepository extends ServiceEntityRepository
+class MgCountriesLangRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, MgCivilities::class);
+        parent::__construct($registry, MgCountriesLang::class);
     }
 
     // /**
-    //  * @return MgCivilities[] Returns an array of MgCivilities objects
+    //  * @return MgCountriesLang[] Returns an array of MgCountriesLang objects
     //  */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class MgCivilitiesRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?MgCivilities
+    public function findOneBySomeField($value): ?MgCountriesLang
     {
         return $this->createQueryBuilder('m')
             ->andWhere('m.exampleField = :val')

@@ -46,19 +46,52 @@ class MgProductsImagesRepository extends ServiceEntityRepository
 
     public function checkImgSize($path, $image, $size, $square, $ext)
     {
+        //dd($ext);
         $key = array_search($size, self::SIZES);
-        $img = $image . $size . $square . $ext;
-        if (!is_file($path . $img)) {
-            while (!is_file($path . $img)) {
-                $key++;
-                if($key > count(self::SIZES)-1) {
-                    $img = null;
+        //dump($key);
+        $max_sizes = self::SIZES;
+        $imgExist = false;
+        //dump($max_sizes[$key+2]);
+        //dump($max_sizes);
+        //dd($ext);
+        $last_key = array_search(end($max_sizes), $max_sizes);
+        //Le type mime associé à l'extension '.jpg' peut aussi avoir une extension '.jpeg';
+        if ($ext == '.jpg' || $ext == '.jpeg') {
+            $ext = ['.jpg', '.jpeg'];
+            foreach ($ext as $value) {
+                $img = $image . $size . $square . $value;
+                if (!file_exists($img)) {
+                    for ($i=$key; $i <= $last_key; $i++) { 
+                        if ($i == 3) {
+                            $square = '';
+                        }
+                        $img =  $image . self::SIZES[$i] . $square . $value;
+                        if (file_exists($path . $img) && is_file($path . $img)) {
+                            $imgExist = true;
+                            break;
+                        } else {
+                            $img = null;
+                        }
+                    }
+                }
+                if ($imgExist) {
                     break;
                 }
-                if (self::SIZES[$key] == '') {
-                    $square = '';
+            }
+        } else {
+            $img = $image . $size . $square . $ext;
+            if (!is_file($path . $img)) {
+                while (!is_file($path . $img)) {
+                    $key++;
+                    if($key > count(self::SIZES)-1) {
+                        $img = null;
+                        break;
+                    }
+                    if (self::SIZES[$key] == '') {
+                        $square = '';
+                    }
+                    $img = $image . self::SIZES[$key] . $square . $ext;
                 }
-                $img = $image . self::SIZES[$key] . $square . $ext;
             }
         }
         return $img;

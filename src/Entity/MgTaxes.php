@@ -38,10 +38,16 @@ class MgTaxes
      */
     private $products;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MgOrdersTaxes", mappedBy="taxe")
+     */
+    private $orderContentTaxes;
+
     public function __construct()
     {
         $this->taxesLangs = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->orderContentTaxes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -129,6 +135,37 @@ class MgTaxes
             // set the owning side to null (unless already changed)
             if ($product->getTaxes() === $this) {
                 $product->setTaxes(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MgOrdersTaxes[]
+     */
+    public function getOrderContentTaxes(): Collection
+    {
+        return $this->orderContentTaxes;
+    }
+
+    public function addOrderContentTax(MgOrdersTaxes $orderContentTax): self
+    {
+        if (!$this->orderContentTaxes->contains($orderContentTax)) {
+            $this->orderContentTaxes[] = $orderContentTax;
+            $orderContentTax->setTaxe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrderContentTax(MgOrdersTaxes $orderContentTax): self
+    {
+        if ($this->orderContentTaxes->contains($orderContentTax)) {
+            $this->orderContentTaxes->removeElement($orderContentTax);
+            // set the owning side to null (unless already changed)
+            if ($orderContentTax->getTaxe() === $this) {
+                $orderContentTax->setTaxe(null);
             }
         }
 

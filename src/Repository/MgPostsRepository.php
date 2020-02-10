@@ -65,6 +65,28 @@ class MgPostsRepository extends ServiceEntityRepository
         return $position;
     }
 
+    /**
+     * Récupère un post par son slug
+     * @param $type est le type du post
+     * @param $lang est la langue des contenus
+     * @param $slug est le slug
+     */
+    public function findOnePostBySlug($type, $lang, $slug)
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.contents', 'l')
+            ->addSelect('l')
+            ->where('p.type = :type')
+            ->andWhere('l.lang = :lang')
+            ->andWhere('l.slug = :slug')
+            ->setParameter('type', $type)
+            ->setParameter('lang', $lang)
+            ->setParameter('slug', $slug)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
     // /**
     //  * @return MgPosts[] Returns an array of MgPosts objects
     //  */

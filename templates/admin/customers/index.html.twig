@@ -36,26 +36,38 @@
                         <thead>
                             <tr>
                                 <th>Id</th>
-                                <th>Compagny</th>
-                                <th>Birthday</th>
-                                <th>Notes</th>
-                                <th>actions</th>
+                                <th>Prénom</th>
+                                <th>Nom</th>
+                                <th>Email</th>
+                                {#<th>Birthday</th>#}
+                                <th>Ventes</th>
+                                <th>Active</th>
+                                <th>Inscription</th>
+                                <th class="text-center">actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                        {% for mg_customer in mg_customers %}
+                        {% for user in users %}
                             <tr>
-                                <td>{{ mg_customer.id }}</td>
-                                <td>{{ mg_customer.compagny }}</td>
-                                <td>{{ mg_customer.birthday ? mg_customer.birthday|date('Y-m-d') : '' }}</td>
-                                <td>{{ mg_customer.notes }}</td>
-                                <td>
-                                    <a href="{{ path('customers_edit', {'id': mg_customer.id}) }}">edit</a>
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.firstname }}</td>
+                                <td>{{ user.lastname }}{{ user.customers.compagny ? '<br>Société ' ~ user.customers.compagny : '' }}</td>
+                                <td>{{ user.email }}</td>
+                                {#<td>{{ user.customers.birthday ? user.customers.birthday|date('Y-m-d') : '' }}</td>#}
+                                <td></td>
+                                <td>{{ user.active }}</td>
+                                <td>{{ user.dateadd ? user.dateadd|date('d-m-Y') : '' }}</td>
+                                <td class="text-center">
+                                    <div class="d-inline-flex">
+                                        <div class="p-1">
+                                            <a href="{{ path('customers_edit', {'id': user.id}) }}" class="btn btn-primary" title="Éditer"><i class="btn-label fas fa-pen" style="font-size: 16px;"></i></a>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="5">Aucun enregistrement dans la base de données</td>
+                                <td colspan="8">Aucun enregistrement dans la base de données</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -65,7 +77,4 @@
         </div>
     </div>
 </div>
-
-
-    <a href="{{ path('customers_new') }}">Create new</a>
 {% endblock %}
