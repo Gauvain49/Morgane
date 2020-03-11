@@ -1,0 +1,229 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Coûts d'expédition{% endblock %}
+{% form_theme form _self %}
+{% block stylesheets %}
+<style type="text/css">
+	fieldset {
+		padding: 0 !important;
+	}
+	.listCountry legend {
+		display: none;
+	}
+	.listCountry .col-3 {
+		border-right: solid 1px #e2e2e2;
+	}
+</style>
+{% endblock %}
+{% block body %}
+<div class="page-header">
+    <h4 class="page-title">Coûts d'expédition</h4>
+    <ul class="breadcrumbs">
+        <li class="nav-home">
+            <a href="{{ path('dashboard') }}">
+                <i class="flaticon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow"></i>
+        </li>
+        <li class="nav-item">
+            E-commerce
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow"></i>
+        </li>
+        <li class="nav-item">
+            <a href="{{ path('carriers_index') }}"></a>Livraison
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow"></i>
+        </li>
+        <li class="nav-item">
+            Ajouter un transporteur
+        </li>
+    </ul>
+</div>
+<div class="row">
+	<div class="col-md-2">
+		<div class="card">
+			<aside>
+				<div class="list-group">
+					<a href="{{ path('carriers_edit', {'id': id}) }}" class="list-group-item">Transporteur</a>
+					<a href="{{ path('carriers_config_edit', {'id': id}) }}" class="list-group-item active">Coûts d'expédition</a>
+				</div>
+			</aside>
+		</div>
+	</div>
+	<div class="col-md-10">
+		<div class="card">
+			<div class="card-header">
+				<div class="card-head-row">
+					<h4 class="card-title text-info">Coût d'expédition</h4>
+					<div class="card-tools">
+						<a href="{{ path('carriers_new') }}" class="btn btn-info font-weight-bold"><span class="btn-label"><i class="flaticon-plus"></i></span> Ajouter un transporteur</a>
+					</div>
+				</div>
+			</div>
+			<div class="card-body">
+				{{ include('admin/carriers/config/_form.html.twig', {'button_label': 'Enregistrer'}) }}
+			</div>
+		</div>
+	</div>
+</div>
+    {# include('admin/carriers/config/_delete_form.html.twig') #}
+{% endblock %}
+{# block _carriers_config_steps_widget %}
+	{{ form_widget(form) }}
+{% endblock #}
+{% block _carriers_config_steps_entry_row %}
+	<div class="col-3 mb-5">
+			{{ form_widget(form) }}
+	</div>
+{% endblock %}
+{% block _carriers_config_steps_entry_widget %}
+<div id="block_{{id}}">
+	<div class="form-group">
+		<div class="row">
+			{{ form_label(form.step_min) }}
+			<div class="col-sm-5">
+				{{ form_widget(form.step_min) }}
+			</div>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="row">
+			{{ form_label(form.step_max) }}
+			<div class="col-sm-5 input-group">
+				<!-- <div class="input-group-prepend">
+						        	<div class="input-group-text">€</div>
+						        </div> -->
+				{{ form_widget(form.step_max) }}
+			</div>
+		</div>
+	</div>
+	<div class="form-group mb-2" style="padding: 0;">
+		{{ form_widget(form.amountCountries) }}
+		<div class="text-right d-none">
+			<button type="button" data-action="delete" data-target="#block_{{id}}" class="btn btn-danger btn-round btn-sm dell_step">Suprimmer la tranche</button>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block javascripts %}
+	<script src="{{ asset('admin/js/country_carriers.js') }}"></script>
+	<script type="text/javascript">
+	//Création du tableau recueillant les pays
+	const listCountry = new Object();
+	{% for country in countries %}
+		{% for countryLang in country.countriesLangs %}
+			{% if countryLang.lang.id == languagesService.languageDefault.id %}
+				listCountry[{{country.id}}] = '{{countryLang.countryName}}';
+			{% endif %}
+		{% endfor %}
+	{% endfor %}
+
+	//Function pour calculer la taille du tableau qui recueille les pays
+	Object.size = function(arr) 
+	{
+	    var size = 0;
+	    for (var key in arr) 
+	    {
+	        if (arr.hasOwnProperty(key)) size++;
+	    }
+	    return size;
+	};
+	var langLength = Object.size(listCountry);
+
+	//S'il n'y a aucune étape d'initialisé, on crée les champs pour recevoir la première
+	if ({{ countStep }} == 0) {
+		var noeud = document.getElementById('carriers_config_steps');
+		//On récupère le contenu des divs à créer
+		var contents = noeud.getAttribute('data-prototype');
+		var counter = 0;//On implémente le compteur
+		for(var i = 0; i <= {{ countStep }}; i++) {
+			var ifExist = document.getElementById('carriers_config_steps' + '_' + counter);
+			if (ifExist === null) {
+				var content = contents.replace(/__name__/g, counter);
+				noeud.insertAdjacentHTML('beforeend', content);
+			}
+			counter++;
+		}
+
+		{% for i in 0..countStep %}
+		countryCarriers('carriers_config_steps_0_amountCountries', listCountry, {{ languagesService.getLanguages|length }}, 0);
+		{% endfor %}
+	} else {
+		for(var c = 0; c < {{ countStep }}; c++) {
+			var y = 0;
+			for(var i in listCountry) {
+				addCountry('carriers_config_steps_' + c + '_amountCountries', y, listCountry, i);
+				y++;
+			}
+		}
+		
+	}
+
+	//Rajout d'étape supplémentaire
+	$('#add_step').click(function(){
+		//Je récupère le numéro des futurs champs que je vais créer
+		//var index = +$('#widgets-counter').val();
+		var index = $('#carriers_config_steps div.col-3').length;
+		console.log(index);
+		//carriers_config_steps
+		//On récupère a valeur des derniers champs step_min et step_max rempli
+
+		var step_min = document.getElementById('carriers_config_steps_' + (index - 1) + '_step_min').value;
+		var step_max = document.getElementById('carriers_config_steps_' + (index - 1) + '_step_max').value;
+		//console.log(step_min);
+		//console.log(step_max);
+
+		if (step_min === "" || step_max === "") {
+			alert('Vous devez remplir les valeurs avant d\'ajouter une nouvelle tranche !');
+		} else if (step_min > step_max) {
+			alert('La valeur \' < à \' (inférieur à) ne peut être inférieur à la valeur \'<= à\' (supérieur ou = à) !');
+		} else {
+			//Je récupère le prototype des entrées
+			const tmpl = $('#carriers_config_steps').data('prototype').replace(/__name__/g, index);
+			$('#carriers_config_steps').append(tmpl);
+			countryCarriers('carriers_config_steps_' + index + '_amountCountries', listCountry, {{ languagesService.getLanguages|length }}, index);
+
+			//On donner au champ step_min la valeur du step_max de la tranche précédente
+			var new_step_min = document.getElementById('carriers_config_steps_' + index + '_step_min').value = step_max;
+
+			index ++;
+			$('#widgets-counter').val(index + 1);
+
+			//Gestion affichage du bouton supprimer
+			displayDellStep();
+			//Gestion du bouton supprimer
+			handleDeleteButtons();
+		}
+	});
+
+	function handleDeleteButtons() {
+		$('button[data-action="delete"]').click(function(){
+			const target = this.dataset.target;
+			$(target).parent('div').remove();
+			displayDellStep();
+		})
+	}
+
+	//Affichage/Suppression du bouton supprimé
+	function displayDellStep() {
+		const a = document.getElementsByClassName('dell_step');
+		for (var j = 0; j<a.length; j++) {
+			//console.log(a[j].parentElement);
+			a[j].parentElement.classList.add('d-none');
+		}
+		if (a.length > 1) {
+			last = a.length - 1;
+			a[last].parentElement.classList.remove('d-none');
+		}
+	}
+	
+	displayDellStep();
+	handleDeleteButtons();
+
+	</script>
+{% endblock %}

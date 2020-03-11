@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\MgPosts;
 use App\Repository\MgCategoriesRepository;
 use App\Services\Languages;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,11 +27,11 @@ class MenusController extends AbstractController
             }
         }
 
-        /*return $this->render('main/partials/_navMain.html.twig', [
+        return $this->render('main/partials/_navMain.html.twig', [
             'pages' => $pages
-        ]);*/
+        ]);
 
-        return $pages;
+        //return $pages;
     }
 
     /**

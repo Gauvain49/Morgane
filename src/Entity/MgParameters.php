@@ -37,6 +37,16 @@ class MgParameters
     private $email_contact;
 
     /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $email_order;
+
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $logo;
+
+    /**
      * @ORM\Column(type="smallint")
      */
     private $nb_posts;
@@ -90,6 +100,30 @@ class MgParameters
     public function setEmailContact(string $email_contact): self
     {
         $this->email_contact = $email_contact;
+
+        return $this;
+    }
+
+    public function getEmailOrder(): ?string
+    {
+        return $this->email_order;
+    }
+
+    public function setEmailOrder(?string $email_order): self
+    {
+        $this->email_order = $email_order;
+
+        return $this;
+    }
+
+    public function getLogo(): ?string
+    {
+        return $this->logo;
+    }
+
+    public function setLogo(?string $logo): self
+    {
+        $this->logo = $logo;
 
         return $this;
     }

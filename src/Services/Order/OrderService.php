@@ -29,7 +29,7 @@ class OrderService extends AbstractController
 	 * Permet la création d'une nouvelle commande
 	 */
 
-	public function creatOrder(MgUsers $user, $mode_payment, $token = false)
+	public function creatOrder(MgUsers $user, $mode_payment, $numOrder)
 	{
 		$cart = $this->cart->cart();
 		$shipping = $this->cart->getShipping();
@@ -77,8 +77,8 @@ class OrderService extends AbstractController
 		$totalCartAllTaxes = $this->cart->totalCart();
 
 		//Création du numéro de la commande
-		$numOrder = strtoupper($this->token->generateToken(5));
-		$numOrder .= $this->getDoctrine()->getRepository(MgOrders::class)->getNumOrder();
+		//$numOrder = strtoupper($this->token->generateToken(5));
+		//$numOrder .= $this->getDoctrine()->getRepository(MgOrders::class)->getNumOrder();
 
 		//Récupération du status
 		if ($mode_payment == 'paypal') {
@@ -106,11 +106,7 @@ class OrderService extends AbstractController
 		$order->setTotalPriceAllTaxes($totalCartAllTaxes);
 		$order->setTotalShippingPrice($shipping['price']);
 		$order->setTotalShippingTaxes($shipping['taxes']);
-		if (!$token) {
-			$order->setUniqKey($this->token->generateUniqid());
-		} else {
-			$order->setUniqKey($token);
-		}
+		$order->setUniqKey($this->token->generateUniqid());
 		
 		$order->setCurrentStatus($status);
 		$em->persist($order);

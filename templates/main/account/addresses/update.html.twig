@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+{% block title %}Votre compte{% endblock %}
+{% block introHome %}{% endblock %}
+{% block stylesheets %}
+<style>
+    #espaceIdentification form {
+        border: none;
+    }
+</style>
+{% endblock %}
+{% block main %}
+	<h1>Mes informations</h1>
+	<p class="salutations">Bonjour {{ app.user.firstname }} {{ app.user.lastname }} <span class="logout"><a href="{{ path('account_logout') }}"><img src="{{ asset('images/deconnexion.png') }}" width="16" height="16" alt="" style="margin-top: 3px;"> Déconnexion</a></span></p>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{label}}">
+                {{message|raw}}
+            </div>
+    	{% endfor %}
+    {% endfor %}
+
+    <aside>
+		{{ include('main/account/nav.html.twig') }}
+		</ul>
+	</aside>
+	<div id="mainContent" class="margeCompte" style="padding-top: 0;">
+		<div id="carnetAdresse" class="clearfix">
+            <div id="espaceIdentification">
+                <div class="my_account">
+            		{{ include('main/account/addresses/_form.html.twig') }}
+            	</div>
+            </div>
+		</div>
+	</div>
+{% endblock %}

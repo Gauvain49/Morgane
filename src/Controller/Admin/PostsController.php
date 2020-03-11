@@ -303,8 +303,8 @@ class PostsController extends AbstractController
                     }
                     foreach ($postChildren as $child) {
                         $child->setParent($parent);
-                        $em->persist($child);
-                        $em->flush();
+                        $entityManager->persist($child);
+                        $entityManager->flush();
                     }
                 }                
             }

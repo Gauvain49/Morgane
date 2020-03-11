@@ -114,7 +114,7 @@ class MgUsers implements UserInterface
     private $gender;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\MgOrders", mappedBy="user")
+     * @ORM\OneToOne(targetEntity="App\Entity\MgOrders", mappedBy="user")
      */
     private $orders;
 

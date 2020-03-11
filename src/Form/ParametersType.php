@@ -30,6 +30,9 @@ class ParametersType extends AbstractType
             ->add('email_contact', EmailType::class, [
                 'label' => 'Email de contact'
             ])
+            ->add('email_order', EmailType::class, [
+                'label' => 'Emailde réception des commandes'
+            ])
             ->add('nb_posts', IntegerType::class, [
                 'label' => 'Nombre d\'article apparaissant en page d\'accueil',
                 'required' => false,

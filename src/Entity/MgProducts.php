@@ -118,6 +118,36 @@ class MgProducts
     private $stock_alert;
 
     /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $width;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $height;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $depth;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $weight;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\MgCarriers", inversedBy="products")
+     */
+    private $carrier;
+
+    /**
+     * @ORM\Column(type="float", options={"default": 0})
+     */
+    private $additionnal_shipping_cost = 0;
+
+    /**
      * @ORM\Column(type="boolean", nullable=true, options={"default": false})
      */
     private $pre_order;
@@ -433,6 +463,78 @@ class MgProducts
     public function setStockAlert(?int $stock_alert): self
     {
         $this->stock_alert = $stock_alert;
+
+        return $this;
+    }
+
+    public function getWidth(): ?float
+    {
+        return $this->width;
+    }
+
+    public function setWidth(?float $width): self
+    {
+        $this->width = $width;
+
+        return $this;
+    }
+
+    public function getHeight(): ?float
+    {
+        return $this->height;
+    }
+
+    public function setHeight(?float $height): self
+    {
+        $this->height = $height;
+
+        return $this;
+    }
+
+    public function getDepth(): ?float
+    {
+        return $this->depth;
+    }
+
+    public function setDepth(?float $depth): self
+    {
+        $this->depth = $depth;
+
+        return $this;
+    }
+
+    public function getWeight(): ?float
+    {
+        return $this->weight;
+    }
+
+    public function setWeight(?float $weight): self
+    {
+        $this->weight = $weight;
+
+        return $this;
+    }
+
+    public function getCarrier(): ?MgCarriers
+    {
+        return $this->carrier;
+    }
+
+    public function setCarrier(?MgCarriers $carrier): self
+    {
+        $this->carrier = $carrier;
+
+        return $this;
+    }
+
+    public function getAdditionnalShippingCost(): ?float
+    {
+        return $this->additionnal_shipping_cost;
+    }
+
+    public function setAdditionnalShippingCost(float $additionnal_shipping_cost): self
+    {
+        $this->additionnal_shipping_cost = $additionnal_shipping_cost;
 
         return $this;
     }

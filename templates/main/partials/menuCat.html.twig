@@ -1,7 +1,7 @@
 		<li {% if menu.catChildren is defined %}class="drop"{% endif %}>
 			<a href="{{ path('catalog', {'slug': menu.contents[0].slug}) }}">{{ menu.contents[0].name }}</a>
 		{% if menu.catChildren is defined %}
-			<ul class="menuSecondaire">
+			<ul>
 				{% for menu in menu.catChildren %}
 					{% include('main/partials/menuCat.html.twig') %}
 				{% endfor %}

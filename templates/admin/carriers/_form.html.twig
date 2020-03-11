@@ -1,0 +1,12 @@
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+    {% if carrier.carrierLogo %}
+    	<div class="form-check">
+		    <label class="form-check-label" for="dellLogo">
+			    <input type="checkbox" class="form-check-input" id="dellLogo" name="dellLogo">
+			    <span class="form-check-sign">Suprimer le logo</span>
+			</label>
+    	</div>
+    {% endif %}
+    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}

@@ -1,7 +1,8 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Connectez-vous !{% endblock %}
+{% block introHome %}{% endblock %}
 {% block main %}
-	<section class="my_account_area pt--80 pb--55 bg--white">
 	{% for label, messages in app.flashes %}
 		{% for message in messages %}
 			<div class="alert alert-{{label}}">
@@ -9,71 +10,59 @@
 			</div>
 		{% endfor %}
 	{% endfor %}
-
-		<div class="container">
-			{% if hasError %}
-			<div class="alert alert-danger">
-			    <ul class="list-unstyled mb-0">
-			        <li>
-			        	<span class="initialism form-error-icon badge badge-danger">Erreur !</span>
-			            <span class="form-error-message">Vos informations ne sont pas corrects.</span>
-			        </li>
-			    </ul>
-			</div>
-			{% endif %}
-			<div class="row">
-				<div class="col-lg-6 col-12">
-					<div class="my__account__wrapper">
-						<h3 class="account__title">J'ai déjà un compte</h3>
-					    <form action="{{ path('account_check_login') }}" method="post">
-					    	<div class="account__form">
-						        <div class="input__box">
-						            <label for="email">Mon adresse email<span>*</span></label>
-						            <input id="username" name="_username" type="text" class="form-control input-border-bottom" value="{{ last_username }}" required>
-						        </div>
-						        <div class="input__box">
-						    	    <label for="password">Mon mot de passe<span>*</span></label>
-						            <input id="password" name="_password" type="password" class="form-control input-border-bottom" required>
-						        </div>
-						        <div class="form__btn">
-						         	<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-						            {#
-						            Si le panier n'est pas vide, on redirige vers la page permettant de vérifier s'il
-						            faut appliquer des remises exceptionnelles réservées au visiteur 
-						            #}
-						            {% if app.session.get('cart')|length > 0 %}
-						            	<input type="hidden" name="_target_path" value="{{ path('cart_check_discount') }}">
-						            {% endif %}
-						            <button class="btn btn-primary" type="submit">Connexion</button>
-						            <label class="label-for-checkbox">
-						            	<input type="checkbox" name="_remember_me" id="remember" class="input-checkbox"><span> Se souvenir de moi</span>
-						            </label>
-						        </div>
-						        <p>
-						        	<small>
-						        		<a href="../forgotPassword.html" class="forget_pass">Mot de passe oublié ?</a>
-						        	</small>
-						        </p>
-					    	</div>
-						</form>
-					</div>
-				</div>
-		    	<div class="col-lg-6 col-12">
-		    		<div class="my__account__wrapper">
-		    			<h3 class="account__title">Je crée mon compte</h3>
-				        {{ form_start(form) }}
-				        <div class="account__form">
-					        <div class="input__box">
-					        	{{ form_row(form.email) }}</p>
-					        </div>
-					        <div class="form__btn">
-					        	<button class="btn">{{ button_label|default('Créer un compte') }}</button>
-					        </div>
-					    </div>
-				        {{ form_end(form) }}
-		    		</div>
-			    </div>
-			</div>
+	<div id="espaceIdentification" class="clearfix">
+		{% if hasError %}
+		<div class="alert alert-danger">
+		    <ul class="list-unstyled mb-0">
+		        <li>
+		        	<span class="initialism form-error-icon badge badge-danger">Erreur !</span>
+		            <span class="form-error-message">Vos informations ne sont pas corrects.</span>
+		        </li>
+		    </ul>
 		</div>
-	</section>
+		{% endif %}
+		<form action="{{ path('account_check_login') }}" method="post" name="identification" id="identification">
+		   	<fieldset class="account__form">
+		   		<legend>J'ai déjà un compte</legend>
+		   		<p>
+		   			<label for="email">Mon adresse email<span>*</span></label>
+					<input id="username" name="_username" type="email" class="form-control input-border-bottom" value="{{ last_username }}" required>
+		   		</p>
+		   		<p>
+		   			<label for="password">Mon mot de passe<span>*</span></label>
+					<input id="password" name="_password" type="password" class="form-control input-border-bottom" required>
+					<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+		   		</p>
+				<p>
+				   	<small>
+				   		<a href="../forgotPassword.html" class="forgotPassword">Mot de passe oublié ?</a>
+				   	</small>
+				</p>
+				{#
+				Si le panier n'est pas vide, on redirige vers la page permettant de vérifier s'il
+				faut appliquer des remises exceptionnelles réservées au visiteur 
+				#}
+				{% if app.session.get('cart')|length > 0 %}
+				   	<input type="hidden" name="_target_path" value="{{ path('cart_check_discount') }}">
+				{% endif %}
+				<button class="btn btn-primary" type="submit">Connexion</button>
+				<label class="label-for-checkbox">
+				   	<input type="checkbox" name="_remember_me" id="remember" class="input-checkbox"><span> Se souvenir de moi</span>
+				</label>
+			</fieldset>
+		</form>
+		{{ form_start(form) }}
+		    <fieldset>
+		       	<legend>Vous n'avez pas encore de compte ?</legend>
+				<div class="account__form">
+				    <div class="input__box">
+					   	{{ form_row(form.email) }}</p>
+				    </div>
+				    <div class="form__btn">
+				    	<button class="btn">{{ button_label|default('Créer un compte') }}</button>
+				    </div>
+				</div>
+		    </fieldset>
+		{{ form_end(form) }}
+		</div>
 {% endblock %}

@@ -8,13 +8,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class PaymentModeOrderService extends AbstractController
 {
-	public function createPaymentModeOrder(MgOrders $order, $modeId, $paymentType, $paymentAmount, $infoTransaction = null)
+	public function createPaymentModeOrder(MgOrders $order, $modePayment, $paymentAmount, $infoTransaction = null)
 	{
-		$mode = $this->getDoctrine()->getRepository(MgPaymentsModes::class)->find($modeId);
+		//$mode = $this->getDoctrine()->getRepository(MgPaymentsModes::class)->find($modeId);
 		$payment = new MgOrdersPayments();
 		$payment->setPaymentOrder($order);
-		$payment->setPaymentMode($mode);
-		//$payment->setPaymentType($paymentType);
+		$payment->setPaymentMode($modePayment);
 		$payment->setPaymentAmount($paymentAmount);
 		$payment->setInfoTransaction($infoTransaction);
 

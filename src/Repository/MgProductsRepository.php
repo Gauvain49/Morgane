@@ -73,7 +73,7 @@ class MgProductsRepository extends ServiceEntityRepository
     public function getProductByIds($ids, $limit = null, $start = null)
     {
         $qb = $this->createQueryBuilder('p');
-        $qb->join('p.supplier', 's')
+        $qb->leftJoin('p.supplier', 's')
             ->addSelect('s')
             ->join('p.taxe', 't')
             ->addSelect('t');

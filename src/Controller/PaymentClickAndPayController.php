@@ -20,9 +20,9 @@ class PaymentClickAndPayController extends AbstractController
     /**
      * @Route("cart/payment/clickandpay", name="form_clickandpay")
      */
-    public function paymentClickAndPay(CartService $cartService, OrderService $orderService, PaymentModeOrderService $paymentModeOrder, TokenUtils $tokenUtils, ClicAndPay $defaultValueClient)
+    public function paymentClicAndPay(CartService $cartService, OrderService $orderService, PaymentModeOrderService $paymentModeOrder, TokenUtils $tokenUtils, ClicAndPay $defaultValueClient)
     {
-        $defaultValueClient->getDefaultValueTest();
+        $defaultValueClient->getDefaultValue();
         $client = new Client();
 
         $cart = $cartService->cart();
@@ -75,47 +75,70 @@ class PaymentClickAndPayController extends AbstractController
             'endpoint' => $client->getClientEndpoint(),
             'publicKey' => $client->getPublicKey(),
             'formToken' => $formToken,
-            'postUrlSuccess' => 'ipn_payment_clickandpay',
+            'postUrlSuccess' => 'ipn_payment_clicandpay',
             'token' => $token
         ]);
     }
 
     /**
-     * @Route("cart/payment/ipn-clickandpay", name="ipn_payment_clickandpay")
+     * @Route("cart/payment/ipn-clicandpay", name="ipn_payment_clicandpay")
      */
-    public function ipnClickAndPay(CartService $cartService, OrderService $orderService, Request $request, SessionInterface $session, ClicAndPay $defaultValueClient)
+    public function ipnClicAndPay(CartService $cartService, OrderService $orderService, Request $request, SessionInterface $session, ClicAndPay $defaultValueClient)
     {
-        $defaultValueClient->getDefaultValueTest();
+        $defaultValueClient->getDefaultValue();
         $client = new Client();
 
         $cart = $cartService->cart();
         $store = array();
         //$client = new ClientTest();
         $customer = $this->getUser();
-        //dd($customer->getEmail());
         $totalCart = intval($cartService->totalCart() * 100);
-        //dd($totalCart);
+
         //La clé amount du tableau prend comme valeur un entier positif (ex: 1234 pour 12.34 EUR).
         $amount = intval(($cartService->totalCart() + array_sum($cartService->getShipping())) * 100);
 
         $ipn = $request->request->all();
-        //dump($ipn['kr-hash']);
-        //dump($ipn['kr-hash-algorithm']);
-        //dump($ipn['kr-answer-type']);
-        //dump($ipn['kr-answer']);
+        $info_transaction = json_decode($ipn['kr-answer']);
+        $info_transaction = serialize($info_transaction);
+        if (!$session->has('info_transaction')) {
+            $session->set('info_transaction', [$info_transaction]);
+        }
+
+        $transaction = json_decode($ipn['kr-answer']);
+
+        if ($transaction->orderDetails->orderTotalAmount == $amount) {
+            return $this->redirectToRoute('payment_valid', ['mode' => 'clickandpay']); 
+        }
+    }
+
+    /**
+     * @Route("cart/payment/ipn-clicandpay-test", name="ipn_payment_clicandpay-test")
+     */
+    public function ipnClicAndPayTest(CartService $cartService, OrderService $orderService, Request $request, SessionInterface $session, ClicAndPay $defaultValueClient)
+    {
+        $defaultValueClient->getDefaultValue();
+        $client = new Client();
+
+        $cart = $cartService->cart();
+        $store = array();
+        //$client = new ClientTest();
+        $customer = $this->getUser();
+        $totalCart = intval($cartService->totalCart() * 100);
+
+        //La clé amount du tableau prend comme valeur un entier positif (ex: 1234 pour 12.34 EUR).
+        $amount = intval(($cartService->totalCart() + array_sum($cartService->getShipping())) * 100);
+
+        $ipn = $request->request->all();
         $info_transaction = json_decode($ipn['kr-answer']);
         $info_transaction = serialize($info_transaction);
         if (!$session->has('infoTransClickAndPay')) {
             $session->set('infoTransClickAndPay', [$info_transaction]);
         }
-        //dd($session->get('infoTransClickAndPay'));
+
         $transaction = json_decode($ipn['kr-answer']);
-        //dd($info_transaction);
-        //dump($amount);
-        //dump($trinfo_transactionuc->orderDetails->orderTotalAmount);
-        //dd($info_transaction);
+
         if ($transaction->orderDetails->orderTotalAmount == $amount) {
-            return $this->redirectToRoute('payment_clickandpay'); 
+            return $this->redirectToRoute('payment_valid', ['mode' => 'clickandpay']); 
         }
     }
 }

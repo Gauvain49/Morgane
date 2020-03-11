@@ -35,17 +35,30 @@
                     <table data-order='[[ 0, "desc" ]]' id="basic-datatables" class="display table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>Id</th>
+                                <th data-class-name="priority">ID</th>
                                 <th>Nom</th>
                                 <th>Référence</th>
-                                <th>Prix de vente HT</th>
-                                <th>Prix de vente TTC</th>
+                                <th class="text-center">Prix vente HT</th>
+                                <th class="text-center">Prix vente TTC</th>
                                 <th>Catégories</th>
                                 <th class="text-center">Quantité</th>
                                 <th class="text-center">Affichage</th>
-                                <th colspan="2" class="text-center">Actions</th>
+                                <th class="text-center">Actions</th>
                             </tr>
                         </thead>
+                        <tfoot>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Référence</th>
+                                <th>Prix Vente HT</th>
+                                <th>Prix Vente TTC</th>
+                                <th>Catégories</th>
+                                <th>Quantité</th>
+                                <th class="cellAlignCenter">Affichage</th>
+                                <th>Action</th>
+                            </tr>
+                        </tfoot>
                         <tbody>
                         {% for product in products %}
                             <tr>
@@ -162,7 +175,7 @@
 {% endblock %}
 {% block javascripts %}
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="{{ asset('admin//assets/js/plugin/datatables/datatables.min.js') }}"></script>
+<script src="{{ asset('admin/js/plugin/datatables/datatables.min.js') }}"></script>
 <script>
     function onClickBtnDisplay(event){
         event.preventDefault();

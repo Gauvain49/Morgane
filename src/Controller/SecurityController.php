@@ -49,7 +49,7 @@ class SecurityController extends AbstractController
                 return $this->redirectToRoute('customer-register');
             } else {
                 $this->addFlash(
-                    'notice',
+                    'danger',
                     'Cet email est déjà utilisé !'
                 );
             }

@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+{% block title %}Votre compte{% endblock %}
+{% block introHome %}{% endblock %}
+{% block main %}
+	<h1>Mes informations</h1>
+	<p class="salutations">Bonjour {{ app.user.firstname }} {{ app.user.lastname }} <span class="logout"><a href="{{ path('account_logout') }}"><img src="{{ asset('images/deconnexion.png') }}" width="16" height="16" alt="" style="margin-top: 3px;"> Déconnexion</a></span></p>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{label}}">
+                {{message|raw}}
+            </div>
+    	{% endfor %}
+    {% endfor %}
+
+    <aside>
+		{{ include('main/account/nav.html.twig') }}
+		</ul>
+	</aside>
+	<div id="mainContent" class="margeCompte" style="padding-top: 0;">
+		<div id="carnetAdresse" class="clearfix">
+		{% for address in addresses %}
+            {% set type = 'billing' %}
+            {% if address.typeAddress == 1 %}
+            {% set type = 'shipping' %}
+            {% endif %}
+			<table style="width: 100%;">
+				<thead>
+					<tr>
+						<th style="text-align: left;" colspan="2">Votre adresse de {% if addresses|length == 1 %}facturation et livraison{% else %}{% if address.typeAddress == 0 %}facturation{% else %}livraison{% endif %}{% endif %}</th>
+						</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<td style="text-align: left;">
+							<a href="{{ path('customer_profil_update_address', {'type': type}) }}" class="btn" style="display: inline-block;">Modifier</a>
+                        </td>
+						<td style="text-align: right;">
+                            {% if addresses|length > 1 %}
+                            {{ include('main/account/addresses/_delete_form.html.twig') }}
+                        	{% endif %}
+                        </td>
+						</tr>
+					</tfoot>
+				<tbody>
+					<tr>
+						<td colspan="2">{{ gender[address.id].shortGender }} {{ address.addressFirstname }} {{ address.addressLastname }}<br>
+                        {{ address.addressCompagny }}<br />{{ address.address|nl2br }}<br />
+						{{ address.zipcode }} {{ address.town }}<br>
+						{% for land in country[address.id].countriesLangs %}{% if land.lang.id == languagesService.languageDefault.id %}{{ land.countryName }}{% endif %}{% endfor %}</td>
+						</tr>
+					</tbody>
+			</table>
+		{% else %}
+            <p class="col-12">Vous n'avez aucune adresse d'enregistrée.</p>
+            <p class="col-12"><a href="{{ path('customer_update_address') }}" class="btn btn-primary" style="display: inline-block;">Enregistrer une adresse</a></p>
+		{% endfor %}
+		{# Si aucune adresse enregistrée... #}
+        {% if addresses|length == 1 %}
+            <div class="col-12 mt-2">
+                <p style="text-align: right;padding-right: 10px;"><a href="{{ path('customer_profil_update_address') }}" style="display: inline-block; padding: 5px; border: solid 1px #999; text-decoration: none; color: #333; border-radius: 5px;">Ajouter une adresse</a></p>
+            </div>
+        {% endif %}                            
+		</div>
+	</div>
+{% endblock %}

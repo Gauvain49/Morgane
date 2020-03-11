@@ -1,0 +1,16 @@
+{{ form_start(form) }}
+	{{ form_row(form) }}
+    {# form_widget(form.billing_on) }}
+    {{ form_widget(form.out_of_range) }}
+    <div class="row mb-5">
+    	<div class="col">
+    		{{ form_widget(form.steps) }}
+    	<button type="button" id="add_step" class="btn btn-default btn-border btn-round btn-sm">Ajouter une tranche</button>
+    	</div>
+    </div>#}
+    <div class="mb-5">
+    	<button type="button" id="add_step" class="btn btn-default btn-border btn-round btn-sm">Ajouter une tranche</button>
+    </div>
+    <input type="hidden" id="widgets-counter" value="{{ countStep }}">
+    <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}

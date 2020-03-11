@@ -32,6 +32,10 @@ class ProductsController extends AbstractController
             foreach ($category->getProducts() as $p) {
                 $productIds .= $p->getId() . ', ';
             }
+            if (empty($productIds)) {
+                $productIds = 0;
+            }
+            //dd($productIds);
             $productIds = trim($productIds, ', ');
             $countProduct = count($repoProduct->getProductByIds($productIds));
             //dd($countProduct);
@@ -83,7 +87,8 @@ class ProductsController extends AbstractController
             'page' => $page,
             'pages' => $pages,
             'slugCat' => $slug,
-            'properties' => $properties
+            'properties' => $properties,
+            'pagination' => $countProduct > $pagination->getLimit() ? true : false
             /*'discountFrom' => $discountFrom,
             'listes' => $listes,
             'listesOneChild' => $listesOneChild,
@@ -109,7 +114,7 @@ class ProductsController extends AbstractController
         $image = $productsImagesRepository->findOneBy(['product' => $product->getId(), 'cover' => true]);
             
         if(!empty($image)) {
-            $getImage = $productsImagesRepository->getImgBySize($this->getParameter('upload_directory_products') . '/', $image->getId(), $productsImagesRepository::MEDIUM, 'square');
+            $getImage = $productsImagesRepository->getImgBySize($this->getParameter('upload_directory_products') . '/', $image->getId(), $productsImagesRepository::LARGE);
             if (!is_null($getImage)) {
                 $imgCover = $getImage;
             }
@@ -134,7 +139,12 @@ class ProductsController extends AbstractController
         }
         $taxe = $repoTaxes->find($product->getTaxe());
         $numerical = $repoProduct->findOneBy(['parent' => $product, 'offline' => 0, 'type' => 'downloadable']);
-        $supplier = $repoSuppliers->find($product->getSupplier());
+        //dd($product->getSupplier());
+        if (!is_null($product->getSupplier())) {
+            $supplier = $repoSuppliers->find($product->getSupplier());
+        } else {
+            $supplier = '';
+        }
         return $this->render('main/product.html.twig', [
             'content' => $content,
             'product' => $product,

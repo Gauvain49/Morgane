@@ -1,0 +1,6 @@
+		<ul id="menuCompte">
+			<li class="nav-item {% if app.request.attributes.get('_route') == 'customer_profil' %} active {% endif %}"><a href="{{ path('customer_profil') }}" class="nav-link">Votre profil</a></li>
+			<li class="nav-item {% if app.request.attributes.get('_route') == 'customer_profil_password' %} active {% endif %}"><a href="{{ path('customer_profil_password') }}" class="nav-link">Gestion du mot de passe</a></li>
+			<li class="nav-item {% if app.request.attributes.get('_route') == 'customer_profil_addresses' or app.request.attributes.get('_route') == 'customer_profil_addresses_update' or app.request.attributes.get('_route') == 'customer_profil_addresses_new' %} active {% endif %}"><a href="{{ path('customer_profil_addresses') }}" class="nav-link">Vos adresses</a></li>
+			<li class="nav-item {% if app.request.attributes.get('_route') == 'customer_profil_orders' %} active {% endif %}"><a href="{{ path('customer_profil_orders') }}" class="nav-link">Vos commandes</a></li>
+		</ul>

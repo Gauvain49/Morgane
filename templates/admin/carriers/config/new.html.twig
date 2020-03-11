@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New MgCarriersConfig{% endblock %}
+
+{% block body %}
+    <h1>Create new MgCarriersConfig</h1>
+
+    {{ include('mg_carriers_config/_form.html.twig') }}
+
+    <a href="{{ path('mg_carriers_config_index') }}">back to list</a>
+{% endblock %}

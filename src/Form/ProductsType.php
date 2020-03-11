@@ -27,13 +27,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ProductsType extends AbstractType
 {
-    /*private $transformer;
-
-    public function __construct(CategorieToNumberTransformer $transformer)
-    {
-        $this->transformer = $transformer;
-    }*/
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -113,7 +106,8 @@ class ProductsType extends AbstractType
             ])
             ->add('bulk_quantity', IntegerType::class, [
                 'label' => 'Commande en vrac de',
-                'required' => false
+                'required' => false,
+                'help' => 'Attention ! Le vrac peut compliquer la gestion panier pour le client. A utiliser avec prudence.'
             ])
             ->add('stock_management', CheckboxType::class, [
                 'label' => 'Gérer les stocks',

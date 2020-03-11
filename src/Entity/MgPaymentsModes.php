@@ -78,6 +78,11 @@ class MgPaymentsModes
      */
     private $type;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\MgPaypal", mappedBy="mode", cascade={"persist", "remove"})
+     */
+    private $paypal;
+
     public function __construct()
     {
         $this->paymentChecks = new ArrayCollection();
@@ -267,6 +272,23 @@ class MgPaymentsModes
     public function setType(string $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getPaypal(): ?MgPaypal
+    {
+        return $this->paypal;
+    }
+
+    public function setPaypal(MgPaypal $paypal): self
+    {
+        $this->paypal = $paypal;
+
+        // set the owning side of the relation if necessary
+        if ($paypal->getMode() !== $this) {
+            $paypal->setMode($this);
+        }
 
         return $this;
     }

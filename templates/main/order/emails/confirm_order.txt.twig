@@ -1,0 +1,36 @@
+Bonjour {{ app.user.firstname }} {{ app.user.lastname }},
+
+Merci d'avoir effectué vos achats sur {{ appService.getParams.getTitle }}
+
+------------------------------------------------------------------
+Détails de la commande
+Commande : {{ order.num }} - Date {{ order.dateAdd|date("d/m/Y") }}
+
+Paiement : {{ payments.paymentMode.title }}
+
+------------------------------------------------------------------
+
+{% for content in contents %}
+{{ content.reference }} - {{ content.designation }}{% if content.format == 'numeric' %}(Ebook){% endif %}
+Prix unitaire : {{ content.netUnitPriceAllTaxes|number_format(2, ',', ' ') }}&nbsp;€
+Quantité : {{ content.quantity }}
+Prix Total : {{ content.totalPriceAllTaxes|number_format(2, ',', ' ') }}&nbsp;€
+
+{% endfor %}
+------------------------------------------------------------------
+Total TTC : {{ order.totalPriceAllTaxes|number_format(2, ',', ' ') }}&nbsp;€
+Dont TVA : {{ order.totaltaxes|number_format(2, ',', ' ') }}&nbsp;€
+Frais de livraison : {{ (order.totalShippingPrice + order.totalShippingTaxes)|number_format(2, ',', ' ') }}
+Total de votre commande : {{ (order.totalPriceAllTaxes + order.totalShippingPrice + order.totalShippingTaxes)|number_format(2, ',', ' ') }}&nbsp;€
+
+------------------------------------------------------------------
+Adresse de facturation :
+{{ order.billingName }}
+{{ order.billingAddress|nl2br }}
+
+Adresse de livraison :
+{{ order.deliveryName }}
+{{ order.deliveryAddress|nl2br }}
+
+------------------------------------------------------------------
+{{ appService.getParams.getTitle }} réalisé avec Morgane

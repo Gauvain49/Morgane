@@ -1,96 +1,123 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Votre panier d'achat{% endblock %}
-
+{% block introHome %}{% endblock %}
 {% block main %}
-	{% for label, messages in app.flashes %}
-		{% for message in messages %}
-			<div class="alert alert-{{label}}">
-				{{message|raw}}
-			</div>
+	<div id="mainContent">
+		<h1>Mon panier</h1>
+		{% for label, messages in app.flashes %}
+			{% for message in messages %}
+				<div class="alert alert-{{label}}">
+					{{message|raw}}
+				</div>
+			{% endfor %}
 		{% endfor %}
-	{% endfor %}
-	{% if cart|length > 0 %}
-	<div class="contentBasket">
-		<h1 style="font-family: 'itc_avant_garde_gothicbook';">Votre panier</h1>
-		<table>
-			<thead>
-				<tr class="title-top">
-					<th class="product-thumbnail">Image</th>
-					<th class="product-name">Produit</th>
-					<th class="product-price">Prix</th>
-					<th class="product-quantity">Quantité</th>
-					<th class="product-subtotal">Total</th>
-					<th class="product-remove">Supprimer</th>				
-				</tr>
-			</thead>
-			<tbody>
-				{% for key, item in cart %}
-				<tr>
-					<td class="product-thumbnail">
-						{% if key in images|keys %}
-						<img src="{{ asset('img/p/') ~ images[key] }}" alt="{{ item.title }}">
-						{% else %}
-						<img src="{{ asset('img/p/fr.jpg') }}" alt="{{ item.title }}">
+		{% if cart|length > 0 %}
+			<table id="contenuPanier">
+				<thead>
+					<tr class="title-top">
+						<th>&nbsp;</th>
+						<th style="text-align: center">Produit</th>
+						<th>Prix Unitaire</th>
+						<th>Quantité</th>
+						<th>Total</th>
+						<th>&nbsp;</th>				
+					</tr>
+				</thead>
+				<tbody>
+					{% for key, item in cart %}
+					{# produit non vrac #}
+						<td class="product-thumbnail">
+							{% if key in images|keys %}
+							<img src="{{ asset('img/p/') ~ images[key] }}" alt="{{ item.title }}">
+							{% else %}
+							<img src="{{ asset('img/p/fr.jpg') }}" alt="{{ item.title }}">
+							{% endif %}
+						</td>
+						<td style="text-align: center;">
+							<strong>
+								{{ item.title }}
+							</strong>
+								{% if item.product.bulkQuantity > 1 %}
+								<br><small><span style="color: #f00; display: inline-block; padding: 0 9px; border: solid 1px #d1d1d1; border-radius: 50%; font-weight: bold;">!</span> Commandable dans un carton réunissant {{ item.product.bulkQuantity }} articles</small>
+								{% endif %}
+						</td>
+						<td class="product-price">
+							{% if item.amount['grossPriceAllTaxes'] != item.amount['priceNetAllTaxes'] %}
+							<span class="price">
+								<span style="text-decoration: line-through; font-size: 0.80em; color: #aaa;">{{ item.amount['grossPriceAllTaxes']|number_format(2, ',', ' ') }} €</span>
+								{{ item.amount['priceNetAllTaxes']|number_format(2, ',', ' ') }} €
+							</span>
+							{% else %}
+								<span class="price">{{ item.amount['priceNetAllTaxes']|number_format(2, ',', ' ') }} €</span>
+							{% endif %}
+						</td>
+						<td class="product-quantity">
+							<div class="gestionQte">
+									<a href="{{ path('cart_less', {'id' : key}) }}" class="qteMoins">-</a>{{ item.qty }}<a href="{{ path('cart_more', {'id' : key}) }}" class="qtePlus">+</a></div>
+						</td>
+						<td class="product-subtotal">{{ (item.amount['priceNetAllTaxes'] * item.qty)|number_format(2, ',', ' ') }} €</td>
+						<td class="product-remove"><a href="{{ path('cart_dell_line', {'id' : key}) }}"><img src="{{ asset('img/delete.png') }}" width="13" height="16"></a></td>
+					</tr>
+					{% endfor %}
+					{% if bulk['exist'] == true %}
+						{% if bulk['valid'] == false %}
+						<tr>
+							<td colspan="6">
+								<p style="color: #F00;">Il vous manque des articles pour atteindre les conditionnements en vrac. Veuillez ajuster vos quantités ou <a href="">voir d'autres articles en vrac</a> pour compléter et valider votre panier.</p>
+							</td>
+						</tr>
 						{% endif %}
-					</td>
-					<td class="product-name">
-						<strong>{{ item.title }}</strong>
-					</td>
-					<td class="product-price">
-						{% if item.amount['grossPriceAllTaxes'] != item.amount['priceNetAllTaxes'] %}
-						<span class="price">
-							<span style="text-decoration: line-through; font-size: 0.80em; color: #aaa;">{{ item.amount['grossPriceAllTaxes']|number_format(2, ',', ' ') }} €</span>
-							{{ item.amount['priceNetAllTaxes']|number_format(2, ',', ' ') }} €
-						</span>
+					{% endif %}
+				</tbody>
+				<tfoot>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td class="prixTotal">Montant total</td>
+						<td class="prixTotal">{{ cartService.totalCart|number_format(2, ',', ' ') }} €</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td style="text-align: right;">Port</td>
+						<td>{{ (cartService.getShipping['price']+cartService.getShipping['taxes'])|number_format(2, ',', ' ') }} €</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td class="prixTotal"><strong>Total commande</strong></td>
+						<td class="prixTotal">{{ (cartService.totalCart + cartService.getShipping['price']+cartService.getShipping['taxes'])|number_format(2, ',', ' ') }} €<td>
+						<td></td>
+					</tr>
+				</tfoot>
+			</table>
+		<div class="pleaseSubmit">
+			<div class="validCart">
+				{% if app.user %}
+					<div class="valideCommande">
+						{% if cartService.totalQuantity < 12 %}
+							<p style="color: #DFDFDF;">Votre panier doit contenir un minimum de 12 articles</p>
 						{% else %}
-							<span class="price">{{ item.amount['priceNetAllTaxes']|number_format(2, ',', ' ') }} €</span>
+						<p><a href="{{ path('cart_confirm') }}">Valider votre commande&nbsp;&nbsp;&nbsp;&nbsp;></a></p>
 						{% endif %}
-					</td>
-					<td class="product-quantity">
-						<div class="lineCart">
-							<form action="">
-								<a href="{{ path('cart_less', {'id' : key}) }}" class="quantityLess">-</a><input name="qty" type="text" id="qty" autocomplete="off" value="{{ item.qty }}" onfocus="if(this.value=='1')this.value='';" /><a href="{{ path('cart_more', {'id' : key}) }}" class="quantityMore">+</a>
-							</form>
-						</div>
-					</td>
-					<td class="product-subtotal">{{ (item.amount['priceNetAllTaxes'] * item.qty)|number_format(2, ',', ' ') }} €</td>
-					<td class="product-remove"><a href="{{ path('cart_dell_line', {'id' : key}) }}"><img src="{{ asset('img/delete.png') }}" width="13" height="16"></a></td>
-				</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-	</div>
-	<div class="totalBasket">
-		<table>
-			<tr>
-				<th>Total du panier</th>
-				<td>{{ cartService.totalCart|number_format(2, ',', ' ') }} €</td>
-			</tr>
-			<tr>
-				<th>Livraison</th>
-				<td>{{ (cartService.getShipping['price']+cartService.getShipping['taxes'])|number_format(2, ',', ' ') }} €</td>
-			</tr>
-			<tr class="totalCart">
-				<th>Total de la commande</th>
-				<td>{{ (cartService.totalCart + cartService.getShipping['price']+cartService.getShipping['taxes'])|number_format(2, ',', ' ') }} €</td>
-			</tr>
-		</table>
-	</div>
-	<div class="pleaseSubmit">
-		<div class="validCart">
-			{% if app.user %}
-				<a href="{{ path('cart_confirm') }}">Valider votre commande&nbsp;&nbsp;&nbsp;&nbsp;></a>
-			{% else %}
-			<div>
-				<p>Veuillez <a href="{{ path('account_login') }}">vous identifier</a> ou <a href="{{ path('account_login') }}">créer votre compte</a> pour passer commande</p>
-		    </div>
-		    {% endif %}
+					</div>
+				{% else %}
+				<div>
+					<p>Veuillez <a href="{{ path('account_login') }}">vous identifier</a> ou <a href="{{ path('account_login') }}">créer votre compte</a> pour passer commande</p>
+			    </div>
+			    {% endif %}
+			</div>
 		</div>
+		{% else %}
+		<div>
+			<p colspan="6">Votre panier est vide.</p>
+		</div>
+		{% endif %}
 	</div>
-	{% else %}
-	<div>
-		<p colspan="6">Votre panier est vide.</p>
-	</div>
-	{% endif %}
 {% endblock %}

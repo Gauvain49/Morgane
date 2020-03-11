@@ -1,0 +1,211 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Commande{% endblock %}
+{# form_theme form _self #}
+
+{% block body %}
+<div class="page-header">
+    <h4 class="page-title">Commande n°{{ order.num }} du {{ order.dateAdd|date('d/m/Y H:i:s') }}</h4>
+    <ul class="breadcrumbs">
+        <li class="nav-home">
+            <a href="{{ path('dashboard') }}">
+                <i class="flaticon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow"></i>
+        </li>
+        <li class="nav-item">
+            <a href="{{ path('orders_index') }}">
+                Commandes
+            </a>
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow"></i>
+        </li>
+        <li class="nav-item">
+            Détail d'un commande
+        </li>
+    </ul>
+</div>
+<div class="row">
+	<div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Client : <span class="badge badge-light"><a href="{{ path('customers_edit', {'id': order.user.id, 'role': 'admin'}) }}">{{ order.user.firstname }} {{ order.user.lastname }}</a></span>&nbsp;<span class="badge">ID n°{{ order.user.id }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                        <div class="col-5">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="badge badge-info">Adresse de facturation</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p>{{ order.billingName }}</p>
+                                    <p>{{ order.billingAddress|nl2br }}</p>
+                                    <p>{# for address in order.customer.addresses %}{{ dump(order.customer.addresses) }}{% endfor #}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-5">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="badge badge-info">Adresse de livraison</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p>{{ order.deliveryName }}</p>
+                                    <p>{{ order.deliveryAddress|nl2br }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6>Commande</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <p class="badge badge-warning">
+                                        Résumé de la commande
+                                    </p>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-striped table-hover mt-2">
+                                        <tr>
+                                            <th>Frais de livraison</th>
+                                            <td>&nbsp;</td>
+                                            <td>{{ (order.totalShippingPrice + order.totalShippingTaxes)|number_format(2, ',', ' ') }} EUR<br><span class="text-muted">Dont {{ order.totalShippingTaxes|number_format(2, ',', ' ') }} € de TVA</span></td>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="2" align="right">Total TTC&nbsp;&nbsp;&nbsp;</th>
+                                            <td style="color: font-weight: bold;">{{ (order.totalPriceAllTaxes + order.totalShippingPrice + order.totalShippingTaxes)|number_format(2, ',', ' ') }} EUR</td>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="2" align="right">État&nbsp;&nbsp;&nbsp;</th>
+                                            <td style="font-weight: bold;">{{ order.currentStatus.name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="2" align="right">Mode de paiement&nbsp;&nbsp;&nbsp;</th>
+                                            <td style="font-weight: bold;">{{ modePayment.title }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <p class="badge badge-warning">Détail de la commande</p>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-striped table-hover mt-2">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Titre</th>
+                                                <th scope="col">Quantite</th>
+                                                <th scope="col">Montant TTC</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for content in order.ordersContents %}
+                                            <tr>
+                                                <td>
+                                                    {% if content.id in product|keys %}
+                                                        {% for image in product[content.id].images %}
+                                                            {% if image.cover == 1 %}
+                                                            <figure class="figure mr-3" style="width: 90px">
+                                                                <img src="{{ asset('img/p/') ~ image.id|pathProduct ~ image.id }}_mediumsquare.jpg" alt="" class="img-fluid img-thumbnail">
+                                                            </figure>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                    <strong>{{ content.designation }}</strong>
+                                                </td>
+                                                <td>{{ content.quantity }}</td>
+                                                <td>{{ content.totalPriceAllTaxes|number_format(2, ',', ' ') }} €</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    État de la commande
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    Status
+                                </div>
+                                <div class="card-body">
+                                    <table class="table">
+                                        <tr>
+                                            <th>État</th>
+                                            <th>Date</th>
+                                        </tr>
+                                        {% for state in status %}
+                                        <tr>
+                                            <td style="padding: 7px;">{{ state.status.name }}</td>
+                                            <td style="padding: 7px;">{{ state.dateAdd|date('d/m/Y H:i:s') }} €</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </table>
+                                    <hr>
+                                    {{ include('admin/orders/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    Paiement
+                                </div>
+                                <div class="card-body">
+                                    <table class="table">
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Moyen de paiement</th>
+                                            <th>Montant</th>
+                                            <th></th>
+                                        </tr>
+                                        {% for payment in payments %}
+                                        <tr>
+                                            <td>{{ payment.paymentDate|date('d/m/Y H:i:s') }}</td>
+                                            <td>{% if payment.id in typePayment|keys %}{{ typePayment[payment.id].title }}{% endif %}{# payment.paymentType #}</td>
+                                            <td {% if payment.paymentAmount < 0 %}class="text-danger"{% endif %}>{{ payment.paymentAmount|number_format(2, ',', ' ') }} €</td>
+                                            <td>{% if payment.id not in paymentDeleted|keys and payment.paymentParent is null %}<a href="{{ path('payment_order_edit', {'id': payment.id}) }}"><i class="fas fa-times-circle text-danger"></i> Annuler</a>{% endif %}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </table>
+                                    <hr>
+                                    <p class="badge badge-info">Mettre à jour le paiement</p>
+                                    {{ include('admin/orders/_form_payments.html.twig', {'button_label': 'Ajouter'}) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+</div>
+{% endblock %}

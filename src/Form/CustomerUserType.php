@@ -93,7 +93,9 @@ class CustomerUserType extends AbstractType
 					'class' => 'btn btn-primary'
 				]
 			])*/
-			->add('customers', CustomersType::class)
+			->add('customers', CustomersType::class, [
+				'label_attr' => [
+					'style' => 'display: none;']])
 			;
 	}
 

@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MgCarriersConfig index{% endblock %}
+
+{% block body %}
+    <h1>MgCarriersConfig index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Billing_on</th>
+                <th>Out_of_range</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for mg_carriers_config in mg_carriers_configs %}
+            <tr>
+                <td>{{ mg_carriers_config.id }}</td>
+                <td>{{ mg_carriers_config.billingOn }}</td>
+                <td>{{ mg_carriers_config.outOfRange }}</td>
+                <td>
+                    <a href="{{ path('mg_carriers_config_show', {'id': mg_carriers_config.id}) }}">show</a>
+                    <a href="{{ path('mg_carriers_config_edit', {'id': mg_carriers_config.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('mg_carriers_config_new') }}">Create new</a>
+{% endblock %}

@@ -3,19 +3,16 @@ namespace App\Services;
 
 use App\Entity\MgProducts;
 use App\Repository\MgProductsRepository;
-//use App\Repository\MgTaxesRepository;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class CartService
 {
 	protected $session;
 	protected $products;
-	//protected $taxes;
 
 	public function __construct(SessionInterface $session, MgProductsRepository $products) {
 		$this->session = $session;
 		$this->products = $products;
-		//$this->taxes = $taxes;
 	}
 
     /**
@@ -28,6 +25,42 @@ class CartService
         }
 
         return $cart = $this->session->get('cart');
+    }
+
+    /**
+     * Vérifie que le panier est valide en cas de produit commandable en vrac
+     */
+    public function checkBulk()
+    {
+        if (!$this->session->has('cart')) {
+            $this->session->set('cart', []);
+        }
+        $cart = $this->session->get('cart');
+        $productBulk = []; //Tableau recueillant l'analyse du vrac
+        $bulk = null; //Variable recueillant la valeur du vrac servant de comparaison avec les produits mis en panier
+        $totalBulk = 0; //Valeur recueillant le total vrac définie pour les produits
+        $qtyCartBulk = 0; //Valeur reprenant les quantités des produits vrac mis dans le panier
+        foreach ($cart as $value) {
+            if ($value['product']->getBulkQuantity() > 1) {
+                $productBulk['exist'] = true;
+                $qtyCartBulk += $value['qty'];
+                $totalBulk += $value['product']->getBulkQuantity();
+            }
+            if ($value['product']->getBulkQuantity() > $bulk) {
+                $bulk = $value['product']->getBulkQuantity();
+            }
+        }
+        dump($bulk);
+        dump($qtyCartBulk);
+        dump($bulk % $qtyCartBulk);
+        dump($bulk/$qtyCartBulk);
+
+        if (($totalBulk == $qtyCartBulk) || (($bulk % $qtyCartBulk) == 0 && ($bulk/$qtyCartBulk) == 1)) {
+            $productBulk['valid'] = true;
+        } else {
+            $productBulk['valid'] = false;
+        }
+        return $productBulk;
     }
 
     /**
@@ -96,7 +129,6 @@ class CartService
     public function less(MgProducts $product)
     {
         $cart = $this->session->get('cart');
-        //$product = $this->products->find($id);
         if (array_key_exists($product->getId(), $cart)) {
             $cart[$product->getId()]['qty'] -= $product->getSalesUnit();
             $this->session->set('cart', $cart);
@@ -126,7 +158,6 @@ class CartService
 
         //Calcul du nombre d'article soumis à la livraison
         foreach ($this->cart() as $item) {
-            //dd($item);
             if ($item['product']->getType() != 'downloadable') {
                 $submittedToTheDelivery += $item['qty'];
             }
@@ -172,7 +203,6 @@ class CartService
         $cart = $this->session->get('cart', []);
         $totalCart = 0;
         foreach ($cart as $key => $value) {
-            //dd($value['amount']['priceNetAllTaxes']);
             $totalCart += $value['amount']['priceNetAllTaxes'] * $value['qty'];
         }
         return $totalCart;

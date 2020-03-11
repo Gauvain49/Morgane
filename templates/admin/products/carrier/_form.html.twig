@@ -1,0 +1,64 @@
+{{ form_start(form) }}
+	<div class="row">
+		<div class="col-3">
+			<div class="form-group">
+				{{ form_label(form.width) }}
+				<div class="input-group">
+					{{ form_widget(form.width) }}
+					<div class="input-group-append">
+					   	<div class="input-group-text">cm</div>
+					</div>
+				</div>
+				{{ form_errors(form.width) }}
+			</div>
+		</div>
+		<div class="col-3">
+			<div class="form-group">
+				{{ form_label(form.height) }}
+				<div class="input-group">
+					{{ form_widget(form.height) }}
+					<div class="input-group-append">
+					   	<div class="input-group-text">cm</div>
+					</div>
+				</div>
+				{{ form_errors(form.height) }}
+			</div>
+		</div>
+		<div class="col-3">
+			<div class="form-group">
+				{{ form_label(form.depth) }}
+				<div class="input-group">
+					{{ form_widget(form.depth) }}
+					<div class="input-group-append">
+					   	<div class="input-group-text">cm</div>
+					</div>
+				</div>
+				{{ form_errors(form.depth) }}
+			</div>
+		</div>
+		<div class="col-3">
+			<div class="form-group">
+				{{ form_label(form.weight) }}
+				<div class="input-group">
+					{{ form_widget(form.weight) }}
+					<div class="input-group-append">
+					   	<div class="input-group-text">Kg</div>
+					</div>
+				</div>
+				{{ form_errors(form.weight) }}
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-3">
+			{{ form_row(form.additionnal_shipping_cost) }}
+		</div>
+	</div>
+	
+	{{ form_row(form.carrier) }}
+		
+	<div class="col">
+		<button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+	</div>
+</div>
+{{ form_end(form) }}

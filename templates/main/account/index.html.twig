@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+{% block title %}Votre compte{% endblock %}
+{% block introHome %}{% endblock %}
+{% block stylesheets %}
+<style>
+    #espaceIdentification form {
+        border: none;
+    }
+    .sr-only {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% block main %}
+    <h1>Mes informations</h1>
+    <p class="salutations">Bonjour {{ app.user.firstname }} {{ app.user.lastname }} <span class="logout"><a href="{{ path('account_logout') }}"><img src="{{ asset('images/deconnexion.png') }}" width="16" height="16" alt="" style="margin-top: 3px;"> Déconnexion</a></span></p>
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{label}}">
+                        {{message|raw}}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            <aside>
+                <!-- <ul id="menuCompte">
+                    <li class="active">Mon compte</li>
+                    <li><a href="http://<?php echo BASE_URL; ?>compte/informations-personnels.php">Modifier mot de passe</a></li>
+                    <li><a href="http://<?php echo BASE_URL; ?>compte/carnet-adresses.php">Mes coordonnées</a></li>
+                    <li><a href="http://<?php echo BASE_URL; ?>compte/mes-commandes.php">Mes commandes</a></li>
+                </ul> -->
+                {{ include('main/account/nav.html.twig') }}
+            </aside>
+
+            <div id="mainContent" class="margeCompte" style="padding-top: 0;">
+                <div id="carnetAdresse" class="clearfix">
+                    <div id="espaceIdentification">
+                        <div class="my_account">
+                            {{ include('main/account/_form.html.twig') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+{% block _customers_gender_entry_widget %}
+    <div class="form-check form-check-inline">
+        <label for="" class="form-check-label">
+            <input type="radio" name="{{ full_name }}" class="form-check-input" value="{{ value }}" required>{{ label }}
+        </label>
+    </div>
+{% endblock %}
+{% block javascripts %}
+<script>
+    /*var a = document.getElementsByClassName('form-check');
+    for (var i = 0; i < a.length; i++) {
+        a[i].classList.add('form-check-inline');
+        a[i].classList.add('p-0');
+        console.log(a[i]);
+    }*/
+</script>
+{% endblock %}

@@ -19,7 +19,7 @@ class MgOrders
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\MgUsers", inversedBy="orders")
+     * @ORM\OneToOne(targetEntity="App\Entity\MgUsers", inversedBy="orders")
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;

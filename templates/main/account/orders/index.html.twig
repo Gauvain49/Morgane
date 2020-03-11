@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+{% block title %}Votre compte{% endblock %}
+{% block introHome %}{% endblock %}
+{% block main %}
+	<h1>Mes informations</h1>
+	<p class="salutations">Bonjour {{ app.user.firstname }} {{ app.user.lastname }} <span class="logout"><a href="{{ path('account_logout') }}"><img src="{{ asset('images/deconnexion.png') }}" width="16" height="16" alt="" style="margin-top: 3px;"> Déconnexion</a></span></p>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{label}}">
+                {{message|raw}}
+            </div>
+    	{% endfor %}
+    {% endfor %}
+
+    <aside>
+		{{ include('main/account/nav.html.twig') }}
+		</ul>
+	</aside>
+	<div id="mainContent" class="margeCompte" style="padding-top: 0;">
+		<h2>Vos commandes</h2>
+		<div id="carnetAdresse" class="clearfix">
+			<table style="width: 100%">
+				<thead>
+					<tr>
+						<th style="text-align: left;">Date de votre commande</th>
+						<th>Numéro</th>
+						<th>Montant total</th>
+						</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<td></td>
+					</tr>
+				</tfoot>
+				<tbody>
+                    {% for order in orders %}
+					<tr>
+						<td>{{ order.dateadd|date("d-m-Y") }}</td>
+						<td>{{ order.num }}</td>
+						<td>{{ (order.totalpricealltaxes + order.totalshippingprice + order.totalshippingtaxes)|number_format(2, ',', ' ') }} €</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+{% endblock %}

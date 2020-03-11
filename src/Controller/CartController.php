@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Repository\MgCustomersRepository;
+use App\Repository\MgGendersRepository;
 use App\Repository\MgPaymentsModesRepository;
+use App\Repository\MgPostsRepository;
 use App\Repository\MgProductsImagesRepository;
 use App\Repository\MgProductsRepository;
 use App\Services\CartService;
@@ -23,6 +26,7 @@ class CartController extends AbstractController
             $session->set('shipping', []);
         }
         $cart = $cartService->cart();
+        $bulk = $cartService->checkBulk();
         //Récupération des images
         $images = [];
         foreach ($cart as $key => $item) {
@@ -36,7 +40,8 @@ class CartController extends AbstractController
         }
         return $this->render('main/cart/index.html.twig', [
             'cart' => $cart,
-            'images' => $images
+            'images' => $images,
+            'bulk' => $bulk
         ]);
     }
 
@@ -192,14 +197,26 @@ class CartController extends AbstractController
     /**
      * @Route("cart/confirm", name="cart_confirm")
      */
-    public function confirm(SessionInterface $session, MgProductsRepository $repoProduct, MgProductsImagesRepository $productsImagesRepository, CartService $cartService, MgPaymentsModesRepository $repoPayments)
+    public function confirm(SessionInterface $session, MgProductsRepository $repoProduct, MgProductsImagesRepository $productsImagesRepository, CartService $cartService, MgPaymentsModesRepository $repoPayments, MgCustomersRepository $repoCustomer, MgGendersRepository $repoGender, MgPostsRepository $repoPost)
     {
         //Si la session du panier ou des frais de livraison n'existe pas...
-        /*if (!$session->has('cart') || !$session->has('shipping')) {
-            return $this->redirectToRoute('cart');
-        }*/
         if (!$session->has('shipping')) {
             $session->set('shipping', []);
+        }
+
+        //On récupère le client
+        $customer = $repoCustomer->findOneBy(['user' => $this->getUser()]);
+        //Puis on récupère ses adresses
+        if ((count($customer->getAddresses())) == 1) {
+            $billingAddress = $shippingAddress = $customer->getAddresses()[0];
+        } else {
+            foreach ($customer->getAddresses() as $value) {
+                if ($value->getTypeAddress() == 0) {
+                    $billingAddress = $value;
+                } else {
+                    $shippingAddress = $value;
+                }
+            }
         }
 
         $cart = $cartService->cart();
@@ -217,8 +234,15 @@ class CartController extends AbstractController
                 }
             }
         }
+        $genders = $repoGender->findAll();
         //$session->set('shipping', $cartService->getShipping($cart));
         $payments = $repoPayments->findByActif(true);
+        $cgv = $repoPost->findOneByReserved('CGV');
+        foreach ($cgv->getContents() as $value) {
+            if ($value->getLang()->getId() == 1) {
+                $cgv = $value->getContent();
+            }
+        }
         return $this->render('main/cart/confirmCart.html.twig', [
             'cart' => $cart,
             //'pricesProducts' => $pricesProducts,
@@ -227,8 +251,12 @@ class CartController extends AbstractController
             //'totalAllTaxes' => $totalAllTaxes,
             //'authors' => $authors,
             'images' => $images,
+            'billingAddress' => $billingAddress,
+            'shippingAddress' => $shippingAddress,
+            'genders' => $genders,
             //'shipping' => $session->get('shipping'),
-            'payments' => $payments
+            'payments' => $payments,
+            'cgv' => $cgv
         ]);
     }
 }

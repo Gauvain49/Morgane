@@ -1,109 +1,87 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Notre catalogue{% endblock %}
+{% block title %}Nos vins{% endblock %}
+{% block introHome %}{% endblock %}
 {% block main %}
-<div class="homePage">
-	<section class="homePage homeNewsItem clearfix">
-		<header>
-			<div class="arianeCat">
-				<ul>
-					{% for ariane in filAriane %}
-					<a href="{{ path('catalog', {'slug': ariane.slug}) }}" style="text-decoration: none;"><li>&nbsp;&nbsp;⟩&nbsp;&nbsp;{{ ariane.name }}</li></a>
-					{% endfor %}
-				</ul>
-			</div>
-		</header>
-		<aside class="filtreCat">
-			<header>
-				<p>Filtrer les produits</p>
-			</header>
-			<ul>
-				{% if categoriesChildren|length > 0 %}
-				{% for categorie in categoriesChildren %}
-					{% for lala in categorie.contents %}
-
-					{% endfor %}
-				<li>
-				{% for content in categorie.contents %}
-				{% if content.lang.id == languagesService.languageDefault.id %}
-					<a href="{{ path('catalog', {'slug': content.slug }) }}">{{ content.name }}</a>
-				{% endif %}
-				{% endfor %}
-				</li>
-				{% endfor %}
-				{% else %}
-				<li style="color: #fff;">Plus de filtrage possible</li>
-				{% endif %}
-			</ul>
-		</aside>
-		<div id="afficheProduitCategorie" style="margin-left: 230px;">
-			{% for product in products %}
-			{% if product.type == 'master' %}
-				{% set slug = '' %}
-				{% for content in product.contents %}
-					{% if content.lang.id == 1 %}
-						{% set slug = content.slug %}
-					{% endif %}
-				{% endfor %}
-			<article class="vignetteProduit">
-				<div>
-					{% if product.supplier != null %}
-					<h2>
-						{% for supplier in suppliers %}
-						{% if supplier.id == product.supplier.id %}
-							{{ supplier.supplierName }}
-						{% endif %}
-						{% endfor %}
-					</h2>
-					{% endif %}
-					<p class="imgProduit">
-						<a href="{{ path('product_detail', {'slug': slug}) }}">
-							{% if product.id in imgPath|keys %}
-							<img src="{{ asset('img/p/') ~ imgPath[product.id] }}" alt="{% for content in product.contents %}{% if content.lang.id == 1 %}{{ content.name }}{% endif %}{% endfor %}">
-							{% else %}
-							<img src="{{ asset('img/p/fr.jpg') }}" alt="{% for content in product.contents %}{% if content.lang.id == 1 %}{{ content.name }}{% endif %}{% endfor %}">
-							{% endif %}
-						</a>
-					</p>
-					<div class="des">
-						<p class="titreProduit"><a href="{{ path('product_detail', {'slug': slug}) }}">{% for content in product.contents %}{% if content.lang.id == 1 %}{{ content.name }}{% endif %}{% endfor %}</a></p>
-						<div class="desShort">
-							{% for content in product.contents %}{% if content.lang.id == 1 %}{{ content.summary|raw }}{% endif %}{% endfor %}
-						</div>
-						<div class="tarifProduit">
-							{% if product.sellingPriceAllTaxes > 0 %}
-							{% if product.discount != '' %}
-								{% set netprice = product.discount|discountPriceAT(product.discountType, product.discountOnTaxe, '20', product.sellingPrice, product.sellingPriceAllTaxes) %}
-							<div class="zonePromo">
-							<p class="pourcentPromo">{{ (netprice - product.sellingPriceAllTaxes)|number_format(2, ',', ' ') }} €</p>
-							<p class="prixBarre">{{ product.sellingPriceAllTaxes|number_format(2, ',', ' ') }} €</p>
-							</div>
-							<p class="prix">Prix Spot'light : {{ netprice|number_format(2, ',', ' ') }} €</p>
-							{% else %}
-							<p class="prix">Prix Spot'light : {{ product.sellingPriceAllTaxes|number_format(2, ',', ' ') }} €</p>
-							{% endif %}
-							{% endif %}
-						{% if product.propertiesContents|length > 0 %}
-							{% for property in product.propertiesContents %}
-								{% if property.lang.id == languagesService.languageDefault.id %}
-								{% for propertie in properties %}
-									{% if property.property.id == propertie.id %}
-										<p class="prix" style="background-color: #009F49;">{% for content in propertie.properties %}{{ content.name }}{% endfor %} : {{ property.value|number_format(2, ',', ' ') }} €</p>
-									{% endif %}
-								{% endfor %}
-								{% endif %}
-							{% endfor %}
-						{% endif %}
-
-						</div>
-					</div>
-				</div>
-			</article>
-				{% endif %}
-			{% endfor %}
+{#<div class="arianeCat">
+	<ul>
+	{% for ariane in filAriane %}
+		<a href="{{ path('catalog', {'slug': ariane.slug}) }}" style="text-decoration: none;"><li>&nbsp;&nbsp;>&nbsp;&nbsp;{{ ariane.name }}</li></a>
+	{% endfor %}
+	</ul>
+</div>#}
+<aside id="listeCat" class="clearfix">
+	<header>
+		<h1>Nos vins</h1>
+	</header>
+	<nav>
+		<ul class="sf-menu sf-vertical">
+			{{ render(controller('App\\Controller\\MenusController::displayMenuCat')) }}
+		</ul>
+	</nav>
+</aside>
+<div id="mainContent" class="margeCompte">
+	{% for product in products %}
+	{% if product.type == 'master' %}
+	<div class="blocBouteillesParCategorie">
+		{% set slug = '' %}
+		{% for content in product.contents %}
+			{% if content.lang.id == 1 %}
+				{% set slug = content.slug %}
+			{% endif %}
+		{% endfor %}
+	<div id="produitCover">
+		<a href="{{ path('product_detail', {'slug': slug}) }}">
+		{% if product.id in imgPath|keys %}
+			<img src="{{ asset('img/p/') ~ imgPath[product.id] }}" alt="{% for content in product.contents %}{% if content.lang.id == 1 %}{{ content.name }}{% endif %}{% endfor %}" style="max-height :100%">
+		{% else %}
+			<img src="{{ asset('img/p/fr.jpg') }}" alt="{% for content in product.contents %}{% if content.lang.id == 1 %}{{ content.name }}{% endif %}{% endfor %}">
+		{% endif %}
+		</a>
+	</div>
+	<div id="produitDescShort">
+		<h2><a href="{{ path('product_detail', {'slug': slug}) }}">{% for content in product.contents %}{% if content.lang.id == 1 %}{{ content.name }}{% endif %}{% endfor %}</a></h2>
+		<div class="resumeCourt">
+			{% if product.bulkQuantity > 1 %}<small><span style="color: #f00; display: inline-block; padding: 0 9px; border: solid 1px #d1d1d1; border-radius: 5px; font-weight: bold;">Vente en vrac !</span></small>{% endif %}
+			<p>{% for content in product.contents %}{% if content.lang.id == 1 %}{{ content.summary|raw }}{% endif %}{% endfor %}</p>
 		</div>
-	<div id="pagination" style="clear: both;">
-		<ul class="pagination justify-content-center">
+	</div>
+	<div class="zoneTarifProduit">
+		<div class="lienDetail"><a href="{{ path('product_detail', {'slug': slug}) }}">>> D&eacute;couvrir ce vin</a></div>
+			{% if product.sellingPriceAllTaxes > 0 %}
+			<div class="zonePromo">
+				{% set netprice = product.sellingPriceAllTaxes %}
+				{% if product.discount != '' %}
+				{% set netprice = product.discount|discountPriceAT(product.discountType, product.discountOnTaxe, '20', product.sellingPrice, product.sellingPriceAllTaxes) %}
+				<div class="prixttcBrut">
+					<del>{{ product.sellingPriceAllTaxes|number_format(2, ',', ' ') }} €</del>
+				</div>
+				<b> - {{ (netprice - product.sellingPriceAllTaxes)|number_format(2, ',', ' ') }} €</b>
+				{% endif %}
+			</div>
+			<div class="prixttcNet">{{ product.sellingPriceAllTaxes|number_format(2, ',', ' ') }} €</div>
+			{% if product.minQuantity > 1 %}<div id="prixpar6">soit {{ (product.minQuantity * netprice)|number_format(2, ',', ' ') }}&euro; les {{ product.minQuantity }} bouteilles</div>{% endif %}
+			{% if product.propertiesContents|length > 0 %}
+				{% for property in product.propertiesContents %}
+					{% if property.lang.id == languagesService.languageDefault.id %}
+					{% for propertie in properties %}
+						{% if property.property.id == propertie.id %}
+							<p class="prix" style="background-color: #009F49;">{% for content in propertie.properties %}{{ content.name }}{% endfor %} : {{ property.value|number_format(2, ',', ' ') }} €</p>
+						{% endif %}
+					{% endfor %}
+					{% endif %}
+				{% endfor %}
+			{% endif %}
+			{% endif %}
+		</div>
+	</div>
+	{% endif %}
+	{% else %}
+		<p>Il n'y a pas encore d'article pour cette catégorie.</p>
+	{% endfor %}
+	{% if pagination == true %}
+		<div id="pagination" style="clear: both;">
+			<ul class="pagination justify-content-center">
 				{% if page == 1 %}
 					<li class="disabled">< Précédent</li>
 				{% else %}
@@ -146,7 +124,6 @@
 				</li>
 				{% endif %}
 			</ul>
-	</div>
-	</section>
-</div>
+		</div>
+	{% endif %}
 {% endblock %}

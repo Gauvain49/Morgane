@@ -1,0 +1,78 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Commandes clients{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <h4 class="page-title">Liste des commandes</h4>
+    <ul class="breadcrumbs">
+        <li class="nav-home">
+            <a href="{{ path('dashboard') }}">
+                <i class="flaticon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow"></i>
+        </li>
+        <li class="nav-item">
+            Commandes
+        </li>
+    </ul>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex" style="justify-content: space-between; align-items: center;">
+                <h4 class="card-title">Commandes</h4>
+                <!-- <a href="" class="btn btn-info font-weight-bold"><span class="btn-label"><i class="flaticon-plus"></i></span> Ajouter un client</a> -->
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table data-order='[[ 0, "desc" ]]' id="basic-datatables" class="display table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th data-class-name="priority">Id</th>
+                                <th>Numéro</th>
+                                <th>Client</th>
+                                <th>Livraison</th>
+                                <th>Total</th>
+                                <th>Paiement</th>
+                                <th>État</th>
+                                <th>Date</th>
+                                <th></th>
+                                <th colspan="2" class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td>{{ order.id }}</td>
+                                <td>{{ order.num }}</td>
+                                <td>{{ order.user.firstname }} {{ order.user.lastname }}</td>
+                                <td>{{ order.deliveryName }}<br>{{ order.deliveryAddress|nl2br }}</td>
+                                <td>{{ (order.totalPriceAllTaxes + order.totalShippingPrice + order.totalShippingTaxes)|number_format(2, ',', ' ') }} EUR</td>
+                                <td>{% if order.id in payment|keys %}{{ payment[order.id].title }}{% endif %}</td>
+                                <td>{{ order.currentStatus.name }}</td>
+                                <td>{{ order.dateAdd|date('d/m/Y H:i:s') }}</td>
+                                <td></td>
+                                <td class="text-center">
+                                    <div class="d-inline-flex">
+                                        <div class="p-1">
+                                            <a href="{{ path('order_edit', {'id': order.id}) }}" class="btn btn-primary" title="Éditer"><i class="btn-label fas fa-pen" style="font-size: 16px;"></i></a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="12">Aucune commande enregistrée</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>                
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

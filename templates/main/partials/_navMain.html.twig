@@ -1,7 +1,3 @@
-<nav class="mainmenu__nav">
-	<ul class="meninmenu d-flex justify-content-start">
-		{% for menu in pages %}
-			{% include('main/partials/menu.html.twig') %}
-		{% endfor %}
-	</ul>
-</nav>
+	{% for menu in pages %}
+		{% include('main/partials/menu.html.twig') %}
+	{% endfor %}

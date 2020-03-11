@@ -1,89 +1,68 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}{{ content.name }}{% endblock %}
+{% block introHome %}{% endblock %}
 {% block main %}
-			<section class="detailProduit clearfix">
-				<header>
-					<h1>{{ content.name }}</h1>
-				</header>
-				<article class="ficheProduit">
-					<div>
-						<div class="dataPrixImages">
-							<div class="imagesProduits">
-								<h2 style="text-align: center; width: 240px; margin-top: 0;"><img src="{{ asset('uploads/suppliers/') ~ supplier.id }}/{{supplier.supplierLogo }}" style="max-width: 100%;" title="{{ supplier.supplierName }}"></h2>
-								<p class="imageCouverture">
-								{% if imgCover != '' %}
-									<a href="{{ asset('img/p/') ~ imgCoverOrigin }}" title="{{ content.name }}"><img src="{{ asset('img/p/') ~ imgCover }}" alt="{{ content.name }}"></a>
-									{% if imgSecondary|length > 0 %}
-										{% for key, otherImg in imgSecondary %}
-										<p class="imagesComplementaire">
-										<span>
-											<a href="{{ asset('img/p/') ~ imgSecondaryOrigin[key] }}"><img src="{{ asset('img/p/') ~ otherImg }}" alt="{{ content.name }}"></a>
-										</span>
-										</p>
-										{% endfor %}
-									{% endif %}
-								{% else %}
-									<img src="{{ asset('img/p/fr.jpg') }}" alt="{{ content.name }}">
-								{% endif %}
-								</p>
-							</div>
-							<div class="detailTarifProduit">
-								{% if product.discount != '' %}
-								<div class="detaiZonePromo">
-									<p class="detaiPrixBarre">
-										{{ product.sellingPriceAllTaxes|number_format(2, ',', ' ') }} €
-									</p>
-									<p class="detailPourcentPromo">
-										{{ product.discount|discountPriceAT(product.discountType, product.discountOnTaxe, taxe.taxeRate, product.sellingPrice, product.sellingPriceAllTaxes)|number_format(2, ',', ' ') }} €
-									</p>
-								</div>
-								{% else %}
-								<p class="detailPrix"><b>Prix Spotlight : {{ product.sellingPriceAllTaxes|number_format(2, ',', ' ') }} €</b></p>
-								{% endif %}
-								{% if product.propertiesContents|length > 0 %}
-									{% for property in product.propertiesContents %}
-										{% if property.lang.id == languagesService.languageDefault.id %}
-										<li>
-											{% for pr in property.property.properties %}
-												{% if pr.lang.id == languagesService.languageDefault.id %}
-													{{ pr.name }}
-												{% endif %}
-											{% endfor %} : {{ property.value }}</li>
-										{% endif %}
-									{% endfor %}
-								{% endif %}
-							</div>
-							<form method="post" enctype="multipart/form-data" action="{{ path('cart_add') }}">
-										<div class="row">
-											<div class="col-12">
-												<p>Format Papier :
-												{% if product.discount != '' %}
-												<span class="price">
-													<span style="text-decoration: line-through; color: #aaa; font-weight: lighter;">{{ product.sellingPriceAllTaxes|number_format(2, ',', ' ') }} €</span>
-													<br>
-													{{ product.discount|discountPriceAT(product.discountType, product.discountOnTaxe, '20', product.sellingPrice, product.sellingPriceAllTaxes)|number_format(2, ',', ' ') }} €
-												</span>
-												{% else %}
-												<span class="price">{{ product.sellingPriceAllTaxes|number_format(2, ',', ' ') }} €</span>
-												{% endif %}
-											</div>
-										</div>
-										<div class="box-tocart d-flex">
-											<span>Quantité</span>
-											<input name="qty" type="number" id="qty" value="1" class="input-text qty" />
-											<input type="hidden" name="version" value="physique">
-											<input type="hidden" name="add_cart" value="{{ product.id }}">
-											<div class="addtocart__actions">
-												<input type="submit" name="addCart" id="addCart_0" class="tocart" value="Ajouter au panier">
-											</div>
-										</div>
-									</form>
-						</div>
-						<div class="desLongue">
-							{{ content.description|raw }}
-						</div>
-					</div>
-				</article>
-			</section>
-	{% endblock %}
+<aside id="listeCat" class="clearfix">
+	<header>
+		<h1>Nos vins</h1>
+	</header>
+	<nav>
+		<ul class="sf-menu sf-vertical">
+			{{ render(controller('App\\Controller\\MenusController::displayMenuCat')) }}
+		</ul>
+	</nav>
+</aside>
+<div class="contentDetailProduit clearfix">
+	<div class="ficheProduit">
+		<h2>{{ content.name }}</h2>
+		<div class="tarifProduit">
+			{% set netprice = product.sellingPriceAllTaxes %}
+			{% if product.discount != '' %}
+			{% set netprice = product.discount|discountPriceAT(product.discountType, product.discountOnTaxe, '20', product.sellingPrice, product.sellingPriceAllTaxes) %}
+				<del>
+					{{ product.sellingPriceAllTaxes|number_format(2, ',', ' ') }} €
+					<span class="remiseMontant">
+						{{ product.discount|discountPriceAT(product.discountType, product.discountOnTaxe, taxe.taxeRate, product.sellingPrice, product.sellingPriceAllTaxes)|number_format(2, ',', ' ') }} €
+					</span>
+				</del>
+			{% endif %}
+			<p class="prixttc">{{ product.sellingPriceAllTaxes|number_format(2, ',', ' ') }} € TTC</p>
+			{% if product.minQuantity > 1 %}<small>Soit {{ (product.minQuantity * netprice)|number_format(2, ',', ' ') }}&euro; les {{ product.minQuantity }} bouteilles</small>{% endif %}
+			{% if product.bulkQuantity > 1 %}<small><span style="color: #f00; display: inline-block; padding: 0 9px; border: solid 1px #d1d1d1; border-radius: 5px; font-weight: bold;">Vente en vrac !</span> Disponible à l'unité, mais vendu dans un carton contenant au moins {{ product.bulkQuantity }} articles.</small>{% endif %}
+		</div>
+		<form method="post" enctype="multipart/form-data" action="{{ path('cart_add') }}">
+				<label for="qte">Quantité</label>
+				<input name="qty" type="number" id="qty" value="{{ product.minQuantity }}" style="width: 50px;" min="{{ product.minQuantity }}" step="{{ product.salesUnit }}" />
+				<input type="hidden" name="version" value="physique">
+				<input type="hidden" name="add_cart" value="{{ product.id }}">
+				<div class="addtocart__actions">
+					<input type="submit" name="addCart" id="addCart_0" class="tocart" value="Ajouter au panier">
+				</div>
+		</form>
+		<div class="description">
+			{{ content.description|raw }}
+		</div>
+	</div>
+	<div class="visuelProduit clearfix">
+		<div class="imagesProduits">
+			<p class="imageCouverture">
+				{% if imgCover != '' %}
+				<a href="{{ asset('img/p/') ~ imgCoverOrigin }}" title="{{ content.name }}"><img src="{{ asset('img/p/') ~ imgCover }}" alt="{{ content.name }}"></a>
+					{% if imgSecondary|length > 0 %}
+						{% for key, otherImg in imgSecondary %}
+						<p class="imagesComplementaire">
+						<span>
+							<a href="{{ asset('img/p/') ~ imgSecondaryOrigin[key] }}"><img src="{{ asset('img/p/') ~ otherImg }}" alt="{{ content.name }}"></a>
+						</span>
+						</p>
+						{% endfor %}
+					{% endif %}
+				{% else %}
+				<img src="{{ asset('img/p/fr.jpg') }}" alt="{{ content.name }}">
+				{% endif %}
+			</p>
+		</div>
+	</div>
+</div>
+{% endblock %}

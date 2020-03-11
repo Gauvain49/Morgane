@@ -22,6 +22,39 @@ class MgPostsRepository extends ServiceEntityRepository
     }
 
     /**
+     * Récupère les pages pour le menu principale
+     *
+     */
+    public function findPostsWithDateManage($type, $status)
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->where($qb->expr()->andX(
+            $qb->expr()->eq('p.type', ':val'),
+            $qb->expr()->lte('p.date_publish', ':date'),
+            $qb->expr()->eq('p.status', ':status'),
+            //$qb->expr()->neq('p.reserved', ':cgv'),
+            $qb->expr()->orX(
+                $qb->expr()->gt('p.date_expire', ':date'),
+                $qb->expr()->isNull('p.date_expire')
+                )
+            ),
+            $qb->expr()->orX(
+                $qb->expr()->neq('p.reserved', ':cgv'),
+                $qb->expr()->isNull('p.reserved')
+                )
+            )
+        ;
+        //$qb->andWhere('p.reserved = :cgv');
+        $qb->orderBy('p.position', 'ASC');
+        $qb->setParameter('status', 'publish');
+        $qb->setParameter('val', $type);
+        $qb->setParameter('date', new \Datetime());
+        $qb->setParameter('cgv', 'CGV');
+        $q = $qb->getQuery()->execute();
+        return $q;
+    }
+
+    /**
      * Récupération des pages par arborescence
      */
     public function findAllByArborescence()

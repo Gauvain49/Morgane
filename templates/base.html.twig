@@ -1,11 +1,15 @@
 <!DOCTYPE html>
-<html class="no-js" lang="fr">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
 <head>
     <meta charset="utf-8">
     <title>{% block title %}{{ appService.params.title }}{% endblock %}</title>
     <meta name="description" content="{{ appService.params.seoDescription }}">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="generator" content="Morgane 4.1" />
 
 	<!-- Favicons -->
 	<link rel="shortcut icon" href="{{ asset('admin/img/favicon.ico') }}" type="image/x-icon">
@@ -15,26 +19,53 @@
 	{% endblock %}
 
 	<!-- Stylesheets -->
-	<link rel="stylesheet" href="{{ asset('css/init.css') }}">
-	<link rel="stylesheet" href="{{ asset('css/styles.css') }}">
-	<link rel="stylesheet" href="{{ asset('css/admin.css') }}">
-	<link rel="stylesheet" href="{{ asset('css/magnific-popup.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/init.css') }}" />
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}" />
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/superfish.css') }}" />
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/superfish-vertical.css') }}" />
+	<!-- Menu princpale -->
+	<link rel="stylesheet" href="{{ asset('css/jmenu.css') }}" type="text/css" />
+	<link href='http://fonts.googleapis.com/css?family=Courgette' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Gruppo&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Forum&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Great+Vibes' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Bad+Script' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
 
 	<!--[if lt IE 9]>
 	<script src="{{ asset('js/html5-3.6-respond-1.1.0.min.js') }}"></script>
 	<![endif]-->
 
+	<!--JS -->
+	<script type="text/javascript" src="{{ asset('js/jquery-1.7.1.min.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('js/jquery-ui-1.8.16.custom.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/jquery.ui.touch-punch.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/main.js') }}"></script>
+	<!-- Menu princpale -->
+    <script type="text/javascript" src="{{ asset('js/jMenu.jquery.js') }}"></script>
+
+    <script src="{{ asset('js/hoverIntent.js') }}"></script>
+    <script src="{{ asset('js/superfish.js') }}"></script>
+    <!-- initialise Superfish -->
+    <script>
+    
+        jQuery(document).ready(function(){
+            jQuery('ul.sf-menu').superfish();
+            jQuery('ul.sf-h-menu').superfish();
+        });
+    
+    </script>
+	<script src="{{ asset('js/plugins.js') }}"></script>
+	<script src="{{ asset('js/main.js') }}"></script>
+	<!--[if gte IE 9]>
+	<style type="text/css">
+    .gradient {
+      	filter: none;
+    	}
+  	</style>
+	<![endif]-->
 	<!-- Modernizer js -->
 	<script src="{{ asset('js/vendor/modernizr-3.5.0.min.js') }}"></script>
-
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-	
-	<script src="{{ asset('js/plugins.js') }}"></script>
-	<!-- Magnific Popup core JS file -->
-	<script src="{{ asset('js/jquery.magnific-popup.js') }}"></script>
-
-    {% block stylesheets %}{% endblock %}
-    {% block JS %}
 	<script type="text/javascript">
 		function imprime() {
 			if (typeof(window.print) != 'undefined') {
@@ -42,27 +73,8 @@
 			}
 		}
 		</script>
-		<script type="text/javascript">
-		$(document).ready(function() {
-			$('.imagesProduits').magnificPopup({
-				delegate: 'a',
-				type: 'image',
-				tLoading: 'Loading image #%curr%...',
-				mainClass: 'mfp-img-mobile',
-				gallery: {
-					enabled: true,
-					navigateByImgClick: true,
-					preload: [0,1] // Will preload 0 - before current, and 1 after the current image
-				},
-				image: {
-					tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
-					titleSrc: function(item) {
-						return item.el.attr('title');
-					}
-				}
-			});
-		});
-		</script>
+    {% block stylesheets %}{% endblock %}
+    {% block JS %}
     {% endblock %}
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -81,15 +93,6 @@
 		    <div id="zoneHeader">
 		    <div id="logoMorgane"><img src="{{ asset('admin/img/morganeresponsive.png') }}" width="75" height="35"></div>
 		    <div id="accesSite">
-		    {#
-		        if(isset($_GET['postvisu'])) {
-		            $lien = URL_ADMIN . 'post-maj.php?id=' . $_GET['postvisu'];
-		            $texte = '<span style="background-color: #FFB400; padding: 5px; color: #fff; border-radius: 3px; text-shadow: 0px 1px 0px #000;">MODIFIER</span> <span style="background-color: #006CFF; padding: 5px; color: #fff; border-radius: 3px; text-shadow: 0px 1px 0px #000;">PUBLIER</span>';
-		        } else {
-		            $lien = URL_ADMIN;
-		            $texte = 'Retour sur Morgane';
-		        }
-		    #}
 		      <p><a href="{{ path('dashboard') }}" style="text-decoration: none;">Retour sur Morgane</a></p>
 		    </div>
 		    <div id="utilisateurConnecte">
@@ -106,83 +109,141 @@
 		</div>
 	   	{% endif %}
     {% endif %}
-	<div class="header-container">
-		<header class="wrapper clearfix">
+    <div id="bgBlack"></div>
+	<div id="container">
+		<div id="contentHeader">
+			<div id="menu_top">
+				<nav>
+					<ul>
+						{% for lang in languagesService.getLanguages %}
+						<li><a href="http://<?php echo BASE_URL; ?>index.php?lang={{ lang.langIsoCode }}"><img src="{{ asset('images/lang/' ~ lang.langImg) }}" alt="{{ lang.langName }}" title="{{ lang.langName }}" /></a></li>
+						{% endfor %}
+					</ul>
+				</nav>
+			</div>
+			<div class="header">
+				<header>
+					<div class="enseigne">
+						<h1><a href=""><img src="{{ asset('images/Nouveau-logo-Bourg-Neuf.png') }}" width="160" height="82" alt=""><span>{{ appService.params.title }}</span></a></h1>
+						<h2>{{ appService.params.slogan }}</h2>
+					</div>
+					<div id="zoneBoutique">
+						<ul>
+							{% if app.user %}
+							<li class="btnCompte"><a href="{{ path('customer_profil') }}">Mon<br>
+							compte</a></li>
+							{% else %}
+							<li class="btnCompte"><a href="{{ path('account_login') }}">Mon<br>
+							compte</a></li>
+							{% endif %}
+							<li class="btnPanier"><a href="{{ path('cart') }}">Mon<br>
+							Panier<br><span>{{ cartService.totalQuantity }}</span></a></li>
+						</ul>
+					</div>
+				</header>
+				<nav>
+					<ul id="jMenu">
+					{{ render(controller('App\\Controller\\MenusController::displayMenu')) }}
+					<li><a href="#">Les vins/Achats en ligne</a>
+						<ul>
+					{{ render(controller('App\\Controller\\MenusController::displayMenuCat')) }}</ul>
+					</li>
+					<li><a href="#">Contact</a></li>
+					<!-- <ul id="jMenu">
+						<li><a href="#">Accueil</a></li>
+						<li><a href="#">Le domaine</a>
+							<ul>
+								<li><a href="#">Les terroirs et les cépages</a></li>
+								<li><a href="#">Le mode de culture</a></li>
+								<li><a href="#">Les vendanges</a></li>
+								<li><a href="#">La vinification et l'élevage des vins</a></li>
+							</ul>
+						</li>
+						<li><a href="#">Les guides</a>
+							<ul>
+								<li><a href="#">Guide Hachette 2015</a></li>
+								<li><a href="#">>Guide Dussert-Gerber</a></li>
+								<li><a href="#">Guide Hachette 2016</a></li>
+								<li><a href="#">GUIDE HACHETTE 2017</a></li>
+							</ul>
+						</li>
+					</ul> -->
+					</ul>
+				</nav>
+			</div><!-- Fin de la div.header -->
+		</div><!-- Fin de la div#contentHeader -->
+		{# <header class="wrapper clearfix">
 			<h1 class="title"><a href="../">{{ appService.params.title }}</a></h1>
 			<h2>{{ appService.params.title }}</h2>
 			<p class="headerTel">107 avenue Maginot - 37100 TOURS - <span>☎ 02 47 54 42 00</span></p>
 			<h3 class="headerDescription">Vente - Location - Installation - Prestations</h3>
-			<!--<form name="form1" method="post" action="recherche.php">
-				<input type="search" name="search" id="search" placeholder="Rechercher un produit...">
-				<input name="submitSearch" type="submit" id="submitSearch" value="Rechercher">
-			</form>-->
 			{{ render(controller('App\\Controller\\SearchController::search')) }}
-		</header>
-		<div class="topHeader">
-			<div class="listeSelection">
-				<p>
-				{% if app.user %}
-					Bienvenue {{ app.user.firstname }} | <a href="{{ path('account_logout') }}">Déconnexion</a>
-				{% else %}
-					<a href="{{ path('account_login') }}"><img src="{{ asset('images/icon-login.png') }}" alt=""></a>
-				{% endif %}
-				<a href="{{ path('cart') }}"><img src="{{ asset('images/icon-selection.png') }}" width="18" height="17" alt="">Panier : {% if cartService.totalQuantity > 1 %}{{ cartService.totalQuantity }} produit{% if cartService.totalQuantity > 1 %}s{% endif %}{% else %}0{% endif %}</a></p>
-			</div>
-		</div>
-		{{ render(controller('App\\Controller\\MenusController::displayMenuCat')) }}
-	</div>
-	<div class="main-container">
-		<div class="main wrapper clearfix">
-			{% block main %}
-		    {% endblock %}
-		</div>
-    </div>
-    <div class="footer-container">
-		<footer class="wrapper clearfix">
-			<div class="activite">
-					<p>Présent  depuis   1980, nos magasins ne cessent d'évoluer pour vous proposer un service à   la mesure d'un secteur d'activité en perpétuelle évolution. </p>
-					<p> Nos équipes se   tiennent à votre entière disposition pour satisfaire tous vos besoins, qu'ils   soient techniques ou commerciaux.</p>
-					<p> Nous disposons d'un large choix   en exposition de <strong>table de mixage, ampli, lecteur CD, platine vinyl</strong>...,   ainsi que d'un auditorium où vous pourrez apprécier notre gamme d'enceintes.</p>
-					<p> Pour les jeux de lumière, nous   disposons d'un <strong>show-room</strong> où plus de 30 appareils sont en démonstration   permanente.</p>
-					<p>Toutes ces gammes de produits   satisferont aussi bien le professionnel le plus exigeant que les passionnés et   les débutants.</p>
-					<p> Nous vous offrons également un <strong>grand choix de lampes</strong>. Environ 500 références aux meilleures   conditions du marché, de l'éclairage général à l'éclairage   professionnel. <strong>Incandescence, halogène, dichroïque, décharge...</strong></p>
-			</div>
-			<div class="donneesFooter">
-				{% for address in appService.getAddressesSite %}
-				<div style="float: left;">
-					<p><strong>
-						{% for title in address.addressesTitles %}
-							{% if title.lang.id == 1 %}
-								{{ title.addressTitle }}
-							{% endif %}
-						{% endfor %}
-					</strong></p>
-					<p>
-						{{ address.address|nl2br }}<br>
-						{{ address.zipcode }} {{ address.town }}
-					</p>
-					<p>Tél : {{ address.phone }}</p>
-					<p><strong>Horaires d'ouverture :</strong><br>
-						{{ address.openingTime|nl2br }}
-					</p>
+		</header> #}
+		<div id="wrapper" class="clearfix">
+			<div id="content" class="clearfix">
+				{% block introHome %}
+				<div id="presentationDomaine">
+					<img src="{{ asset('images/bg-header.jpg') }}" alt="" style="width: 100%">
+					<section class="introDomaine">
+						<header>
+							<h1>Christian Joseph et Fils, Vignerons à Varrains</h1>
+						</header>
+						<p><br>
+						Domaine de 39 hectares fondé en 1975 par Raymond Joseph, le domaine du bourg neuf est exploité depuis 1981 par son fils Christian et dédié aux appellations saumur et saumur-champigny.</p>
+					</section>
 				</div>
-				{% endfor %}
-				<div>
-					<p><strong>Responsable</strong> : David Cotet</p>
-					<p><a href="contact.php">Contact</a> | <a href="#">Mentions Légales</a></p>
-					<p>Siret : 401 507 348 00019<br>APE : 4743Z</p>
-					<p>Tous droits réservés - {{ "now"|date("Y") }}</p>
-				</div>
-			</div>
+				<article style="margin-top: 15px;">
+					<header style="border-radius: 5px; padding: 5px 15px; background: #a90329; background: -moz-linear-gradient(top, #a90329 0%, #8f0222 44%, #6d0019 100%); background: -webkit-linear-gradient(top, #a90329 0%,#8f0222 44%,#6d0019 100%); background: linear-gradient(to bottom, #a90329 0%,#8f0222 44%,#6d0019 100%); filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a90329', endColorstr='#6d0019',GradientType=0 ); color: #fff; text-align: center;">
+						<h1 style="font-size: 1.2em;">Le Domaine du Bourg Neuf à le plaisir de vous inviter au salon des vins vignerons indépendants à Paris Porte de Versailles du 28 Novembre au 1er Décembre 2019.</h1>
+					</header>
+					<p style="text-align: center;">Nous vous proposons nos vins de Saumur  AOC :</p>
+					<ul>
+						<li>SAUMUR ROUGE millésime 2017 "Médaille OR MACON"</li>
+						<li>SAUMUR CHAMPIGNY millésime 2017 "Liger ARGENT"</li>
+						<li>SAUMUR CHAMPIGNY millésime 2017 "vieilles vignes Cuvée Les Poyeux"</li>
+						<li>SAUMUR BLANC millésime 2018</li>
+						<li>SAUMUR BLANC millésime 2014 "Cheninfidèle élevage en fut de chêne"</li>
+					</ul>
+					<p style="text-align: center;"><a href="http://www.mybadgeonline.com/VIGNERONS/default.aspx?IdSession=L&IdInvitant=615933568" target="_blanck">Télécharger votre invitation élèctronique "SALON DE PARIS PORTE DE VERSAILLES 2019"</a></p>
+					<p style="text-align: center;"><img src="http://<?php echo BASE_URL; ?>images/image001.jpg" alt="Salon des Vins des vignerons indépendants"></p>
+				</article>
+				<article style="margin-top: 15px;">
+					<header style="border-radius: 5px; padding: 5px; background: #a90329; background: -moz-linear-gradient(top, #a90329 0%, #8f0222 44%, #6d0019 100%); background: -webkit-linear-gradient(top, #a90329 0%,#8f0222 44%,#6d0019 100%); background: linear-gradient(to bottom, #a90329 0%,#8f0222 44%,#6d0019 100%); filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a90329', endColorstr='#6d0019',GradientType=0 ); color: #fff; text-align: center;">
+						<h1 style="font-size: 1.2em;">Récompenses : Le domaine du Bourg Neuf a remporté les médailles <a href="https://www.concoursdesligers.fr/palmares/2018/medaille-argent/181532" target="_blanck" style="color: #fff; font-style: italic;">Ligiers</a> et <a href="http://www.concours-salons-vins-macon.com/index.php" target="_blanck" style="color: #fff; font-style: italic;">Macon</a> sur le Millésime 2017</h1>
+					</header>
+					<p style="text-align: center;"><span style="display: inline-block; margin-right: 10px; box-shadow: 5px 5px 5px #666; border: solid 1px #666;"><a href="{{ asset("images/LIGERS-D'ARGENT-2018-SAUMUR-CHAMPIGNY-millésime--2017_0001.jpg") }}"><img src="{{ asset("images/LIGERS-D'ARGENT-2018-SAUMUR-CHAMPIGNY-millésime--2017_0001.jpg") }}" width="296" height="457"></a></span><span style="display: inline-block; box-shadow: 5px 5px 5px #666; border: solid 1px #666;"><a href="{{ asset("images/MEDAILLE-D'OR-MACON-2018-SAUMUR-ROUGE-MILLESIME-2017_0001.jpg") }}"><img src="{{ asset("images/MEDAILLE-D'OR-MACON-2018-SAUMUR-ROUGE-MILLESIME-2017_0001.jpg") }}" width="700" height="457"></a></span></p>
+				</article>
+				{% endblock %}
+				{% block main %}
+			    {% endblock %}
+			</div><!-- FIN DU #content -->
+		</div><!-- FIN DU #wrapper -->
+		<!-- FOOTER -->
+		<footer>
+			<p>L'abus d'alcool est dangereux pour la santé - A consommer avec modération - Domaine du Bourg Neuf - 2014</p>
+			<p><a href="mentions-legales.php">Mentions légales</a></p>
 		</footer>
-	</div>
-</div>
+		<script type="text/javascript">
+            $(document).ready(function() {
+                $("#jMenu").jMenu({
+                    openClick : false,
+                    ulWidth :'auto',
+                    TimeBeforeOpening : 0,
+                    TimeBeforeClosing : 100,
+                    animatedText : false,
+                    paddingLeft: 1,
+                    effects : {
+                        effectSpeedOpen : 150,
+                        effectSpeedClose : 150,
+                        effectTypeOpen : 'slide',
+                        effectTypeClose : 'slide',
+                        effectOpen : 'swing',
+                        effectClose : 'swing'
+                    }
+                });
+            });
+        </script>
+	</div><!-- FIN DU #container -->
 {% block javascripts %}{% endblock %}
-<!--<script>
-        var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-        (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-        g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-        s.parentNode.insertBefore(g,s)}(document,'script'));
-    </script>-->
 </body>
 </html>

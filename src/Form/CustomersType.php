@@ -21,14 +21,18 @@ class CustomersType extends AbstractType
         $builder
             ->add('compagny', TextType::class, [
                 'label' => 'Societé',
+                'attr' => [
+                    'style' => 'max-width: 500px'
+                ],
                 'required' => false])
-            /*->add('birthday', BirthdayType::class, [
-                    'label' => 'Date de naissance (en option)',
+            ->add('birthday', BirthdayType::class, [
+                    'label' => 'Date de naissance',
                     'placeholder' => ['year' => 'Année', 'month' => 'Mois', 'day' => 'Jour'],
-                    'required' => false,
-                    'years' => range($date->format('Y'), $date->format('Y') - 120)
+                    'widget' => 'choice',
+                    //'required' => false,
+                    'years' => range($date->format('Y')-18, $date->format('Y') - 120)
                 ]
-            )*/
+            )
             /*->add('addresses', CollectionType::class, [
                 'label' => 'Votre adresse de facturation',
                 'entry_type' => CustomersAddressesType::class,
@@ -50,12 +54,12 @@ class CustomersType extends AbstractType
             //->add('user')
             //->add('customer_group')
             // ->add('gender')
-            ->add('customer_group', EntityType::class, [
+            /*->add('customer_group', EntityType::class, [
                 'label' => 'Groupe de client',
                 'class' => MgCustomersGroups::class,
                 'choice_label' => 'group_name',
                 'required' => false
-            ])
+            ])*/
         ;
     }
 

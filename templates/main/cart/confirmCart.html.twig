@@ -1,101 +1,174 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Votre panier d'achat{% endblock %}
+{% block introHome %}{% endblock %}
 
 {% block main %}
-	{% for label, messages in app.flashes %}
-		{% for message in messages %}
-			<div class="alert alert-{{label}}">
-				{{message|raw}}
-			</div>
+	<div id="infobox">
+		<div id="closeInfobox"></div>
+		<h1>Conditions générales de vente</h1>
+		<div id="contentInfobox">
+			{{ cgv|raw }}
+		</div>
+	</div>
+	<div id="mainContent">
+		<h1>Confirmation de votre commande</h1>
+		{% for label, messages in app.flashes %}
+			{% for message in messages %}
+				<div class="alert alert-{{label}}">
+					{{message|raw}}
+				</div>
+			{% endfor %}
 		{% endfor %}
-	{% endfor %}
-	{% if cart|length > 0 %}
-	<div class="contentBasket">
-		<h1 style="font-family: 'itc_avant_garde_gothicbook';">Confirmation de votre panier</h1>
-		<table>
-			<thead>
-				<tr class="title-top">
-					<th class="product-thumbnail">Image</th>
-					<th class="product-name">Produit</th>
-					<th class="product-price">Prix</th>
-					<th class="product-quantity">Quantité</th>
-					<th class="product-subtotal">Total</th>
-					<th class="product-remove">Supprimer</th>				
-				</tr>
-			</thead>
-			<tbody>
-				{% for key, item in cart %}
-				<tr>
-					<td class="product-thumbnail">
-						{% if key in images|keys %}
-						<img src="{{ asset('img/p/') ~ images[key] }}" alt="{{ item.title }}">
-						{% else %}
-						<img src="{{ asset('img/p/fr.jpg') }}" alt="{{ item.title }}">
-						{% endif %}
-					</td>
-					<td class="product-name">
-						<strong>{{ item.title }}</strong> {% if item['product'].type != 'downloadable' %}<i>- Format papier</i>{% else %}<i>- Ebook</i>{% endif %}
-					</td>
-					<td class="product-price">
-						{% if item.amount['grossPriceAllTaxes'] != item.amount['priceNetAllTaxes'] %}
-						<span class="price">
-							<span style="text-decoration: line-through; font-size: 0.80em; color: #aaa;">{{ item.amount['grossPriceAllTaxes']|number_format(2, ',', ' ') }} €</span>
-							{{ item.amount['priceNetAllTaxes']|number_format(2, ',', ' ') }} €
-						</span>
-						{% else %}
-							<span class="price">{{ item.amount['priceNetAllTaxes']|number_format(2, ',', ' ') }} €</span>
-						{% endif %}
-					</td>
-					<td class="product-quantity">
-						<div class="lineCart">
-							<input name="qty" type="text" id="qty" autocomplete="off" value="{{ item.qty }}" onfocus="if(this.value=='1')this.value='';" readonly />
-						</div>
-					</td>
-					<td class="product-subtotal">{{ (item.amount['priceNetAllTaxes'] * item.qty)|number_format(2, ',', ' ') }} €</td>
-					<td class="product-remove"><a href="{{ path('cart_dell_line', {'id' : key}) }}"><img src="{{ asset('img/delete.png') }}" width="13" height="16"></a></td>
-				</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-	</div>
-	<div class="totalBasket">
-		<table>
+		{% if cart|length > 0 %}	<div id="carnetAdresse" class="clearfix">
+	<table id="verifAdresse">
+		<thead>
 			<tr>
-				<th>Total du panier</th>
-				<td>{{ cartService.totalCart|number_format(2, ',', ' ') }} €</td>
-			</tr>
+				<th style="text-align: left;">Livraison</th>
+				</tr>
+		</thead>
+		<tfoot>
 			<tr>
-				<th>Livraison</th>
-				<td>{{ (cartService.getShipping['price']+cartService.getShipping['taxes'])|number_format(2, ',', ' ') }} €</td>
+				<td><a href="compte/modif-adresse-livraison.php">Modifier</a></td>
+				</tr>
+		</tfoot>
+		<tbody>
+			<tr>
+				<td>
+					{% for gender in genders %}{% if gender.id == shippingAddress.gender.id %}{{ gender.shortGender }}{% endif %}{% endfor %} {{ shippingAddress.addressFirstname }} {{ shippingAddress.addressLastname }}<br />
+					{{ shippingAddress.address|nl2br }}<br />
+					{{ shippingAddress.zipcode }} {{ shippingAddress.town }}
+				</td>
+				</tr>
+		</tbody>
+	</table>
+	<table id="verifAdresse">
+		<thead>
+			<tr>
+				<th>Facturation</th>
+				</tr>
+		</thead>
+		<tfoot>
+			<tr>
+				<td><a href="compte/modif-adresse-facturation.php">Modifier</a></td>
 			</tr>
-			<tr class="totalCart">
-				<th>Total de la commande</th>
-				<td>{{ (cartService.totalCart + cartService.getShipping['price']+cartService.getShipping['taxes'])|number_format(2, ',', ' ') }} €</td>
+		</tfoot>
+		<tbody>
+			<tr>
+				<td>
+					{% for gender in genders %}{% if gender.id == billingAddress.gender.id %}{{ gender.shortGender }}{% endif %}{% endfor %} {{ billingAddress.addressFirstname }} {{ billingAddress.addressLastname }}<br />
+					{{ billingAddress.address|nl2br }}<br />
+					{{ billingAddress.zipcode }} {{ billingAddress.town }}
+				</td>
 			</tr>
-		</table>
+		</tbody>
+	</table>
 	</div>
-	<div class="choosePayment">
-		{% if app.user.customers.addresses|length > 0 %}
-		<p><strong>Veuillez choisir un mode de paiement ci-dessous :</strong></p>
-		<table class="moyenPaiement">
-		    {% for payment in payments %}
-		    <tr>
-		        <td><span class="moyenPaiementImg"><img src="{{ asset('img/payments/') }}{{ payment.logo }}" alt="" /></span></td>
-		        <td><span class="moyenPaiementTitre">{{ payment.title }}</span><span class="moyenPaiementDescription">{{ payment.description }}</span></td>
-		        <td>
-			       	<div class="valideCommande">
-		               	<p><a href="{{ path(payment.linkSubmit) }}" class="btn btn-primary">Choisir ce mode de paiement &raquo;</a></p>
-		           	</div>
-		        </td>
-		    </tr>
-		    {% endfor %}
-		</table>
+			<table id="contenuPanier">
+				<thead>
+					<tr class="title-top">
+						<th>&nbsp;</th>
+						<th style="text-align: center">Produit</th>
+						<th>Prix Unitaire</th>
+						<th>Quantité</th>
+						<th>Total</th>
+						<th>&nbsp;</th>				
+					</tr>
+				</thead>
+				<tbody>
+					{% for key, item in cart %}
+					<tr>
+						<td class="product-thumbnail">
+							{% if key in images|keys %}
+							<img src="{{ asset('img/p/') ~ images[key] }}" alt="{{ item.title }}">
+							{% else %}
+							<img src="{{ asset('img/p/fr.jpg') }}" alt="{{ item.title }}">
+							{% endif %}
+						</td>
+						<td style="text-align: center;">
+							<strong>{{ item.title }}</strong>
+						</td>
+						<td class="product-price">
+							{% if item.amount['grossPriceAllTaxes'] != item.amount['priceNetAllTaxes'] %}
+							<span class="price">
+								<span style="text-decoration: line-through; font-size: 0.80em; color: #aaa;">{{ item.amount['grossPriceAllTaxes']|number_format(2, ',', ' ') }} €</span>
+								{{ item.amount['priceNetAllTaxes']|number_format(2, ',', ' ') }} €
+							</span>
+							{% else %}
+								<span class="price">{{ item.amount['priceNetAllTaxes']|number_format(2, ',', ' ') }} €</span>
+							{% endif %}
+						</td>
+						<td class="product-quantity">
+							{{ item.qty }}
+						</td>
+						<td class="product-subtotal">{{ (item.amount['priceNetAllTaxes'] * item.qty)|number_format(2, ',', ' ') }} €</td>
+						<td class="product-remove"><a href="{{ path('cart_dell_line', {'id' : key}) }}"><img src="{{ asset('img/delete.png') }}" width="13" height="16"></a></td>
+					</tr>
+					{% endfor %}
+				</tbody>
+				<tfoot>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td class="prixTotal">Montant total</td>
+						<td class="prixTotal">{{ cartService.totalCart|number_format(2, ',', ' ') }} €</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td style="text-align: right;">Port</td>
+						<td>{{ (cartService.getShipping['price']+cartService.getShipping['taxes'])|number_format(2, ',', ' ') }} €</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td class="prixTotal"><strong>Total commande</strong></td>
+						<td class="prixTotal">{{ (cartService.totalCart + cartService.getShipping['price']+cartService.getShipping['taxes'])|number_format(2, ',', ' ') }} €<td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="7" style="text-align: left; background-color: #f2f2f2;">
+						<form name="form1" method="post" action="">
+							<input type="checkbox" name="accept_cgv" id="accept_cgv">
+							<label for="accept_cgv">Je déclare avoir pris connaissance des <a href="{{ path('page', {'slug': 'conditions-generales-de-vente'}) }}" id="open-infobox">conditions générales de vente</a></label>
+						</form>
+						</td>
+					</td>
+				</tfoot>
+			</table>
+		<div class="choosePayment">
+			{% if app.user.customers.addresses|length > 0 %}
+			<p><strong>Veuillez choisir un mode de paiement ci-dessous :</strong></p>
+			<table id="moyenPaiement">
+			    {% for payment in payments %}
+			    <tr>
+			        <td><span class="moyenPaiementImg"><img src="{{ asset('img/payments/') }}{{ payment.logo }}" alt="" /></span></td>
+			        <td><span class="moyenPaiementTitre">{{ payment.title }}</span><span class="moyenPaiementDescription">{{ payment.description }}</span></td>
+			        <td>
+				       	<div class="valideCommande">
+			               	<p><a href="{{ path('payment_valid', {'mode': payment.type}) }}" class="btn btn-primary">Choisir ce mode de paiement &raquo;</a></p>
+			           	</div>
+			        </td>
+			    </tr>
+			    {% endfor %}
+			</table>
+			{% endif %}
+		</div>
+		{% else %}
+		<div>
+			<p colspan="6">Votre panier est vide.</p>
+		</div>
 		{% endif %}
 	</div>
-	{% else %}
-	<div>
-		<p colspan="6">Votre panier est vide.</p>
-	</div>
-	{% endif %}
+{% endblock %}
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('js/accept_cgv.js') }}"></script>
+	<script>
+	acceptCgv('valideCommande', 'accept_cgv');
+	</script>
 {% endblock %}
