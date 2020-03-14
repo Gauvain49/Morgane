@@ -60,7 +60,7 @@
 						<td class="product-remove"><a href="{{ path('cart_dell_line', {'id' : key}) }}"><img src="{{ asset('img/delete.png') }}" width="13" height="16"></a></td>
 					</tr>
 					{% endfor %}
-					{% if bulk['exist'] == true %}
+					{# if bulk['exist'] == true #}
 						{% if bulk['valid'] == false %}
 						<tr>
 							<td colspan="6">
@@ -68,7 +68,7 @@
 							</td>
 						</tr>
 						{% endif %}
-					{% endif %}
+					{# endif #}
 				</tbody>
 				<tfoot>
 					<tr>
@@ -76,23 +76,26 @@
 						<td></td>
 						<td></td>
 						<td class="prixTotal">Montant total</td>
-						<td class="prixTotal">{{ cartService.totalCart|number_format(2, ',', ' ') }} €</td>
+						<td class="prixTotal" style="text-align: right;">{{ cartService.totalCart|number_format(2, ',', ' ') }} €</td>
 						<td></td>
 					</tr>
+					{% set totalShipping = 0 %}
+					{% for cartShipping in shipping %}
+					{% set totalShipping = totalShipping + cartShipping['price'] + cartShipping['taxes'] %}
 					<tr>
 						<td></td>
 						<td></td>
 						<td></td>
-						<td style="text-align: right;">Port</td>
-						<td>{{ (cartService.getShipping['price']+cartService.getShipping['taxes'])|number_format(2, ',', ' ') }} €</td>
+						<td colspan="2" style="text-align: right;">Livraison {% for carrier in carriers %}{% if carrier.id == loop.index %} {{ carrier.carrierName }}{% endif %}{% endfor %} : {{ (cartShipping['price']+cartShipping['taxes'])|number_format(2, ',', ' ') }} €</td>
 						<td></td>
 					</tr>
+					{% endfor %}
 					<tr>
 						<td></td>
 						<td></td>
 						<td></td>
 						<td class="prixTotal"><strong>Total commande</strong></td>
-						<td class="prixTotal">{{ (cartService.totalCart + cartService.getShipping['price']+cartService.getShipping['taxes'])|number_format(2, ',', ' ') }} €<td>
+						<td class="prixTotal" style="text-align: right;">{{ (cartService.totalCart + totalShipping)|number_format(2, ',', ' ') }} €<td>
 						<td></td>
 					</tr>
 				</tfoot>

@@ -2,9 +2,9 @@
 
 namespace App\Form;
 
-use App\Entity\MgCarriersSteps;
+use App\Entity\MgCarriersStepsDep;
 use App\Entity\MgCountries;
-use App\Form\CarriersAmountCountriesType;
+use App\Form\CarriersAmountDepartmentsType;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -13,7 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CarriersStepsType extends AbstractType
+class CarriersStepsDepartmentsType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -26,11 +26,11 @@ class CarriersStepsType extends AbstractType
                 'label' => 'jusqu\'à une valeur < à ',
                 'required' => false
             ])
-            ->add('amountCountries', CollectionType::class, [
+            ->add('amountDepartments', CollectionType::class, [
                 'label' => 'Pays',
-                'entry_type' => CarriersAmountCountriesType::class,
+                'entry_type' => CarriersAmountDepartmentsType::class,
                 'allow_add' => true,
-                'prototype_name' => '__country__'
+                'prototype_name' => '__department__'
             ])
         ;
     }
@@ -38,7 +38,7 @@ class CarriersStepsType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => MgCarriersSteps::class,
+            'data_class' => MgCarriersStepsDep::class,
         ]);
     }
 }

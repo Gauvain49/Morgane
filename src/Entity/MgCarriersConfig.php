@@ -11,6 +11,21 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class MgCarriersConfig
 {
+    //ENUM de la colonne billing_on
+    const PRICE = 'price';
+    const WEIGHT = 'weight';
+    const QTY = 'qty';
+    //ENUM de la colonne out_of_range
+    const FREE = 'free';
+    const HIT = 'hit';
+
+    private $billingOnValues = array(
+        self::PRICE, self::WEIGHT, self::QTY
+    );
+    private $outOfRangeValues = array(
+        self::FREE, self::HIT
+    );
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -44,10 +59,28 @@ class MgCarriersConfig
      */
     private $amountCountries;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\MgTaxes")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $taxe;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MgCarriersAmountDepartments", mappedBy="carrier_config", orphanRemoval=true)
+     */
+    private $amountDepartments;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MgCarriersStepsDep", mappedBy="config", orphanRemoval=true)
+     */
+    private $stepsDeps;
+
     public function __construct()
     {
         $this->steps = new ArrayCollection();
         $this->amountCountries = new ArrayCollection();
+        $this->amountDepartments = new ArrayCollection();
+        $this->stepsDeps = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -74,6 +107,11 @@ class MgCarriersConfig
 
     public function setBillingOn(string $billing_on): self
     {
+        if (!in_array($billing_on, $this->billingOnValues)) {
+            throw new \InvalidArgumentException(
+                sprintf('Valeur invalide pour mg_carriers_config.billing_on : %s.', $billing_on)
+            );
+        }
         $this->billing_on = $billing_on;
 
         return $this;
@@ -86,6 +124,11 @@ class MgCarriersConfig
 
     public function setOutOfRange(string $out_of_range): self
     {
+        if (!in_array($out_of_range, $this->outOfRangeValues)) {
+            throw new \InvalidArgumentException(
+                sprintf('Valeur invalide pour mg_carriers_config.out_of_range : %s.', $out_of_range)
+            );
+        }
         $this->out_of_range = $out_of_range;
 
         return $this;
@@ -147,6 +190,80 @@ class MgCarriersConfig
             // set the owning side to null (unless already changed)
             if ($amountCountry->getCarrierConfig() === $this) {
                 $amountCountry->setCarrierConfig(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getTaxe(): ?MgTaxes
+    {
+        return $this->taxe;
+    }
+
+    public function setTaxe(?MgTaxes $taxe): self
+    {
+        $this->taxe = $taxe;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MgCarriersAmountDepartments[]
+     */
+    public function getAmountDepartments(): Collection
+    {
+        return $this->amountDepartments;
+    }
+
+    public function addAmountDepartment(MgCarriersAmountDepartments $amountDepartment): self
+    {
+        if (!$this->amountDepartments->contains($amountDepartment)) {
+            $this->amountDepartments[] = $amountDepartment;
+            $amountDepartment->setCarrierConfig($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAmountDepartment(MgCarriersAmountDepartments $amountDepartment): self
+    {
+        if ($this->amountDepartments->contains($amountDepartment)) {
+            $this->amountDepartments->removeElement($amountDepartment);
+            // set the owning side to null (unless already changed)
+            if ($amountDepartment->getCarrierConfig() === $this) {
+                $amountDepartment->setCarrierConfig(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MgCarriersStepsDep[]
+     */
+    public function getStepsDeps(): Collection
+    {
+        return $this->stepsDeps;
+    }
+
+    public function addStepsDep(MgCarriersStepsDep $stepsDep): self
+    {
+        if (!$this->stepsDeps->contains($stepsDep)) {
+            $this->stepsDeps[] = $stepsDep;
+            $stepsDep->setConfig($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStepsDep(MgCarriersStepsDep $stepsDep): self
+    {
+        if ($this->stepsDeps->contains($stepsDep)) {
+            $this->stepsDeps->removeElement($stepsDep);
+            // set the owning side to null (unless already changed)
+            if ($stepsDep->getConfig() === $this) {
+                $stepsDep->setConfig(null);
             }
         }
 

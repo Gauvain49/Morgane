@@ -37,7 +37,7 @@ class PostsType extends AbstractType
                 ]
             )
         ;
-        if ($options['action'] == 'page' || $options['data']->getType() == 'page') {
+        if ($options['isPage'] == true || $options['data']->getType() == 'page') {
             $builder
                 ->add('parent', ChoiceType::class, [
                     'label' => 'Page parente',
@@ -157,10 +157,11 @@ class PostsType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => MgPosts::class,
+            'isPage' => false
         ])
                 ->setRequired(
-            'checkbox',
-            'action'
+            'checkbox'
         );
+        $resolver->setAllowedTypes('isPage', 'bool');
     }
 }

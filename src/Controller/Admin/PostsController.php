@@ -128,10 +128,12 @@ class PostsController extends AbstractController
         //$content = new MgPostsLang();
         if ($role == $post::PAGE) {
             $listCascad = $repoPosts->findAllByArborescence();
+            $isPage = true;
         } elseif ($role == $post::POST) {
             $listCascad = $repoCat->findAllByArborescence('post');
+            $isPage = false;
         }
-        $form = $this->createForm(PostsType::class, $post, ['checkbox' => $listCascad, 'action' => $role]);
+        $form = $this->createForm(PostsType::class, $post, ['checkbox' => $listCascad, 'isPage' => $isPage]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

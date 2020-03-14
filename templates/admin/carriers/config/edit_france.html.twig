@@ -50,8 +50,8 @@
 			<aside>
 				<div class="list-group">
 					<a href="{{ path('carriers_edit', {'id': id}) }}" class="list-group-item">Transporteur</a>
-					<a href="{{ path('carriers_config_edit', {'id': id}) }}" class="list-group-item active">Coûts d'expédition</a>
-					<a href="{{ path('carriers_config_edit_france', {'id': id}) }}" class="list-group-item">Coûts d'expédition par département</a>
+					<a href="{{ path('carriers_config_edit', {'id': id}) }}" class="list-group-item">Coûts d'expédition</a>
+					<a href="{{ path('carriers_config_edit_france', {'id': id}) }}" class="list-group-item active">Coûts d'expédition par département</a>
 				</div>
 			</aside>
 		</div>
@@ -101,7 +101,7 @@
 		</div>
 	</div>
 	<div class="form-group mb-2" style="padding: 0;">
-		{{ form_widget(form.amountCountries) }}
+		{{ form_widget(form.amountDepartments) }}
 		<div class="text-right d-none">
 			<button type="button" data-action="delete" data-target="#block_{{id}}" class="btn btn-danger btn-round btn-sm dell_step">Suprimmer la tranche</button>
 		</div>
@@ -109,16 +109,14 @@
 </div>
 {% endblock %}
 {% block javascripts %}
-	<script src="{{ asset('admin/js/country_carriers.js') }}"></script>
+	<script src="{{ asset('admin/js/department_carriers.js') }}"></script>
 	<script type="text/javascript">
 	//Création du tableau recueillant les pays
 	const listCountry = new Object();
-	{% for country in countries %}
-		{% for countryLang in country.countriesLangs %}
-			{% if countryLang.lang.id == languagesService.languageDefault.id %}
-				listCountry[{{country.id}}] = '{{countryLang.countryName}}';
-			{% endif %}
-		{% endfor %}
+	const listInsee = new Object();
+	{% for department in departments %}
+		listCountry[{{department.id}}] = '{{department.name}}';
+		listInsee[{{department.id}}] = '{{department.codeInsee}}';
 	{% endfor %}
 
 	//Function pour calculer la taille du tableau qui recueille les pays
@@ -135,12 +133,12 @@
 
 	//S'il n'y a aucune étape d'initialisé, on crée les champs pour recevoir la première
 	if ({{ countStep }} == 0) {
-		var noeud = document.getElementById('carriers_config_steps');
+		var noeud = document.getElementById('carriers_config_stepsDeps');
 		//On récupère le contenu des divs à créer
 		var contents = noeud.getAttribute('data-prototype');
 		var counter = 0;//On implémente le compteur
 		for(var i = 0; i <= {{ countStep }}; i++) {
-			var ifExist = document.getElementById('carriers_config_steps' + '_' + counter);
+			var ifExist = document.getElementById('carriers_config_stepsDeps' + '_' + counter);
 			if (ifExist === null) {
 				var content = contents.replace(/__name__/g, counter);
 				noeud.insertAdjacentHTML('beforeend', content);
@@ -149,13 +147,13 @@
 		}
 
 		{% for i in 0..countStep %}
-		countryCarriers('carriers_config_steps_0_amountCountries', listCountry, {{ languagesService.getLanguages|length }}, 0);
+		departmentCarriers('carriers_config_stepsDeps_0_amountDepartments', listCountry, listInsee, {{ languagesService.getLanguages|length }}, 0);
 		{% endfor %}
 	} else {
 		for(var c = 0; c < {{ countStep }}; c++) {
 			var y = 0;
 			for(var i in listCountry) {
-				addCountry('carriers_config_steps_' + c + '_amountCountries', y, listCountry, i);
+				addCountry('carriers_config_stepsDeps_' + c + '_amountDepartments', y, listCountry, listInsee, i);
 				y++;
 			}
 		}
@@ -166,12 +164,12 @@
 	$('#add_step').click(function(){
 		//Je récupère le numéro des futurs champs que je vais créer
 		//var index = +$('#widgets-counter').val();
-		var index = $('#carriers_config_steps div.col-3').length;
-		//carriers_config_steps
+		var index = $('#carriers_config_stepsDeps div.col-3').length;
+		//carriers_config_stepsDeps
 		//On récupère a valeur des derniers champs step_min et step_max rempli
 
-		var step_min = parseInt(document.getElementById('carriers_config_steps_' + (index - 1) + '_step_min').value);
-		var step_max = parseInt(document.getElementById('carriers_config_steps_' + (index - 1) + '_step_max').value);
+		var step_min = parseInt(document.getElementById('carriers_config_stepsDeps_' + (index - 1) + '_step_min').value);
+		var step_max = parseInt(document.getElementById('carriers_config_stepsDeps_' + (index - 1) + '_step_max').value);
 
 		if (step_min === "" || step_max === "") {
 			alert('Vous devez remplir les valeurs avant d\'ajouter une nouvelle tranche !');
@@ -179,12 +177,12 @@
 			alert('La valeur \' < à \' (inférieur à) ne peut être inférieur à la valeur \'<= à\' (supérieur ou = à) !');
 		} else {
 			//Je récupère le prototype des entrées
-			const tmpl = $('#carriers_config_steps').data('prototype').replace(/__name__/g, index);
-			$('#carriers_config_steps').append(tmpl);
-			countryCarriers('carriers_config_steps_' + index + '_amountCountries', listCountry, {{ languagesService.getLanguages|length }}, index);
+			const tmpl = $('#carriers_config_stepsDeps').data('prototype').replace(/__name__/g, index);
+			$('#carriers_config_stepsDeps').append(tmpl);
+			countryCarriers('carriers_config_stepsDeps_' + index + '_amountCountries', listCountry, listInsee, {{ languagesService.getLanguages|length }}, index);
 
 			//On donner au champ step_min la valeur du step_max de la tranche précédente
-			var new_step_min = document.getElementById('carriers_config_steps_' + index + '_step_min').value = step_max;
+			var new_step_min = document.getElementById('carriers_config_stepsDeps_' + index + '_step_min').value = step_max;
 
 			index ++;
 			$('#widgets-counter').val(index + 1);

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\MgCarriersRepository;
 use App\Repository\MgCustomersRepository;
 use App\Repository\MgGendersRepository;
 use App\Repository\MgPaymentsModesRepository;
@@ -20,13 +21,34 @@ class CartController extends AbstractController
     /**
      * @Route("/cart/content", name="cart")
      */
-    public function cart(SessionInterface $session, CartService $cartService, MgProductsImagesRepository $productsImagesRepository)
+    public function cart(SessionInterface $session, CartService $cartService, MgProductsImagesRepository $productsImagesRepository, MgCarriersRepository $repoCarrier)
     {
         if (!$session->has('shipping')) {
             $session->set('shipping', []);
         }
         $cart = $cartService->cart();
         $bulk = $cartService->checkBulk();
+        if (is_null($this->getUser())) {
+            $country = 8;
+            $dep = null;
+        } else {
+            //On récupère le client
+            $customer = $repoCustomer->findOneBy(['user' => $this->getUser()]);
+            //Puis on récupère ses adresses
+            if ((count($customer->getAddresses())) == 1) {
+                $country = $shippingAddress = $customer->getAddresses()[0]->getCountry()->getId();
+                $dep = $shippingAddress = $customer->getAddresses()[0]->getZipcode();
+            } else {
+                foreach ($customer->getAddresses() as $value) {
+                    if ($value->getTypeAddress() == 1) {
+                        $country = $value->getCountry()->getId();
+                        $dep = $value->getZipcode();
+                    }
+                }
+            }
+            $dep = substr($dep, 0, 2);
+        }
+        $shipping = $cartService->getShipping($country, $dep);
         //Récupération des images
         $images = [];
         foreach ($cart as $key => $item) {
@@ -38,10 +60,13 @@ class CartController extends AbstractController
                 }
             }
         }
+        $carriers = $repoCarrier->findAll();
         return $this->render('main/cart/index.html.twig', [
             'cart' => $cart,
             'images' => $images,
-            'bulk' => $bulk
+            'bulk' => $bulk,
+            'shipping' => $shipping,
+            'carriers' => $carriers
         ]);
     }
 

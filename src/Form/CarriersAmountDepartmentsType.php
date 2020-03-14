@@ -2,19 +2,19 @@
 
 namespace App\Form;
 
-use App\Entity\MgCarriersAmountCountries;
-use App\Form\DataTransformer\CountryToNumberTransformer;
+use App\Entity\MgCarriersAmountDepartments;
+use App\Form\DataTransformer\DepartmentToNumberTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CarriersAmountCountriesType extends AbstractType
+class CarriersAmountDepartmentsType extends AbstractType
 {
     private $transformer;
 
-    public function __construct(CountryToNumberTransformer $transformer)
+    public function __construct(DepartmentToNumberTransformer $transformer)
     {
         $this->transformer = $transformer;
     }
@@ -22,10 +22,10 @@ class CarriersAmountCountriesType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('country_amount', MoneyType::class, [
+            ->add('department_amount', MoneyType::class, [
             ])
-            ->add('step_country', HiddenType::class, [])
-            ->get('step_country')
+            ->add('step_department', HiddenType::class, [])
+            ->get('step_department')
                 ->addModelTransformer($this->transformer)
         ;
     }
@@ -33,7 +33,7 @@ class CarriersAmountCountriesType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => MgCarriersAmountCountries::class,
+            'data_class' => MgCarriersAmountDepartments::class,
         ]);
     }
 }
