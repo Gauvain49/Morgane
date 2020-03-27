@@ -50,8 +50,9 @@
 			<aside>
 				<div class="list-group">
 					<a href="{{ path('carriers_edit', {'id': id}) }}" class="list-group-item">Transporteur</a>
-					<a href="{{ path('carriers_config_edit', {'id': id}) }}" class="list-group-item">Coûts d'expédition</a>
-					<a href="{{ path('carriers_config_edit_france', {'id': id}) }}" class="list-group-item active">Coûts d'expédition par département</a>
+					<a href="{{ path('carriers_config_edit', {'id': id}) }}" class="list-group-item">Coûts d'expédition par pays</a>
+					<a href="{{ path('carriers_config_edit_region', {'id': id}) }}" class="list-group-item">Coûts d'expédition par région</a>
+					<a href="{{ path('carriers_config_edit_department', {'id': id}) }}" class="list-group-item active">Coûts d'expédition par département</a>
 				</div>
 			</aside>
 		</div>
@@ -77,12 +78,12 @@
 {# block _carriers_config_steps_widget %}
 	{{ form_widget(form) }}
 {% endblock #}
-{% block _carriers_config_steps_entry_row %}
+{% block _carriers_config_stepsDeps_entry_row %}
 	<div class="col-3 mb-5">
 			{{ form_widget(form) }}
 	</div>
 {% endblock %}
-{% block _carriers_config_steps_entry_widget %}
+{% block _carriers_config_stepsDeps_entry_widget %}
 <div id="block_{{id}}">
 	<div class="form-group">
 		<div class="row">
@@ -165,13 +166,14 @@
 		//Je récupère le numéro des futurs champs que je vais créer
 		//var index = +$('#widgets-counter').val();
 		var index = $('#carriers_config_stepsDeps div.col-3').length;
+		console.log(index);
 		//carriers_config_stepsDeps
 		//On récupère a valeur des derniers champs step_min et step_max rempli
 
 		var step_min = parseInt(document.getElementById('carriers_config_stepsDeps_' + (index - 1) + '_step_min').value);
 		var step_max = parseInt(document.getElementById('carriers_config_stepsDeps_' + (index - 1) + '_step_max').value);
 
-		if (step_min === "" || step_max === "") {
+		if (isNaN(step_min) || isNaN(step_max)) {
 			alert('Vous devez remplir les valeurs avant d\'ajouter une nouvelle tranche !');
 		} else if (step_min > step_max) {
 			alert('La valeur \' < à \' (inférieur à) ne peut être inférieur à la valeur \'<= à\' (supérieur ou = à) !');
@@ -179,7 +181,7 @@
 			//Je récupère le prototype des entrées
 			const tmpl = $('#carriers_config_stepsDeps').data('prototype').replace(/__name__/g, index);
 			$('#carriers_config_stepsDeps').append(tmpl);
-			countryCarriers('carriers_config_stepsDeps_' + index + '_amountCountries', listCountry, listInsee, {{ languagesService.getLanguages|length }}, index);
+			departmentCarriers('carriers_config_stepsDeps_' + index + '_amountDepartments', listCountry, listInsee, {{ languagesService.getLanguages|length }}, index);
 
 			//On donner au champ step_min la valeur du step_max de la tranche précédente
 			var new_step_min = document.getElementById('carriers_config_stepsDeps_' + index + '_step_min').value = step_max;

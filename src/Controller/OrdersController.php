@@ -12,7 +12,9 @@ use App\Services\AppService;
 use App\Services\CartService;
 use App\Services\Order\OrderService;
 use App\Services\Order\PaymentModeOrderService;
+use App\Services\Order\ShippingOrderService;
 use App\Services\SendEmails;
+use App\Services\ShippingService;
 use App\Services\TokenUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,11 +28,11 @@ class OrdersController extends AbstractController
     /**
      * @Route("/order/creat_order/{mode}", name="creat_order")
      */
-    public function newOrder($mode, CartService $cartService, OrderService $orderService, PaymentModeOrderService $paymentModeOrder, TokenUtils $tokenUtils, SessionInterface $session, MgPaymentsModesRepository $repoPayment, AppService $appService, SendEmails $sendEmails)
+    public function newOrder($mode, CartService $cartService, ShippingService $shippingService, OrderService $orderService, ShippingOrderService $shippingOrderService, PaymentModeOrderService $paymentModeOrder, TokenUtils $tokenUtils, SessionInterface $session, MgPaymentsModesRepository $repoPayment, AppService $appService, SendEmails $sendEmails)
     {
         $cart = $cartService->cart();
-        $shipping = $cartService->getShipping();
-
+        $shipping = current($session->get('shipping'));
+        $totalShipping = $shippingService->totalCostShipping();
         if (!$session->has('info_transaction')) {
             $session->set('info_transaction', []);
         }
@@ -39,7 +41,7 @@ class OrdersController extends AbstractController
         $info_transaction = current($info_transaction);
 
         //Initialisation du prix total du panier
-        $totalBasketAllTaxes = $cartService->totalCart() + array_sum($shipping);
+        $totalBasketAllTaxes = $cartService->totalCart() + array_sum($totalShipping);
         $modePayment = $repoPayment->findOneBy(['type' => $mode]);
 
         //Création de la commande
@@ -47,9 +49,12 @@ class OrdersController extends AbstractController
         $numOrder = $session->get('numOrder');
         $newOrder = $orderService->creatOrder($this->getUser(), $mode, $numOrder);
         $newPayment = $paymentModeOrder->createPaymentModeOrder($newOrder, $modePayment, $totalBasketAllTaxes, $info_transaction);
+        $newShipping = $shippingOrderService->creatShippingOrder($shipping, $newOrder);
 
         $session->remove('info_transaction');
         $session->remove('cart');
+        $session->remove('shipping');
+        $session->remove('numOrder');
 
         /**
          * Envoi des emails avertissant/confirmant la commande

@@ -1,1 +1,350 @@
 {% extends 'admin/base.html.twig' %}
+{% block body %}
+	<div class="page-header">
+		<h4 class="page-title">Tableau de bord</h4>
+	</div>
+	<div class="row">
+		<div class="col-sm-6 col-md-3">
+			<div class="card card-stats card-primary card-round">
+				<div class="card-body">
+					<div class="row">
+						<div class="col-5">
+							<div class="icon-big text-center">
+								<i class="flaticon-users"></i>
+							</div>
+						</div>
+						<div class="col-7 col-stats">
+							<div class="numbers">
+								<p class="card-category">Inscrits</p>
+								<h4 class="card-title">{{ customers }}</h4>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-6 col-md-3">
+			<div class="card card-stats card-info card-round">
+				<div class="card-body">
+					<div class="row">
+						<div class="col-5">
+							<div class="icon-big text-center">
+								<i class="flaticon-interface-6"></i>
+							</div>
+						</div>
+						<div class="col-7 col-stats">
+							<div class="numbers">
+								<p class="card-category">Ventes mois précédent</p>
+								<h4 class="card-title">€ {{ salesOfPrevMounth|number_format(2, ',', ' ') }}</h4>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-6 col-md-3">
+			<div class="card card-stats card-success card-round">
+				<div class="card-body">
+					<div class="row">
+						<div class="col-5">
+							<div class="icon-big text-center">
+								<i class="flaticon-graph"></i>
+							</div>
+						</div>
+						<div class="col-7 col-stats">
+							<div class="numbers">
+								<p class="card-category">Ventes du mois</p>
+								<h4 class="card-title">€ {{ salesOfMonth|number_format(2, ',', ' ') }}</h4>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-6 col-md-3">
+			<div class="card card-stats card-secondary card-round">
+				<div class="card-body">
+					<div class="row">
+						<div class="col-5">
+							<div class="icon-big text-center">
+								<i class="flaticon-success"></i>
+							</div>
+						</div>
+						<div class="col-7 col-stats">
+							<div class="numbers">
+								<p class="card-category">Nombre de commande</p>
+								<h4 class="card-title">{{ ordersOfMonth }}</h4>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-8">
+			<div class="card">
+				<div class="card-header">
+					<div class="card-title">Ventes 12 derniers mois</div>
+				</div>
+				<div class="card-body">
+					<ul class="nav nav-pills nav-primary" id="pills-tab" role="tablist">
+						<li class="nav-item">
+							<a class="nav-link active" id="pills-graph-tab" data-toggle="pill" href="#pills-graph" role="tab" aria-controls="pills-graph" aria-selected="true">Ventes</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" id="pills-graph2-tab" data-toggle="pill" href="#pills-graph2" role="tab" aria-controls="pills-graph2" aria-selected="false">Commandes</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" id="pills-graph3-tab" data-toggle="pill" href="#pills-graph3" role="tab" aria-controls="pills-graph3" aria-selected="true">Encore autres Ventes</a>
+						</li>
+					</ul>
+					<div class="tab-content" id="pills-tabContent">
+						<div class="tab-pane fade show active" id="pills-graph" role="tabpanel" aria-labelledby="pills-graph-tab">
+							<div class="chart-container">
+								<canvas id="multipleLineChart" height="331"></canvas>
+							</div>
+						</div>
+						<div class="tab-pane fade" id="pills-graph2" role="tabpanel" aria-labelledby="pills-graph2-tab">
+							<div class="chart-container">
+								<canvas id="multipleLineChartOrder" height="331"></canvas>
+							</div>
+						</div>
+						<div class="tab-pane fade" id="pills-graph3" role="tabpanel" aria-labelledby="pills-graph3-tab">
+							<p>Encore autre contenu</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card">
+				<div class="card-header">
+					<h4 class="card-title">Pourcentage utilisateur</h4>
+					<p class="card-category">Pourcentage mars 2019</p>
+				</div>
+				<div class="card-body">
+					<div class="chart-container">
+						<canvas id="pieChart"></canvas>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row row-card-no-pd">
+		<div class="col-md-12">
+			<div class="card">
+				<div class="card-header">
+					<div class="card-head-row">
+						<h4 class="card-title">Géolocalisasion</h4>
+					</div>
+					<p class="card-category">Carte de la répartition des utilisateurs dans le monde</p>
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="table-responsive table-hover table-sales">
+								
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="mapcontainer">
+								<div id="map-example" class="vmap"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
+{% block javascripts %}
+	<!-- Chart JS -->
+	<script src="{{ asset('admin/js/plugin/chart.js/chart.min.js') }}"></script>
+
+	<!-- jQuery Vector Maps -->
+	<script src="{{ asset('admin/js/plugin/jqvmap/jquery.vmap.min.js') }}"></script>
+	<script src="{{ asset('admin/js/plugin/jqvmap/maps/jquery.vmap.world.js') }}"></script>
+
+	<script>
+	var multipleLineChart = document.getElementById('multipleLineChart').getContext('2d');
+
+	var myMultipleLineChart = new Chart(multipleLineChart, {
+		type: 'line',
+		data: {
+			labels: ["Jan", "Fev", "Mar", "Avr", "Mai", "Jui", "Juil", "Aoû", "Sep", "Oct", "Nov", "Dec"],
+			datasets: [{
+				label: "2019",
+				borderColor: "#1d7af3",
+				pointBorderColor: "#FFF",
+				pointBackgroundColor: "#1d7af3",
+				pointBorderWidth: 2,
+				pointHoverRadius: 4,
+				pointHoverBorderWidth: 1,
+				pointRadius: 4,
+				backgroundColor: 'transparent',
+				fill: true,
+				borderWidth: 2,
+				data: [{{ saleOfYearByMonth['01'] }}, {{ saleOfYearByMonth['02'] }}, {{ saleOfYearByMonth['03'] }}, {{ saleOfYearByMonth['04'] }}, {{ saleOfYearByMonth['05'] }}, {{ saleOfYearByMonth['06'] }}, {{ saleOfYearByMonth['07'] }}, {{ saleOfYearByMonth['08'] }}, {{ saleOfYearByMonth['09'] }}, {{ saleOfYearByMonth['10'] }}, {{ saleOfYearByMonth['11'] }}, {{ saleOfYearByMonth['12'] }}]
+			},{
+				label: "2018",
+				borderColor: "#59d05d",
+				pointBorderColor: "#FFF",
+				pointBackgroundColor: "#59d05d",
+				pointBorderWidth: 2,
+				pointHoverRadius: 4,
+				pointHoverBorderWidth: 1,
+				pointRadius: 4,
+				backgroundColor: 'transparent',
+				fill: true,
+				borderWidth: 2,
+				data: [{{ saleOfPrevYearByMonth['01'] }}, {{ saleOfPrevYearByMonth['02'] }}, {{ saleOfPrevYearByMonth['03'] }}, {{ saleOfPrevYearByMonth['04'] }}, {{ saleOfPrevYearByMonth['05'] }}, {{ saleOfPrevYearByMonth['06'] }}, {{ saleOfPrevYearByMonth['07'] }}, {{ saleOfPrevYearByMonth['08'] }}, {{ saleOfPrevYearByMonth['09'] }}, {{ saleOfPrevYearByMonth['10'] }}, {{ saleOfPrevYearByMonth['11'] }}, {{ saleOfPrevYearByMonth['12'] }}]
+			}]
+		},
+		options : {
+			responsive: true,
+			maintainAspectRatio: false,
+			legend: {
+				position: 'top',
+			},
+			tooltips: {
+				bodySpacing: 4,
+				mode:"nearest",
+				intersect: 0,
+				position:"nearest",
+				xPadding:10,
+				yPadding:10,
+				caretPadding:10
+			},
+			layout:{
+				padding:{left:15,right:15,top:15,bottom:15}
+			}
+		}
+	});
+
+
+	var multipleLineChartOrder = document.getElementById('multipleLineChartOrder').getContext('2d');
+
+	var myMultipleLineChartOrder = new Chart(multipleLineChartOrder, {
+		type: 'line',
+		data: {
+			labels: ["Jan", "Fev", "Mar", "Avr", "Mai", "Jui", "Juil", "Aoû", "Sep", "Oct", "Nov", "Dec"],
+			datasets: [{
+				label: "2019",
+				borderColor: "#1d7af3",
+				pointBorderColor: "#FFF",
+				pointBackgroundColor: "#1d7af3",
+				pointBorderWidth: 2,
+				pointHoverRadius: 4,
+				pointHoverBorderWidth: 1,
+				pointRadius: 4,
+				backgroundColor: 'transparent',
+				fill: true,
+				borderWidth: 2,
+				data: [{{ orderOfYearByMonth['01'] }}, {{ orderOfYearByMonth['02'] }}, {{ orderOfYearByMonth['03'] }}, {{ orderOfYearByMonth['04'] }}, {{ orderOfYearByMonth['05'] }}, {{ orderOfYearByMonth['06'] }}, {{ orderOfYearByMonth['07'] }}, {{ orderOfYearByMonth['08'] }}, {{ orderOfYearByMonth['09'] }}, {{ orderOfYearByMonth['10'] }}, {{ orderOfYearByMonth['11'] }}, {{ orderOfYearByMonth['12'] }}]
+			},{
+				label: "2018",
+				borderColor: "#59d05d",
+				pointBorderColor: "#FFF",
+				pointBackgroundColor: "#59d05d",
+				pointBorderWidth: 2,
+				pointHoverRadius: 4,
+				pointHoverBorderWidth: 1,
+				pointRadius: 4,
+				backgroundColor: 'transparent',
+				fill: true,
+				borderWidth: 2,
+				data: [{{ orderOfPrevYearByMonth['01'] }}, {{ orderOfPrevYearByMonth['02'] }}, {{ orderOfPrevYearByMonth['03'] }}, {{ orderOfPrevYearByMonth['04'] }}, {{ orderOfPrevYearByMonth['05'] }}, {{ orderOfPrevYearByMonth['06'] }}, {{ orderOfPrevYearByMonth['07'] }}, {{ orderOfPrevYearByMonth['08'] }}, {{ orderOfPrevYearByMonth['09'] }}, {{ orderOfPrevYearByMonth['10'] }}, {{ orderOfPrevYearByMonth['11'] }}, {{ orderOfPrevYearByMonth['12'] }}]
+			}]
+		},
+		options : {
+			responsive: true,
+			maintainAspectRatio: false,
+			legend: {
+				position: 'top',
+			},
+			tooltips: {
+				bodySpacing: 4,
+				mode:"nearest",
+				intersect: 0,
+				position:"nearest",
+				xPadding:10,
+				yPadding:10,
+				caretPadding:10
+			},
+			layout:{
+				padding:{left:15,right:15,top:15,bottom:15}
+			}
+		}
+	});
+
+
+
+	var pieChart = document.getElementById('pieChart').getContext('2d');
+
+	var myPieChart = new Chart(pieChart, {
+		type: 'pie',
+		data: {
+			datasets: [{
+				data: [50, 35, 15],
+				backgroundColor :["#1d7af3","#f3545d","#fdaf4b"],
+				borderWidth: 0
+			}],
+			labels: ['Nouveau', 'Inscrits', 'Actifs']
+		},
+		options : {
+			responsive: true,
+			maintainAspectRatio: false,
+			legend: {
+				position : 'bottom',
+				labels : {
+					fontColor: 'rgb(154, 154, 154)',
+					fontSize: 11,
+					usePointStyle : true,
+					padding: 20
+				}
+			},
+			pieceLabel: {
+				render: 'percentage',
+				fontColor: 'white',
+				fontSize: 14,
+			},
+			tooltips: false,
+			layout: {
+				padding: {
+					left: 20,
+					right: 20,
+					top: 20,
+					bottom: 20
+				}
+			}
+		}
+	});
+
+	// JQVmap
+	$('#map-example').vectorMap(
+	{
+		map: 'world_en',
+		backgroundColor: 'transparent',
+		borderColor: '#fff',
+		borderWidth: 2,
+		color: '#e4e4e4',
+		enableZoom: true,
+		hoverColor: '#35cd3a',
+		hoverOpacity: null,
+		normalizeFunction: 'linear',
+		scaleColors: ['#b6d6ff', '#005ace'],
+		selectedColor: '#35cd3a',
+		selectedRegions: ['ID', 'RU', 'US', 'AU', 'CN', 'BR'],
+		showTooltip: true,
+		onRegionClick: function(element, code, region)
+		{
+			return false;
+		},
+		onResize: function (element, width, height) {
+			console.log('Map Size: ' +  width + 'x' +  height);
+		},
+	});
+	</script>
+{% endblock %}

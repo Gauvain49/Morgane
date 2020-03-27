@@ -11,6 +11,7 @@ use App\Repository\MgProductsImagesRepository;
 use App\Repository\MgProductsRepository;
 use App\Services\CartService;
 use App\Services\Languages;
+use App\Services\ShippingService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -21,7 +22,7 @@ class CartController extends AbstractController
     /**
      * @Route("/cart/content", name="cart")
      */
-    public function cart(SessionInterface $session, CartService $cartService, MgProductsImagesRepository $productsImagesRepository, MgCarriersRepository $repoCarrier)
+    public function cart(SessionInterface $session, CartService $cartService, ShippingService $shippingService, MgProductsImagesRepository $productsImagesRepository, MgCarriersRepository $repoCarrier, MgCustomersRepository $repoCustomer)
     {
         if (!$session->has('shipping')) {
             $session->set('shipping', []);
@@ -48,7 +49,8 @@ class CartController extends AbstractController
             }
             $dep = substr($dep, 0, 2);
         }
-        $shipping = $cartService->getShipping($country, $dep);
+        $shipping = $shippingService->getShipping($country, $dep);
+        $session->set('shipping', [$shipping]);
         //Récupération des images
         $images = [];
         foreach ($cart as $key => $item) {
@@ -222,7 +224,7 @@ class CartController extends AbstractController
     /**
      * @Route("cart/confirm", name="cart_confirm")
      */
-    public function confirm(SessionInterface $session, MgProductsRepository $repoProduct, MgProductsImagesRepository $productsImagesRepository, CartService $cartService, MgPaymentsModesRepository $repoPayments, MgCustomersRepository $repoCustomer, MgGendersRepository $repoGender, MgPostsRepository $repoPost)
+    public function confirm(SessionInterface $session, MgProductsRepository $repoProduct, MgProductsImagesRepository $productsImagesRepository, MgCarriersRepository $repoCarrier, CartService $cartService, MgPaymentsModesRepository $repoPayments, MgCustomersRepository $repoCustomer, MgGendersRepository $repoGender, MgPostsRepository $repoPost)
     {
         //Si la session du panier ou des frais de livraison n'existe pas...
         if (!$session->has('shipping')) {
@@ -246,7 +248,7 @@ class CartController extends AbstractController
 
         $cart = $cartService->cart();
 
-        $shipping = $session->get('shipping');
+        //$shipping = $session->get('shipping');
         //$totalCart = $cartService->totalCart();
         //Récupération des images
         $images = [];
@@ -268,6 +270,7 @@ class CartController extends AbstractController
                 $cgv = $value->getContent();
             }
         }
+        $carriers = $repoCarrier->findAll();
         return $this->render('main/cart/confirmCart.html.twig', [
             'cart' => $cart,
             //'pricesProducts' => $pricesProducts,
@@ -279,9 +282,10 @@ class CartController extends AbstractController
             'billingAddress' => $billingAddress,
             'shippingAddress' => $shippingAddress,
             'genders' => $genders,
-            //'shipping' => $session->get('shipping'),
+            'shipping' => current($session->get('shipping')),
             'payments' => $payments,
-            'cgv' => $cgv
+            'cgv' => $cgv,
+            'carriers' => $carriers
         ]);
     }
 }

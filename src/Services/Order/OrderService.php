@@ -7,6 +7,7 @@ use App\Entity\MgOrdersStatusLang;
 use App\Entity\MgUsers;
 use App\Services\CartService;
 use App\Services\Order\StatusOrderService;
+use App\Services\ShippingService;
 use App\Services\TokenUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -16,13 +17,15 @@ class OrderService extends AbstractController
 	protected $token;
 	protected $contentOrder;
 	protected $statusOrder;
+	protected $shipping;
 
-	public function __construct(CartService $cartServices, TokenUtils $token, ContentOrderService $contentOrder, StatusOrderService $statusOrder)
+	public function __construct(CartService $cartServices, ShippingService $shippingService, TokenUtils $token, ContentOrderService $contentOrder, StatusOrderService $statusOrder)
 	{
 		$this->cart = $cartServices;
 		$this->token = $token;
 		$this->contentOrder = $contentOrder;
 		$this->statusOrder = $statusOrder;
+		$this->shipping = $shippingService;
 	}
 
 	/**
@@ -32,7 +35,7 @@ class OrderService extends AbstractController
 	public function creatOrder(MgUsers $user, $mode_payment, $numOrder)
 	{
 		$cart = $this->cart->cart();
-		$shipping = $this->cart->getShipping();
+		$shipping = $this->shipping->totalCostShipping();
 
 		//Récupération des adresses du client
 		$country_shipping = '';

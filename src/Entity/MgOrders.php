@@ -19,7 +19,7 @@ class MgOrders
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\MgUsers", inversedBy="orders")
+     * @ORM\ManyToOne(targetEntity="App\Entity\MgUsers", inversedBy="orders")
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
@@ -105,12 +105,18 @@ class MgOrders
      */
     private $orders;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MgOrdersCarriers", mappedBy="get_order", orphanRemoval=true)
+     */
+    private $orderCarriers;
+
     public function __construct()
     {
         $this->ordersContents = new ArrayCollection();
         $this->orderPayments = new ArrayCollection();
         $this->orders = new ArrayCollection();
         $this->date_add = new  \Datetime();
+        $this->orderCarriers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -373,6 +379,37 @@ class MgOrders
             // set the owning side to null (unless already changed)
             if ($order->getStatusOrder() === $this) {
                 $order->setStatusOrder(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MgOrdersCarriers[]
+     */
+    public function getOrderCarriers(): Collection
+    {
+        return $this->orderCarriers;
+    }
+
+    public function addOrderCarrier(MgOrdersCarriers $orderCarrier): self
+    {
+        if (!$this->orderCarriers->contains($orderCarrier)) {
+            $this->orderCarriers[] = $orderCarrier;
+            $orderCarrier->setGetOrder($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrderCarrier(MgOrdersCarriers $orderCarrier): self
+    {
+        if ($this->orderCarriers->contains($orderCarrier)) {
+            $this->orderCarriers->removeElement($orderCarrier);
+            // set the owning side to null (unless already changed)
+            if ($orderCarrier->getGetOrder() === $this) {
+                $orderCarrier->setGetOrder(null);
             }
         }
 

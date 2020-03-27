@@ -21,11 +21,12 @@ class CarriersConfigType extends AbstractType
     {
         $builder
             ->add('billing_on', ChoiceType::class, [
-                'label' => 'Facturation',
+                'label' => 'Base de calcul de la livraison',
+                'attr' => ['class' => 'ml-5'],
                 'choices' => [
-                    'En fonction du prix total' => 'price',
-                    'En fonction du poids' => 'weight',
-                    'En fonction de la quantité' => 'qty'],
+                    'En fonction du prix total du panier' => 'price',
+                    'En fonction du poids total des articles' => 'weight',
+                    'En fonction de la quantité total du panier' => 'qty'],
                 'expanded' => true,
                 'multiple' => false
             ])
@@ -42,7 +43,7 @@ class CarriersConfigType extends AbstractType
                 }
             ])
             ->add('out_of_range', ChoiceType::class, [
-                'label' => 'Si hors tranche',
+                'label' => 'Comportement si hors tranche',
                 'choices' => [
                     'Port gratuit' => 'free',
                     'Prendre la plus grande tranche' => 'hit'],
@@ -51,11 +52,21 @@ class CarriersConfigType extends AbstractType
                 'data' => 'free'
             ])
         ;
-        if ($options['required_departments']) {
+        if ($options['required_amount'] == 'departments') {
             $builder
                 ->add('stepsDeps', CollectionType::class, [
-                    'label' => 'Tranches de prix HT',
+                    'label' => 'Tranches de prix HT par département',
                     'entry_type' => CarriersStepsDepartmentsType::class,
+                    'allow_add' => true,
+                    'allow_delete' => true,
+                    'attr' => ['class' => 'row listCountry'],
+                ])
+            ;
+        } elseif($options['required_amount'] == 'regions') {
+            $builder
+                ->add('stepsRegions', CollectionType::class, [
+                    'label' => 'Tranches de prix HT par région',
+                    'entry_type' => CarriersStepsRegionsType::class,
                     'allow_add' => true,
                     'allow_delete' => true,
                     'attr' => ['class' => 'row listCountry'],
@@ -64,7 +75,7 @@ class CarriersConfigType extends AbstractType
         } else {
             $builder
                 ->add('steps', CollectionType::class, [
-                    'label' => 'Tranches de prix HT',
+                    'label' => 'Tranches de prix HT par pays',
                     'entry_type' => CarriersStepsType::class,
                     'allow_add' => true,
                     'allow_delete' => true,
@@ -78,8 +89,9 @@ class CarriersConfigType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => MgCarriersConfig::class,
-            'required_departments' => false
+            'required_amount' => 'country',
+            'label' => false
         ]);
-        $resolver->setAllowedTypes('required_departments', 'bool');
+        $resolver->setAllowedTypes('required_amount', 'string');
     }
 }

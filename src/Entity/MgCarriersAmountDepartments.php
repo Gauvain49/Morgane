@@ -29,7 +29,7 @@ class MgCarriersAmountDepartments
     private $step_department;
 
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="float", nullable=true)
      */
     private $department_amount;
 

@@ -44,7 +44,9 @@
 			<aside>
 				<div class="list-group">
 					<a href="#" class="list-group-item active">Transporteur</a>
-					<a href="{{ path('carriers_config_edit', {'id': carrier.id}) }}" class="list-group-item disabled">Coûts d'expédition</a>
+					<a href="{{ path('carriers_config_edit', {'id': carrier.id}) }}" class="list-group-item disabled">Coûts d'expédition par pays</a>
+					<a href="{{ path('carriers_config_edit_region', {'id': carrier.id}) }}" class="list-group-item disabled">Coûts d'expédition par Région</a>
+					<a href="{{ path('carriers_config_edit_department', {'id': carrier.id}) }}" class="list-group-item disabled">Coûts d'expédition par département</a>
 				</div>
 			</aside>
 		</div>

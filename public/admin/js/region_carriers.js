@@ -1,4 +1,4 @@
-function departmentCarriers(nomCible, listLang, listInsee, langLength, index) {
+function regionCarriers(nomCible, listLang, langLength, index) {
 	//On récupère le nom 'global' des div avec différents pays.
 	var noeud = document.getElementById(nomCible);
 	//console.log(nomCible);
@@ -10,12 +10,12 @@ function departmentCarriers(nomCible, listLang, listInsee, langLength, index) {
 		//On ne créée le nouvel élément que s'il n'existe pas
 		var ifExist = document.getElementById(nomCible + '_' + counter);
 		if (ifExist === null) {
-			var content = contents.replace(/__department__/g, counter);
+			var content = contents.replace(/__region__/g, counter);
 			noeud.insertAdjacentHTML('beforebegin', content);
 		}
 		document.getElementById(nomCible + '_' + counter).lastChild.value = i;
 		// On précise ensuite le nom du pays dans le label
-		addCountry(nomCible, counter, listLang, listInsee, i);
+		addCountry(nomCible, counter, listLang, i);
 		/*var enfant = document.getElementById(nomCible + '_' + counter).children;
 		for(var a = 0; a<enfant.length;a++) {
 			var label = enfant[a].getElementsByTagName("label");
@@ -27,7 +27,7 @@ function departmentCarriers(nomCible, listLang, listInsee, langLength, index) {
 	}
 }
 
-function addCountry(nomCible, counter, listLang, listInsee, i) {
+function addCountry(nomCible, counter, listLang, i) {
 	//console.log(nomCible + '_' + counter);
 	if (nomCible + '_' + counter) {
 		//console.log(nomCible + '_' + counter);
@@ -37,7 +37,7 @@ function addCountry(nomCible, counter, listLang, listInsee, i) {
 			//console.log(label);
 			for(var b = 0; b<label.length;b++) {
 				//console.log(label[b]);
-				var chose = label[b].innerHTML = listInsee[i] + ' - ' + listLang[i];
+				var chose = label[b].innerHTML = listLang[i];
 			}
 		}		
 	}

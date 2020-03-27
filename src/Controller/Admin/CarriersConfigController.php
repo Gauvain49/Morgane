@@ -8,9 +8,11 @@ use App\Entity\MgCarriersConfig;
 use App\Form\CarriersConfigType;
 use App\Repository\MgCarriersConfigRepository;
 use App\Repository\MgCarriersStepsDepRepository;
+use App\Repository\MgCarriersStepsRegionsRepository;
 use App\Repository\MgCarriersStepsRepository;
 use App\Repository\MgCountriesRepository;
 use App\Repository\MgDepartmentsFrenchRepository;
+use App\Repository\MgRegionsFrenchRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,7 +50,7 @@ class CarriersConfigController extends AbstractController
             $carriersConfig = new MgCarriersConfig();
         }
         $form = $this->createForm(CarriersConfigType::class, $carriersConfig, [
-            'required_departments' => false
+            'required_amount' => 'country'
         ]);
         $form->handleRequest($request);
 
@@ -89,9 +91,9 @@ class CarriersConfigController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/edit-france", name="carriers_config_edit_france", methods={"GET","POST"})
+     * @Route("/{id}/edit-department", name="carriers_config_edit_department", methods={"GET","POST"})
      */
-    public function editFrance($id, Request $request, MgCarriers $carriers, MgCarriersConfigRepository $repoCarrierConfig, MgCarriersStepsDepRepository $repoSteps, MgDepartmentsFrenchRepository $repoDepartment): Response
+    public function editDepartment($id, Request $request, MgCarriers $carriers, MgCarriersConfigRepository $repoCarrierConfig, MgCarriersStepsDepRepository $repoSteps, MgDepartmentsFrenchRepository $repoDepartment): Response
     {
         $carriersConfig = $repoCarrierConfig->findOneBy(['carrier' => $carriers]);
         if (!empty($carriersConfig)) {
@@ -105,23 +107,19 @@ class CarriersConfigController extends AbstractController
             $carriersConfig = new MgCarriersConfig();
         }
         $form = $this->createForm(CarriersConfigType::class, $carriersConfig, [
-            'required_departments' => true
+            'required_amount' => 'departments'
         ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $task = $form->getData();
-            //dd($task);
             $em = $this->getDoctrine()->getManager();
             foreach ($carriersConfig->getStepsDeps() as $step) {
                 $step->setConfig($carriersConfig);
-                //$step->setCarrier($carriers);
                 $em->persist($step);
                 foreach ($step->getAmountDepartments() as $amountDepartment) {
                     $amountDepartment->setCarrierStep($step);
                     $amountDepartment->setCarrierConfig($carriersConfig);
-                    //$amountCountry->setStepCountry($repoCountry->find(17));
-                    //$amountCountry->setCarrier($carriers);
                     $em->persist($amountDepartment);
                 }
             }
@@ -133,14 +131,71 @@ class CarriersConfigController extends AbstractController
                 "Enregistrement réussi."
             );
 
-            return $this->redirectToRoute('carriers_config_edit_france', ['id' => $id]);
+            return $this->redirectToRoute('carriers_config_edit_department', ['id' => $id]);
         }
 
-        return $this->render('admin/carriers/config/edit_france.html.twig', [
+        return $this->render('admin/carriers/config/edit_department.html.twig', [
             'carriers_config' => $carriersConfig,
             'id' => $id,
             'form' => $form->createView(),
             'departments' => $departments,
+            'countStep' => $countStep
+        ]);
+    }
+
+    /**
+     * @Route("/{id}/edit_region", name="carriers_config_edit_region", methods={"GET","POST"})
+     */
+    public function editRegion($id, Request $request, MgCarriers $carriers, MgCarriersConfigRepository $repoCarrierConfig, MgCarriersStepsRegionsRepository $repoSteps, MgRegionsFrenchRepository $repoRegion): Response
+    {
+        $carriersConfig = $repoCarrierConfig->findOneBy(['carrier' => $carriers]);
+        if (!empty($carriersConfig)) {
+            $carrierStep = $repoSteps->findBy(['config' => $carriersConfig]);
+            $countStep = count($carrierStep);
+        } else {
+            $countStep = 0;
+        }
+        $regions = $repoRegion->findAll();
+        if (empty($carriersConfig)) {
+            $carriersConfig = new MgCarriersConfig();
+        }
+        $form = $this->createForm(CarriersConfigType::class, $carriersConfig, [
+            'required_amount' => 'regions'
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $task = $form->getData();
+            //dd($task);
+            $em = $this->getDoctrine()->getManager();
+            foreach ($carriersConfig->getStepsRegions() as $step) {
+                $step->setConfig($carriersConfig);
+                //$step->setCarrier($carriers);
+                $em->persist($step);
+                foreach ($step->getAmountRegions() as $amountRegion) {
+                    $amountRegion->setCarrierStep($step);
+                    $amountRegion->setCarrierConfig($carriersConfig);
+                    //$amountCountry->setStepCountry($repoCountry->find(17));
+                    //$amountCountry->setCarrier($carriers);
+                    $em->persist($amountRegion);
+                }
+            }
+            $carriersConfig->setCarrier($carriers);
+            $em->persist($carriersConfig);
+            $em->flush();
+            $this->addFlash(
+                'success',
+                "Enregistrement réussi."
+            );
+
+            return $this->redirectToRoute('carriers_config_edit_region', ['id' => $id]);
+        }
+
+        return $this->render('admin/carriers/config/edit_region.html.twig', [
+            'carriers_config' => $carriersConfig,
+            'id' => $id,
+            'form' => $form->createView(),
+            'regions' => $regions,
             'countStep' => $countStep
         ]);
     }

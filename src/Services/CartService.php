@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\Entity\MgProducts;
 use App\Repository\MgCarriersRepository;
+use App\Repository\MgDepartmentsFrenchRepository;
 use App\Repository\MgProductsRepository;
 use App\Repository\MgTaxesRepository;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -11,14 +12,10 @@ class CartService
 {
 	protected $session;
 	protected $products;
-    protected $taxes;
-    protected $carrier;
 
-	public function __construct(SessionInterface $session, MgProductsRepository $products, MgCarriersRepository $carrier, MgTaxesRepository $taxes) {
+	public function __construct(SessionInterface $session, MgProductsRepository $products) {
 		$this->session = $session;
 		$this->products = $products;
-        $this->carrier = $carrier;
-        $this->taxes = $taxes;
 	}
 
     /**
@@ -38,10 +35,6 @@ class CartService
      */
     public function checkBulk()
     {
-        /*if (!$this->session->has('cart')) {
-            $this->session->set('cart', []);
-        }
-        $cart = $this->session->get('cart');*/
         $cart = $this->cart();
         $productBulk = []; //Tableau recueillant l'analyse du vrac
         $bulk = null; //Variable recueillant la valeur du vrac servant de comparaison avec les produits mis en panier
@@ -156,85 +149,6 @@ class CartService
             unset($cart[$product->getId()]);
             $this->session->set('cart', $cart);
         }
-    }
-
-    public function getShipping($countryCustomer, $zip)
-    {
-        //Nombre d'article soumis au frais de livraison (ne comprends pas les articles numériques)
-        $submittedToTheDelivery = 0;
-        //$shipping = ['price' => 0, 'taxes' => 0, 'carrier' => null];
-        $shipping = [];
-        foreach ($this->cart() as $item) {
-            if ($item['product']->getType() != 'downloadable' || $item['product']->getType() != 'downloadable_exclu') {
-                $carrier = $this->carrier->find($item['product']->getCarrier()->getId());
-                $tranche = false;//Variable permettant de vérifier si une tranche est trouvée
-                if ($carrier->getConfig()->getBillingOn() == 'qty') {
-                    foreach ($carrier->getConfig()->getSteps() as $value) {
-                        if ($this->totalQuantity() >= $value->getStepMin() && $this->totalQuantity() < $value->getStepMax()) {
-                            foreach ($value->getAmountCountries() as $country) {
-                                if ($country->getStepCountry()->getId() == $countryCustomer) {
-                                    $shipping[$carrier->getId()]['price'] = $country->getCountryAmount();
-                                    $taxe = $this->taxes->find($carrier->getConfig()->getTaxe()->getId());
-                                    $shipping[$carrier->getId()]['taxes'] = $shipping[$carrier->getId()]['price'] * $taxe->getTaxeRate() / 100;
-                                    $tranche = true;//Une tranche est trouvée
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                } elseif($carrier->getConfig()->getBillingOn() == 'price') {
-                    foreach ($carrier->getConfig()->getSteps() as $value) {
-                        if ($this->totalCart() >= $value->getStepMin() && $this->totalCart() < $value->getStepMax()) {
-                            foreach ($value->getAmountCountries() as $country) {
-                                if ($country->getStepCountry()->getId() == $countryCustomer) {
-                                    $shipping[$carrier->getId()]['price'] = $country->getCountryAmount();
-                                    $taxe = $this->taxes->find($carrier->getConfig()->getTaxe()->getId());
-                                    $shipping[$carrier->getId()]['taxes'] = $shipping[$carrier->getId()]['price'] * $taxe->getTaxeRate() / 100;
-                                    $tranche = true;//Une tranche est trouvée
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                } elseif($carrier->getConfig()->getBillingOn() == 'weight') {
-                    $weight = 0;
-                    foreach ($this->cart() as $recupWeight) {
-                        if ($recupWeight['product']->getCarrier()->getId() == $carrier->getId()) {
-                            $weight += $recupWeight['product']->getWeight();
-                        }
-                    }
-                    foreach ($carrier->getConfig()->getSteps() as $value) {
-                        if ($weight >= $value->getStepMin() && $weight < $value->getStepMax()) {
-                            foreach ($value->getAmountCountries() as $country) {
-                                if ($country->getStepCountry()->getId() == $countryCustomer) {
-                                    $shipping[$carrier->getId()]['price'] = $country->getCountryAmount();
-                                    $taxe = $this->taxes->find($carrier->getConfig()->getTaxe()->getId());
-                                    $shipping[$carrier->getId()]['taxes'] = $shipping[$carrier->getId()]['price'] * $taxe->getTaxeRate() / 100;
-                                    $tranche = true;//Une tranche est trouvée
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (!$tranche) {//Si aucune tranche n'est trouvée
-                    //Si le hors tranche (out of range) est à hit, on prend la tranche la plus haute
-                    if ($carrier->getConfig()->getOutOfRange() == 'hit') {
-                        foreach ($value->getAmountCountries() as $country) {
-                            if ($country->getStepCountry()->getId() == $countryCustomer) {
-                                $shipping[$carrier->getId()]['price'] = $country->getCountryAmount();
-                                    $taxe = $this->taxes->find($carrier->getConfig()->getTaxe()->getId());
-                                $shipping[$carrier->getId()]['taxes'] = $shipping[$carrier->getId()]['price'] * $taxe->getTaxeRate() / 100;
-                            }
-                        }
-                    } else {//Sinon on laisse le port à 0 comme initialisé een début de script
-                        $shipping[$carrier->getId()]['price'] = 0;
-                        $shipping[$carrier->getId()]['taxes'] = 0;
-                    }
-                }
-            }
-        }
-        return $shipping;
     }
 
     /**

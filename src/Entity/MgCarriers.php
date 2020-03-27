@@ -61,10 +61,16 @@ class MgCarriers
      */
     private $products;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MgOrdersCarriers", mappedBy="carrier")
+     */
+    private $orderCarriers;
+
     public function __construct()
     {
         $this->carriersLang = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->orderCarriers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -193,6 +199,37 @@ class MgCarriers
             // set the owning side to null (unless already changed)
             if ($product->getCarrier() === $this) {
                 $product->setCarrier(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MgOrdersCarriers[]
+     */
+    public function getOrderCarriers(): Collection
+    {
+        return $this->orderCarriers;
+    }
+
+    public function addOrderCarrier(MgOrdersCarriers $orderCarrier): self
+    {
+        if (!$this->orderCarriers->contains($orderCarrier)) {
+            $this->orderCarriers[] = $orderCarrier;
+            $orderCarrier->setCarrier($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrderCarrier(MgOrdersCarriers $orderCarrier): self
+    {
+        if ($this->orderCarriers->contains($orderCarrier)) {
+            $this->orderCarriers->removeElement($orderCarrier);
+            // set the owning side to null (unless already changed)
+            if ($orderCarrier->getCarrier() === $this) {
+                $orderCarrier->setCarrier(null);
             }
         }
 

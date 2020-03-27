@@ -9,7 +9,7 @@ class SendEmails
 	{
 		$this->transport = (new \Swift_SmtpTransport('ssl0.ovh.net', 465, 'SSL'))
           ->setUsername('contact@percevalcreation.fr')
-          ->setPassword('kamaaloT131009')
+          ->setPassword('kaErlion091013#')
         ;
 	}
 

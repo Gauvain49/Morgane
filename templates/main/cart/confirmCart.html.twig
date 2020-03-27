@@ -110,29 +110,26 @@
 					<tr>
 						<td></td>
 						<td></td>
-						<td></td>
-						<td class="prixTotal">Montant total</td>
-						<td class="prixTotal">{{ cartService.totalCart|number_format(2, ',', ' ') }} €</td>
-						<td></td>
+						<td class="prixTotal" colspan="2" style="text-align: right;">Montant total</td>
+						<td class="prixTotal">{{ cartService.totalCart|number_format(2, ',', ' ') }}&nbsp;€</td>
 					</tr>
+					{% set totalShipping = 0 %}
+					{% for cartShipping in shipping %}
+					{% set totalShipping = totalShipping + cartShipping['price'] + cartShipping['taxes'] %}
+					<tr>
+						<td></td>
+						<td colspan="3" style="text-align: right;">Livraison {% for carrier in carriers %}{% if carrier.id == loop.index %} {{ carrier.carrierName }}{% endif %}{% endfor %}</td>
+						<td>{{ (cartShipping['price']+cartShipping['taxes'])|number_format(2, ',', ' ') }}&nbsp;€</td>
+					</tr>
+					{% endfor %}
 					<tr>
 						<td></td>
 						<td></td>
-						<td></td>
-						<td style="text-align: right;">Port</td>
-						<td>{{ (cartService.getShipping['price']+cartService.getShipping['taxes'])|number_format(2, ',', ' ') }} €</td>
-						<td></td>
+						<td class="prixTotal" colspan="2" style="text-align: right;"><strong>Total commande</strong></td>
+						<td class="prixTotal">{{ (cartService.totalCart + totalShipping)|number_format(2, ',', ' ') }}&nbsp;€<td>
 					</tr>
 					<tr>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td class="prixTotal"><strong>Total commande</strong></td>
-						<td class="prixTotal">{{ (cartService.totalCart + cartService.getShipping['price']+cartService.getShipping['taxes'])|number_format(2, ',', ' ') }} €<td>
-						<td></td>
-					</tr>
-					<tr>
-						<td colspan="7" style="text-align: left; background-color: #f2f2f2;">
+						<td colspan="6" style="text-align: left; background-color: #f2f2f2;">
 						<form name="form1" method="post" action="">
 							<input type="checkbox" name="accept_cgv" id="accept_cgv">
 							<label for="accept_cgv">Je déclare avoir pris connaissance des <a href="{{ path('page', {'slug': 'conditions-generales-de-vente'}) }}" id="open-infobox">conditions générales de vente</a></label>

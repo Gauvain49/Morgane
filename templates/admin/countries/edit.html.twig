@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit MgCountries{% endblock %}
+
+{% block body %}
+    <h1>Edit MgCountries</h1>
+
+    {{ include('mg_countries/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('mg_countries_index') }}">back to list</a>
+
+    {{ include('mg_countries/_delete_form.html.twig') }}
+{% endblock %}

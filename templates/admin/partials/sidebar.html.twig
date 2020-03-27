@@ -80,7 +80,7 @@
 							</li>
 							<li class="nav-item">
 								<a data-toggle="collapse" href="#clients">
-									<i class="la la-street-view"></i>
+									<i class="flaticon-users"></i>
 									<p>Clients</p>
 									<span class="caret"></span>
 								</a>
@@ -106,10 +106,25 @@
 								</a>
 							</li>
 							<li class="nav-item">
-								<a href="{{ path('carriers_index') }}">
+								<a data-toggle="collapse" href="#listCarriers">
 									<i class="la la-truck"></i>
 									<p>Livraison</p>
+									<span class="caret"></span>
 								</a>
+								<div class="collapse {% if NavCarrierOpen is defined %}show{% endif %}" id="listCarriers">
+									<ul class="nav nav-collapse">
+										<li>
+											<a href="{{ path('carriers_index') }}">
+												<span class="sub-item">Transporteurs</span>
+											</a>
+										</li>
+										<li>
+											<a href="{{ path('countries_index') }}">
+												<span class="sub-item">Pays livrables</span>
+											</a>
+										</li>
+									</ul>
+								</div>
 							</li>
 							<li class="nav-item">
 								<a href="{{ path('payments_mode') }}">

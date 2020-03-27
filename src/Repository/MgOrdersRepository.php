@@ -37,6 +37,30 @@ class MgOrdersRepository extends ServiceEntityRepository
         //return $newNum;
     }
 
+    public function salesOfMounth($month)
+    {
+        return $this->createQueryBuilder('o')
+            ->select('o.total_price_all_taxes')
+            //->expr()->sum('o.total_price_all_taxes')
+            ->where('MONTH(o.date_add) = :month')
+            ->setParameter('month', $month)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function salesOfYear($year)
+    {
+        return $this->createQueryBuilder('o')
+            ->select('o.date_add, o.total_price_all_taxes')
+            //->expr()->sum('o.total_price_all_taxes')
+            ->where('YEAR(o.date_add) = :year')
+            ->setParameter('year', $year)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     // /**
     //  * @return MgOrders[] Returns an array of MgOrders objects
     //  */

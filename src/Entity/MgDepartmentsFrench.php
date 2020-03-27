@@ -33,6 +33,11 @@ class MgDepartmentsFrench
      */
     private $amountDepartments;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\MgRegionsFrench", inversedBy="departmentsFrenches")
+     */
+    private $region;
+
     public function __construct()
     {
         $this->amountDepartments = new ArrayCollection();
@@ -94,6 +99,18 @@ class MgDepartmentsFrench
                 $amountDepartment->setStepDepartment(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getRegion(): ?MgRegionsFrench
+    {
+        return $this->region;
+    }
+
+    public function setRegion(?MgRegionsFrench $region): self
+    {
+        $this->region = $region;
 
         return $this;
     }

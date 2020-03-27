@@ -56,7 +56,7 @@
 							<div class="gestionQte">
 									<a href="{{ path('cart_less', {'id' : key}) }}" class="qteMoins">-</a>{{ item.qty }}<a href="{{ path('cart_more', {'id' : key}) }}" class="qtePlus">+</a></div>
 						</td>
-						<td class="product-subtotal">{{ (item.amount['priceNetAllTaxes'] * item.qty)|number_format(2, ',', ' ') }} €</td>
+						<td class="product-subtotal">{{ (item.amount['priceNetAllTaxes'] * item.qty)|number_format(2, ',', ' ') }}&nbsp;€</td>
 						<td class="product-remove"><a href="{{ path('cart_dell_line', {'id' : key}) }}"><img src="{{ asset('img/delete.png') }}" width="13" height="16"></a></td>
 					</tr>
 					{% endfor %}
@@ -74,29 +74,23 @@
 					<tr>
 						<td></td>
 						<td></td>
-						<td></td>
-						<td class="prixTotal">Montant total</td>
-						<td class="prixTotal" style="text-align: right;">{{ cartService.totalCart|number_format(2, ',', ' ') }} €</td>
-						<td></td>
+						<td class="prixTotal" colspan="2" style="text-align: right;">Montant total</td>
+						<td class="prixTotal" style="text-align: right;">{{ cartService.totalCart|number_format(2, ',', ' ') }}&nbsp;€</td>
 					</tr>
 					{% set totalShipping = 0 %}
 					{% for cartShipping in shipping %}
 					{% set totalShipping = totalShipping + cartShipping['price'] + cartShipping['taxes'] %}
 					<tr>
 						<td></td>
-						<td></td>
-						<td></td>
-						<td colspan="2" style="text-align: right;">Livraison {% for carrier in carriers %}{% if carrier.id == loop.index %} {{ carrier.carrierName }}{% endif %}{% endfor %} : {{ (cartShipping['price']+cartShipping['taxes'])|number_format(2, ',', ' ') }} €</td>
-						<td></td>
+						<td colspan="3" style="text-align: right;">Livraison {% for carrier in carriers %}{% if carrier.id == loop.index %} {{ carrier.carrierName }}{% endif %}{% endfor %}</td>
+						<td>{{ (cartShipping['price']+cartShipping['taxes'])|number_format(2, ',', ' ') }}&nbsp;€</td>
 					</tr>
 					{% endfor %}
 					<tr>
 						<td></td>
 						<td></td>
-						<td></td>
-						<td class="prixTotal"><strong>Total commande</strong></td>
-						<td class="prixTotal" style="text-align: right;">{{ (cartService.totalCart + totalShipping)|number_format(2, ',', ' ') }} €<td>
-						<td></td>
+						<td class="prixTotal" colspan="2" style="text-align: right;"><strong>Total commande</strong></td>
+						<td class="prixTotal" style="text-align: right;">{{ (cartService.totalCart + totalShipping)|number_format(2, ',', ' ') }}&nbsp;€<td>
 					</tr>
 				</tfoot>
 			</table>

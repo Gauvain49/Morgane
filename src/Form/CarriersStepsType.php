@@ -20,10 +20,12 @@ class CarriersStepsType extends AbstractType
         $builder
             ->add('step_min', TextType::class, [
                 'label' => 'Pour une valeur >= à ',
+                'label_attr' => ['class' => 'col-form-label step_min'],
                 'required' => false
             ])
             ->add('step_max', TextType::class, [
                 'label' => 'jusqu\'à une valeur < à ',
+                'label_attr' => ['class' => 'col-form-label step_max'],
                 'required' => false
             ])
             ->add('amountCountries', CollectionType::class, [

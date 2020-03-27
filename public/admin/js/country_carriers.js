@@ -38,3 +38,111 @@ function addCountry(nomCible, counter, listLang, i) {
 		}
 	}
 }
+
+function basePrice(name) {
+	//console.log(index);
+	var base = document.getElementById(name);
+	var input = base.getElementsByTagName('input');
+	for (var b = 0; b<input.length; b++) {
+		if (input[b].checked) {
+			var valInput = input[b].value;
+		}
+	}
+	if (valInput == 'price') {
+		var valLabelStepMin = 'Pour un prix total &gt;= à';
+		var valLabelStepMax = 'jusqu\'à un prix total &lt;= à';
+	} else if (valInput == 'weight') {
+		var valLabelStepMin = 'Pour un poids total &gt;= à';
+		var valLabelStepMax = 'jusqu\'à un poids total &lt;= à';
+	} else if (valInput == 'qty') {
+		var valLabelStepMin = 'Pour une quantité total &gt;= à';
+		var valLabelStepMax = 'jusqu\'à une quantité total &lt;= à';
+	}
+	var price = document.getElementById('carriers_config_billing_on_0');
+	var weight = document.getElementById('carriers_config_billing_on_1');
+	var qty = document.getElementById('carriers_config_billing_on_2');
+	price.addEventListener('change', function(){
+		valInput = price.value;
+		var valLabelStepMin = 'Pour un prix total &gt;= à';
+		var valLabelStepMax = 'jusqu\'à un prix total &lt;= à';
+	
+		var valLabel = [valLabelStepMin, valLabelStepMax];
+		var index = $('#carriers_config_steps div.col-3').length;
+		for (var i = 0; i < index; i++) {
+			var a = document.getElementById('block_carriers_config_steps_' + i);
+			var label_step_min = a.getElementsByClassName("step_min");
+			for (var l=0; l<label_step_min.length; l++) {
+				label_step_min[l].innerHTML = valLabel[0];
+				//console.log(label_step_min[l].innerHTML);
+			}
+			var label_step_max = a.getElementsByClassName("step_max");
+			for (var l=0; l<label_step_max.length; l++) {
+				label_step_max[l].innerHTML = valLabel[1];
+				//console.log(label_step_min[l].innerHTML);
+			}
+		}
+		console.log(valInput);
+	});
+	weight.addEventListener('change', function(){
+		valInput = weight.value;
+		var valLabelStepMin = 'Pour un poids total &gt;= à';
+		var valLabelStepMax = 'jusqu\'à un poids total &lt;= à';
+	
+		var valLabel = [valLabelStepMin, valLabelStepMax];
+		var index = $('#carriers_config_steps div.col-3').length;
+		for (var i = 0; i < index; i++) {
+			var a = document.getElementById('block_carriers_config_steps_' + i);
+			var label_step_min = a.getElementsByClassName("step_min");
+			for (var l=0; l<label_step_min.length; l++) {
+				label_step_min[l].innerHTML = valLabel[0];
+				//console.log(label_step_min[l].innerHTML);
+			}
+			var label_step_max = a.getElementsByClassName("step_max");
+			for (var l=0; l<label_step_max.length; l++) {
+				label_step_max[l].innerHTML = valLabel[1];
+				//console.log(label_step_min[l].innerHTML);
+			}
+		}
+		console.log(valInput);
+	});
+	qty.addEventListener('change', function(){
+		valInput = qty.value;
+		var valLabelStepMin = 'Pour une quantité total &gt;= à';
+		var valLabelStepMax = 'jusqu\'à une quantité total &lt;= à';
+	
+		var valLabel = [valLabelStepMin, valLabelStepMax];
+		var index = $('#carriers_config_steps div.col-3').length;
+		for (var i = 0; i < index; i++) {
+			var a = document.getElementById('block_carriers_config_steps_' + i);
+			var label_step_min = a.getElementsByClassName("step_min");
+			for (var l=0; l<label_step_min.length; l++) {
+				label_step_min[l].innerHTML = valLabel[0];
+				//console.log(label_step_min[l].innerHTML);
+			}
+			var label_step_max = a.getElementsByClassName("step_max");
+			for (var l=0; l<label_step_max.length; l++) {
+				label_step_max[l].innerHTML = valLabel[1];
+				//console.log(label_step_min[l].innerHTML);
+			}
+		}
+	});
+	
+	var valLabel = [valLabelStepMin, valLabelStepMax];
+	var index = $('#carriers_config_steps div.col-3').length;
+	for (var i = 0; i < index; i++) {
+		var a = document.getElementById('block_carriers_config_steps_' + i);
+		var label_step_min = a.getElementsByClassName("step_min");
+		for (var l=0; l<label_step_min.length; l++) {
+			label_step_min[l].innerHTML = valLabel[0];
+			//console.log(label_step_min[l].innerHTML);
+		}
+		var label_step_max = a.getElementsByClassName("step_max");
+		for (var l=0; l<label_step_max.length; l++) {
+			label_step_max[l].innerHTML = valLabel[1];
+			//console.log(label_step_min[l].innerHTML);
+		}
+	}
+
+
+	return valLabel;
+}

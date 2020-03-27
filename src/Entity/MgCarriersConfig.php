@@ -75,12 +75,24 @@ class MgCarriersConfig
      */
     private $stepsDeps;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MgCarriersStepsRegions", mappedBy="config", orphanRemoval=true)
+     */
+    private $stepsRegions;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MgCarriersAmountRegions", mappedBy="carrier_config", orphanRemoval=true)
+     */
+    private $amountRegions;
+
     public function __construct()
     {
         $this->steps = new ArrayCollection();
         $this->amountCountries = new ArrayCollection();
         $this->amountDepartments = new ArrayCollection();
         $this->stepsDeps = new ArrayCollection();
+        $this->stepsRegions = new ArrayCollection();
+        $this->amountRegions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -264,6 +276,68 @@ class MgCarriersConfig
             // set the owning side to null (unless already changed)
             if ($stepsDep->getConfig() === $this) {
                 $stepsDep->setConfig(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MgCarriersStepsRegions[]
+     */
+    public function getStepsRegions(): Collection
+    {
+        return $this->stepsRegions;
+    }
+
+    public function addStepsRegion(MgCarriersStepsRegions $stepsRegion): self
+    {
+        if (!$this->stepsRegions->contains($stepsRegion)) {
+            $this->stepsRegions[] = $stepsRegion;
+            $stepsRegion->setConfig($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStepsRegion(MgCarriersStepsRegions $stepsRegion): self
+    {
+        if ($this->stepsRegions->contains($stepsRegion)) {
+            $this->stepsRegions->removeElement($stepsRegion);
+            // set the owning side to null (unless already changed)
+            if ($stepsRegion->getConfig() === $this) {
+                $stepsRegion->setConfig(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MgCarriersAmountRegions[]
+     */
+    public function getAmountRegions(): Collection
+    {
+        return $this->amountRegions;
+    }
+
+    public function addAmountRegion(MgCarriersAmountRegions $amountRegion): self
+    {
+        if (!$this->amountRegions->contains($amountRegion)) {
+            $this->amountRegions[] = $amountRegion;
+            $amountRegion->setCarrierConfig($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAmountRegion(MgCarriersAmountRegions $amountRegion): self
+    {
+        if ($this->amountRegions->contains($amountRegion)) {
+            $this->amountRegions->removeElement($amountRegion);
+            // set the owning side to null (unless already changed)
+            if ($amountRegion->getCarrierConfig() === $this) {
+                $amountRegion->setCarrierConfig(null);
             }
         }
 

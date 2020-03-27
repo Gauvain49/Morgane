@@ -50,8 +50,8 @@
 			<aside>
 				<div class="list-group">
 					<a href="{{ path('carriers_edit', {'id': id}) }}" class="list-group-item">Transporteur</a>
-					<a href="{{ path('carriers_config_edit', {'id': id}) }}" class="list-group-item active">Coûts d'expédition par pays</a>
-					<a href="{{ path('carriers_config_edit_region', {'id': id}) }}" class="list-group-item">Coûts d'expédition par région</a>
+					<a href="{{ path('carriers_config_edit', {'id': id}) }}" class="list-group-item">Coûts d'expédition par pays</a>
+					<a href="{{ path('carriers_config_edit_region', {'id': id}) }}" class="list-group-item active">Coûts d'expédition par région</a>
 					<a href="{{ path('carriers_config_edit_department', {'id': id}) }}" class="list-group-item">Coûts d'expédition par département</a>
 				</div>
 			</aside>
@@ -78,35 +78,31 @@
 {# block _carriers_config_steps_widget %}
 	{{ form_widget(form) }}
 {% endblock #}
-{% block _carriers_config_steps_entry_row %}
+{% block _carriers_config_stepsRegions_entry_row %}
 	<div class="col-3 mb-5">
 			{{ form_widget(form) }}
 	</div>
 {% endblock %}
-{% block _carriers_config_steps_entry_widget %}
+{% block _carriers_config_stepsRegions_entry_widget %}
 <div id="block_{{id}}">
-	<div class="form-group" style="padding-bottom: 5px;">
-		<div class="row p-1" style="background-color: #3db8d5;">
-			<div class="col-sm-8 text-right">
-				{{ form_label(form.step_min) }}
-			</div>
-			<div class="col-sm-4">
+	<div class="form-group">
+		<div class="row">
+			{{ form_label(form.step_min) }}
+			<div class="col-sm-5">
 				{{ form_widget(form.step_min) }}
 			</div>
 		</div>
 	</div>
-	<div class="form-group" style="padding-top: 5px;">
-		<div class="row p-1" style="background-color: #3db8d5;">
-			<div class="col-sm-8 text-right">
-				{{ form_label(form.step_max) }}
-			</div>
-			<div class="col-sm-4">
+	<div class="form-group">
+		<div class="row">
+			{{ form_label(form.step_max) }}
+			<div class="col-sm-5 input-group">
 				{{ form_widget(form.step_max) }}
 			</div>
 		</div>
 	</div>
 	<div class="form-group mb-2" style="padding: 0;">
-		{{ form_widget(form.amountCountries) }}
+		{{ form_widget(form.amountRegions) }}
 		<div class="text-right d-none">
 			<button type="button" data-action="delete" data-target="#block_{{id}}" class="btn btn-danger btn-round btn-sm dell_step">Suprimmer la tranche</button>
 		</div>
@@ -114,16 +110,12 @@
 </div>
 {% endblock %}
 {% block javascripts %}
-	<script src="{{ asset('admin/js/country_carriers.js') }}"></script>
+	<script src="{{ asset('admin/js/region_carriers.js') }}"></script>
 	<script type="text/javascript">
 	//Création du tableau recueillant les pays
 	const listCountry = new Object();
-	{% for country in countries %}
-		{% for countryLang in country.countriesLangs %}
-			{% if countryLang.lang.id == languagesService.languageDefault.id %}
-				listCountry[{{country.id}}] = '{{countryLang.countryName}}';
-			{% endif %}
-		{% endfor %}
+	{% for region in regions %}
+		listCountry[{{region.id}}] = '{{region.name}}';
 	{% endfor %}
 
 	//Function pour calculer la taille du tableau qui recueille les pays
@@ -138,67 +130,46 @@
 	};
 	var langLength = Object.size(listCountry);
 
-	//Pour savoir quelle base de prix est coché
-	//var valLabel = basePrice('carriers_config_billing_on');
-
 	//S'il n'y a aucune étape d'initialisé, on crée les champs pour recevoir la première
 	if ({{ countStep }} == 0) {
-		var noeud = document.getElementById('carriers_config_steps');
+		var noeud = document.getElementById('carriers_config_stepsRegions');
 		//On récupère le contenu des divs à créer
 		var contents = noeud.getAttribute('data-prototype');
 		var counter = 0;//On implémente le compteur
 		for(var i = 0; i <= {{ countStep }}; i++) {
-			var ifExist = document.getElementById('carriers_config_steps' + '_' + counter);
+			var ifExist = document.getElementById('carriers_config_stepsRegions' + '_' + counter);
 			if (ifExist === null) {
 				var content = contents.replace(/__name__/g, counter);
 				noeud.insertAdjacentHTML('beforeend', content);
 			}
 			counter++;
 		}
-		//Pour savoir quelle base de prix est coché
-		basePrice('carriers_config_billing_on');
-
 
 		{% for i in 0..countStep %}
-		countryCarriers('carriers_config_steps_0_amountCountries', listCountry, {{ languagesService.getLanguages|length }}, 0);
+		regionCarriers('carriers_config_stepsRegions_0_amountRegions', listCountry, {{ languagesService.getLanguages|length }}, 0);
 		{% endfor %}
 	} else {
-
 		for(var c = 0; c < {{ countStep }}; c++) {
 			var y = 0;
 			for(var i in listCountry) {
-				addCountry('carriers_config_steps_' + c + '_amountCountries', y, listCountry, i);
+				addCountry('carriers_config_stepsRegions_' + c + '_amountRegions', y, listCountry, i);
 				y++;
 			}
-			//Pour récupérer le label des step_min et step_max
-			/*var a = document.getElementById('block_carriers_config_steps_' + c);
-			var label_step_min = a.getElementsByClassName("step_min");
-			for (var l=0; l<label_step_min.length; l++) {
-				label_step_min[l].innerHTML = valLabel[0];
-				//console.log(label_step_min[l].innerHTML);
-			}
-			var label_step_max = a.getElementsByClassName("step_max");
-			for (var l=0; l<label_step_max.length; l++) {
-				label_step_max[l].innerHTML = valLabel[1];
-				//console.log(label_step_min[l].innerHTML);
-			}*/
-			//console.log(label);
 		}
-		//Pour savoir quelle base de prix est coché
-		basePrice('carriers_config_billing_on');
-
+		
 	}
 
 	//Rajout d'étape supplémentaire
 	$('#add_step').click(function(){
 		//Je récupère le numéro des futurs champs que je vais créer
 		//var index = +$('#widgets-counter').val();
-		var index = $('#carriers_config_steps div.col-3').length;
-		//carriers_config_steps
+		var index = $('#carriers_config_stepsRegions div.col-3').length;
+		console.log(index);
+		//carriers_config_stepsDeps
 		//On récupère a valeur des derniers champs step_min et step_max rempli
 
-		var step_min = parseInt(document.getElementById('carriers_config_steps_' + (index - 1) + '_step_min').value);
-		var step_max = parseInt(document.getElementById('carriers_config_steps_' + (index - 1) + '_step_max').value);
+		var step_min = parseInt(document.getElementById('carriers_config_stepsRegions_' + (index - 1) + '_step_min').value);
+		var step_max = parseInt(document.getElementById('carriers_config_stepsRegions_' + (index - 1) + '_step_max').value);
 
 		if (isNaN(step_min) || isNaN(step_max)) {
 			alert('Vous devez remplir les valeurs avant d\'ajouter une nouvelle tranche !');
@@ -206,12 +177,12 @@
 			alert('La valeur \' < à \' (inférieur à) ne peut être inférieur à la valeur \'<= à\' (supérieur ou = à) !');
 		} else {
 			//Je récupère le prototype des entrées
-			const tmpl = $('#carriers_config_steps').data('prototype').replace(/__name__/g, index);
-			$('#carriers_config_steps').append(tmpl);
-			countryCarriers('carriers_config_steps_' + index + '_amountCountries', listCountry, {{ languagesService.getLanguages|length }}, index);
+			const tmpl = $('#carriers_config_stepsRegions').data('prototype').replace(/__name__/g, index);
+			$('#carriers_config_stepsRegions').append(tmpl);
+			regionCarriers('carriers_config_stepsRegions_' + index + '_amountRegions', listCountry, {{ languagesService.getLanguages|length }}, index);
 
 			//On donner au champ step_min la valeur du step_max de la tranche précédente
-			var new_step_min = document.getElementById('carriers_config_steps_' + index + '_step_min').value = step_max;
+			var new_step_min = document.getElementById('carriers_config_stepsRegions_' + index + '_step_min').value = step_max;
 
 			index ++;
 			$('#widgets-counter').val(index + 1);
@@ -221,7 +192,6 @@
 			//Gestion du bouton supprimer
 			handleDeleteButtons();
 		}
-		basePrice('carriers_config_billing_on');
 	});
 
 	function handleDeleteButtons() {
