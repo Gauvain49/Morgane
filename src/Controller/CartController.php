@@ -50,7 +50,8 @@ class CartController extends AbstractController
             $dep = substr($dep, 0, 2);
         }
         $shipping = $shippingService->getShipping($country, $dep);
-        $session->set('shipping', [$shipping]);
+        //dump($shipping);
+        //$session->set('shipping', $shipping);
         //Récupération des images
         $images = [];
         foreach ($cart as $key => $item) {
@@ -62,6 +63,7 @@ class CartController extends AbstractController
                 }
             }
         }
+        //dd($shipping);
         $carriers = $repoCarrier->findAll();
         return $this->render('main/cart/index.html.twig', [
             'cart' => $cart,

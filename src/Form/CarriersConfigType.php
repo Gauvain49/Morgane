@@ -24,9 +24,9 @@ class CarriersConfigType extends AbstractType
                 'label' => 'Base de calcul de la livraison',
                 'attr' => ['class' => 'ml-5'],
                 'choices' => [
-                    'En fonction du prix total du panier' => 'price',
-                    'En fonction du poids total des articles' => 'weight',
-                    'En fonction de la quantité total du panier' => 'qty'],
+                    'En fonction du prix total' => 'price',
+                    'En fonction du poids total' => 'weight',
+                    'En fonction de la quantité total' => 'qty'],
                 'expanded' => true,
                 'multiple' => false
             ])

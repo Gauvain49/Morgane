@@ -143,9 +143,9 @@ class MgProducts
     private $carrier;
 
     /**
-     * @ORM\Column(type="float", options={"default": 0})
+     * @ORM\Column(type="float", nullable=true)
      */
-    private $additionnal_shipping_cost = 0;
+    private $additionnal_shipping_cost;
 
     /**
      * @ORM\Column(type="boolean", nullable=true, options={"default": false})

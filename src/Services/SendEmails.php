@@ -54,11 +54,28 @@ class SendEmails
         $mailer->send($message);
     }
 
-    public function sendMailContact($template, $templateTxt,
-        $fromEMail, $fromName, $toEmail, $toName, $subject)
+    public function sendMailContact($template, $templateTxt, $fromEMail, $fromName, $toEmail, $toName, $subject)
     {
         $message = (new \Swift_Message($subject))
             ->setFrom([$fromEMail => "Message de $fromName"])
+            ->setTo([$toEmail => "$toName"])
+            ->setBody(
+                $template,
+                'text/html'
+            )
+            ->addPart(
+                $templateTxt,
+                'text/plain'
+            )
+            ;
+        $mailer = new \Swift_Mailer($this->transport);
+        $mailer->send($message);
+    }
+
+    public function sendMailForgotPassword($template, $templateTxt, $fromEMail, $fromName, $toEmail, $toName, $subject)
+    {
+        $message = (new \Swift_Message($subject))
+            ->setFrom([$fromEMail => "$fromName"])
             ->setTo([$toEmail => "$toName"])
             ->setBody(
                 $template,

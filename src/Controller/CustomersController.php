@@ -20,10 +20,14 @@ use App\Repository\MgCustomersRepository;
 use App\Repository\MgGendersRepository;
 use App\Repository\MgOrdersRepository;
 use App\Repository\MgUsersRepository;
+use App\Services\AppService;
+use App\Services\SendEmails;
 use App\Services\TokenUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -377,5 +381,93 @@ class CustomersController extends AbstractController
         return $this->render('main/account/orders/index.html.twig', [
             'orders' => $getOrders
         ]);
+    }
+
+    /**
+     * @Route("/customer/forgotPassword", name="customer_forgot_password")
+     */
+    public function forgotPassword(Request $request, MgUsersRepository $repoUsers, UserPasswordEncoderInterface $encoder, TokenUtils $tokenUtils, SendEmails $sendEmails, AppService $appService)
+    {
+        $form = $this->createFormBuilder()
+                ->add('email', EmailType::class, [
+                    'label' => 'Votre adresse email',
+                    'help' => 'Saisissez l\'adresse e-mail associée à votre compte.'
+                ])
+                ->add('send', SubmitType::class, [
+                    'label' => 'Envoyer'
+                ])
+                ->getForm();
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $task = $form->getData();
+            $user = $repoUsers->findOneBy(['email' => $task['email']]);
+            if (!empty($user)) {
+                $newPassword = $tokenUtils->generateToken(10);
+                $encoded = $encoder->encodePassword($user, $newPassword);
+                $em = $this->getDoctrine()->getManager();
+                $user->setPassword($encoded);
+                $em->persist($user);
+                $em->flush();
+
+                //Envoi de l'email au client
+                $template = $this->forgotPasswordSendNewEmail($user, $newPassword);
+                $templateTxt = $this->forgotPasswordSendNewEmailtxt($user, $newPassword);
+                //On ne récupère que le content du template, sinon il affiche les headers dans l'en-tête du mail
+                $template = $template->getContent();
+                $templateTxt = $templateTxt->getContent();
+
+                //Envoi au client
+                //dd($user()->getEmail());
+                $sendMailCustomer = $sendEmails->sendMailForgotPassword($template, $templateTxt, $appService->getParams()->getEmailContact(), $appService->getParams()->getTitle(), $user->getEmail(), $user->getFirstname() . ' ' . $user->getLastname(), 'Réinitialisation de votre mot de passe');
+
+                return $this->redirectToRoute('customer_forgot_password_change');
+
+            } else {
+                $this->addFlash(
+                        'danger',
+                        'Utilisateur inconnu !');
+                $form->get('email')->addError(new FormError(" : Cet email est inconnu de notre base de données."));
+            }
+        }
+        
+        return $this->render('main/forgotPassword/forgotPassword.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/forgotPassword/{user}/{$newPassword}", name="send_new_password")
+     */
+    public function forgotPasswordSendNewEmail($user, $newPassword)
+    {
+
+        $template =  $this->renderView('main/forgotPassword/emails/give_newpassword.html.twig', [
+            'user' => $user,
+            'newPassword' => $newPassword,
+        ]);
+
+        return new Response($template);
+    }
+
+    /**
+     * @Route("/forgotPassword/{user}/{$newPassword}", name="send_email_confirm_order")
+     */
+    public function forgotPasswordSendNewEmailtxt($user, $newPassword)
+    {
+
+        $template =  $this->renderView('main/forgotPassword/emails/give_newpassword.txt.twig', [
+            'user' => $user,
+            'newPassword' => $newPassword,
+        ]);
+
+        return new Response($template);
+    }
+
+    /**
+     * @Route("/customer/forgotPasswordChange", name="customer_forgot_password_change")
+     */
+    public function forgetPasswordchange()
+    {
+        return $this->render('main/forgotPassword/forgotPasswordChange.html.twig');
     }
 }

@@ -82,7 +82,7 @@
 					{% set totalShipping = totalShipping + cartShipping['price'] + cartShipping['taxes'] %}
 					<tr>
 						<td></td>
-						<td colspan="3" style="text-align: right;">Livraison {% for carrier in carriers %}{% if carrier.id == loop.index %} {{ carrier.carrierName }}{% endif %}{% endfor %}</td>
+						<td colspan="3" style="text-align: right;">Livraison {{ carriers[loop.index].carrierName }}</td>
 						<td>{{ (cartShipping['price']+cartShipping['taxes'])|number_format(2, ',', ' ') }}&nbsp;€</td>
 					</tr>
 					{% endfor %}

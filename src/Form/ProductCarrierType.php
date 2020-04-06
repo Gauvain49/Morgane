@@ -33,8 +33,9 @@ class ProductCarrierType extends AbstractType
                 'required' => false
             ])
             ->add('additionnal_shipping_cost', MoneyType::class, [
-                'label' => 'Frais de transport additionnels pour ce produit',
-                'required' => false
+                'label' => 'Frais de transport HT additionnels pour ce produit',
+                'required' => false,
+                'help' => 'La taxe associée au transporteur selectionné sera appliquée aux frais additionnels.'
             ])
             ->add('carrier', EntityType::class, [
                 'label' => 'Transporteur',
